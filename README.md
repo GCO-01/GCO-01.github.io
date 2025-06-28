@@ -1,2 +1,2 @@
 # GCO-01.github.io
-Página de prueba
+Página de pruebas
