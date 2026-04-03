@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Landing hero de Perfect Pal, bebida proteica a base de clara de huevo." />
+  <title>Perfect Pal | v2</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,700;0,800;1,500;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/perfectpal-v2.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Navegación principal">
+        <a class="site-nav__link" href="#">Tienda</a>
+        <a class="site-nav__link" href="#">Proteína 101</a>
+        <a class="site-nav__link" href="#">Calculadora</a>
+      </nav>
+
+      <a class="site-brand" href="#" aria-label="Perfect Pal, inicio">perfect pal</a>
+
+      <nav class="site-actions" aria-label="Acciones rápidas">
+        <a class="site-actions__button" href="#" aria-label="Cuenta">
+          <svg class="site-actions__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 21a8 8 0 0 0-16 0"></path>
+            <circle cx="12" cy="8" r="4"></circle>
+          </svg>
+        </a>
+        <a class="site-actions__button" href="#" aria-label="Buscar">
+          <svg class="site-actions__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m20 20-3.5-3.5"></path>
+          </svg>
+        </a>
+        <a class="site-actions__button" href="#" aria-label="Carrito">
+          <svg class="site-actions__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="9" cy="20" r="1.5"></circle>
+            <circle cx="18" cy="20" r="1.5"></circle>
+            <path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8H18a1 1 0 0 0 1-.8L21 7H7"></path>
+          </svg>
+          <span class="site-actions__badge" aria-hidden="true">0</span>
+        </a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__inner">
+          <div class="hero__media" aria-label="Imagen principal del producto">
+            <figure class="hero__egg-frame">
+              <img
+                class="hero__egg-image"
+                src="assets/huevito%20final.png"
+                alt="Huevo entero marrón sobre fondo claro"
+                loading="eager"
+                decoding="async"
+              />
+            </figure>
+          </div>
+
+          <div class="hero__content">
+            <h1 id="hero-title" class="hero__title">El huevo fue<br />primero</h1>
+            <p class="hero__subtitle">Deja la leche para las gallinas.</p>
+            <a class="hero__cta" href="#">PRUÉBALO HOY</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section class="benefits" aria-label="Beneficios del producto">
+      <ul class="benefits__list">
+        <li class="benefits__item"><span class="benefits__icon" aria-hidden="true">✓</span><span>Sin lactosa</span></li>
+        <li class="benefits__item"><span class="benefits__icon" aria-hidden="true">✓</span><span>Ingredientes naturales</span></li>
+        <li class="benefits__item"><span class="benefits__icon" aria-hidden="true">✓</span><span>0G azúcar añadida</span></li>
+        <li class="benefits__item"><span class="benefits__icon" aria-hidden="true">✓</span><span>Sin químicos</span></li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>
