@@ -161,7 +161,7 @@ main {
 .hero {
   display: flex;
   justify-content: center;
-  padding: clamp(1.5rem, 4vh, 3.75rem) var(--section-padding-x) clamp(1.5rem, 4vh, 3.75rem);
+  padding: clamp(1.5rem, 4vh, 4.75rem) var(--section-padding-x) clamp(1.5rem, 4vh, 4.75rem);
   font-family: var(--font-family-base);
 }
 
@@ -177,6 +177,7 @@ main {
   align-items: center;
   width: min(100%, 80rem);
   margin-inline: auto;
+  padding-inline: clamp(1rem, 2.5vw, 5.5rem);
 }
 
 .hero__media,
@@ -188,7 +189,7 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: min(95%, 50rem);
+  width: min(95%, 80rem);
   margin-inline: 0;
 }
 
@@ -216,6 +217,7 @@ main {
   margin-inline: auto;
   object-fit: contain;
   filter: drop-shadow(0 0.75rem 1.5rem rgba(0, 0, 0, 0.16));
+  max-height: 30rem;
 }
 
 .hero__content {
@@ -251,7 +253,7 @@ main {
   align-items: center;
   justify-content: center;
   min-width: clamp(18rem, 18vw, 20rem);
-  min-height: 4.75rem;
+  min-height: 3rem;
   padding: 1rem 2rem;
   border: 0;
   border-radius: var(--radius-button);
@@ -315,8 +317,8 @@ main {
   flex-shrink: 0;
   background-color: rgba(255, 255, 255, 0.92);
   color: #111111;
-  font-size: 0.85rem;
-  font-weight: 800;
+  font-size: 0.80rem;
+  font-weight: 600;
   line-height: 1;
 }
 
@@ -337,10 +339,7 @@ main {
     margin-inline: auto;
   }
 
-  .hero__media {
-    width: min(85%, 5.5rem);
-  }
-
+ 
   .benefits__list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     padding-block: 1.25rem;
