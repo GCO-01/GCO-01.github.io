@@ -1,0 +1,39 @@
+/* ─────────────────────────────────────────────────────────────
+   Product Section — animations, utilities, responsive
+   ───────────────────────────────────────────────────────────── */
+
+@keyframes barScroll {
+  0%   { background-position: 0% 0%;   }
+  100% { background-position: 200% 0%; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.pp-fade      { animation: fadeUp 0.4s ease forwards; }
+.pp-thumb:hover { transform: scale(1.04); }
+.pp-flavor:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important; }
+.pp-faq-btn:hover { background: #fafafa; }
+
+/* ── Tablet (768–1023px) ──────────────────────────────────── */
+@media (max-width: 1023px) {
+  .pp-grid       { flex-direction: column !important; }
+  .pp-gallery    { width: 100% !important; position: static !important; }
+  .pp-h1         { font-size: 34px !important; }
+  .pp-reviews-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ── Mobile (<768px) ─────────────────────────────────────── */
+@media (max-width: 767px) {
+  .pp-grid          { padding: 24px 20px 0 !important; gap: 32px !important; }
+  .pp-nav-links     { display: none; }
+  .pp-h1            { font-size: 28px !important; }
+  .pp-image-card    { height: 360px !important; }
+  .pp-bottle-img    { height: 260px !important; }
+  .pp-reviews-grid  { grid-template-columns: 1fr !important; }
+  .pp-reviews-pad   { padding: 48px 20px 56px !important; }
+  .pp-sticky-pad    { padding: 0 20px !important; }
+  .pp-footer-links  { display: none; }
+}
