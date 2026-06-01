@@ -65,15 +65,15 @@
           padding: '0 48px',
         }} className="header-pad">
           <nav style={{ display: 'flex', gap: 28 }} className="site-nav-links">
-            {['Tienda','Proteína 101','Calculadora'].map(link => (
-              <a key={link} href="#" style={{
+            {[{label:'Tienda',href:'#'},{label:'Proteína 101',href:'#'},{label:'Calculadora',href:'calculadora.html'}].map(({label,href}) => (
+              <a key={label} href={href} style={{
                 fontFamily: OS, fontSize: 14, letterSpacing: '-0.02em',
                 color: '#f4f4f6', textDecoration: 'none', opacity: 0.8,
                 transition: 'opacity 0.2s',
               }}
               onMouseEnter={e => e.target.style.opacity = '1'}
               onMouseLeave={e => e.target.style.opacity = '0.8'}
-              >{link}</a>
+              >{label}</a>
             ))}
           </nav>
 
@@ -657,8 +657,8 @@
           }}>
             <span style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 700, fontSize: 20, letterSpacing: '-0.05em', color: '#f4f4f6' }}>perfect pal</span>
             <div style={{ display: 'flex', gap: 32 }} className="footer-links">
-              {['Tienda','Proteína 101','Calculadora','Contacto'].map(l => (
-                <a key={l} href="#" style={{
+              {[{l:'Tienda',h:'#'},{l:'Proteína 101',h:'#'},{l:'Calculadora',h:'calculadora.html'},{l:'Contacto',h:'#'}].map(({l,h}) => (
+                <a key={l} href={h} style={{
                   fontFamily: "'Open Sans', sans-serif", fontSize: 13, color: 'rgba(255,255,255,0.4)',
                   textDecoration: 'none', transition: 'color 0.2s',
                 }}
