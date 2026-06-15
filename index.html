@@ -9,7 +9,7 @@
   <!-- Tipografía -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,700;0,800;1,500;1,600&family=Open+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,700;0,800;1,500;1,600&family=Open+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Lato:wght@400;700;900&display=swap" rel="stylesheet" />
 
   <!-- Estilos -->
   <link rel="stylesheet" href="assets/css/perfectpal-v2.css" />
@@ -79,6 +79,10 @@
       </section>
     </main>
 
+     <!-- ═══════════════════════════════════════════════════════════
+         SECCIÓN 2: Claims
+    ════════════════════════════════════════════════════════════ -->
+
     <section class="benefits" aria-label="Beneficios del producto">
       <ul class="benefits__list">
         <li class="benefits__item"><span class="benefits__icon" aria-hidden="true">✓</span><span>Sin lactosa</span></li>
@@ -87,6 +91,65 @@
         <li class="benefits__item"><span class="benefits__icon" aria-hidden="true">✓</span><span>Sin químicos</span></li>
       </ul>
     </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SECCIÓN 3: Product Presentation
+    ════════════════════════════════════════════════════════════ -->
+    <section class="sp" aria-labelledby="sp-headline">
+      <div class="sp__inner">
+
+        <!-- Ellipse gradient behind bottles (z-index 0) -->
+        <div class="sp__ellipse" aria-hidden="true">
+          <img src="assets/sp-ellipse.svg" alt="" width="511" height="531">
+        </div>
+
+        <!-- Product bottles (z-index 1) -->
+        <div class="sp__bottles">
+          <img class="sp__bottle sp__bottle--choc" src="assets/sp-bottle-chocolate.png" alt="Shake chocolate criollo" loading="lazy" decoding="async">
+          <img class="sp__bottle sp__bottle--mango" src="assets/sp-bottle-mango.png" alt="Shake mango" loading="lazy" decoding="async">
+        </div>
+
+        <!-- Badge: Ingredientes naturales (z-index 2) -->
+        <div class="sp__badge sp__badge--ingr" aria-label="Hecho con ingredientes naturales">
+          <div class="sp__badge-icons">
+            <div class="sp__icon-wrap sp__icon-wrap--almond">
+              <img src="assets/sp-icon-almond.png" alt="" loading="lazy">
+            </div>
+            <div class="sp__icon-wrap sp__icon-wrap--mango-fruit">
+              <img src="assets/sp-icon-mango.png" alt="" loading="lazy">
+            </div>
+          </div>
+          <p class="sp__badge-text">Hecho con<br><strong>ingredientes naturales</strong></p>
+        </div>
+
+        <!-- Badge: Proteína de clara de huevo (z-index 2) -->
+        <div class="sp__badge sp__badge--prot" aria-label="Proteína de clara de huevo">
+          <div class="sp__icon-wrap sp__icon-wrap--egg">
+            <img src="assets/sp-icon-egg.png" alt="" loading="lazy">
+          </div>
+          <p class="sp__badge-text sp__badge-text--prot">Proteína de<br><strong>clara de huevo</strong></p>
+        </div>
+
+        <!-- Left text content (z-index 2) -->
+        <div class="sp__left">
+          <p class="sp__label">SOCIAL PROOF #1</p>
+          <div class="sp__content">
+            <div class="sp__text">
+              <h2 id="sp-headline" class="sp__headline">La proteína <span class="sp__no">NO</span> se negocia.</h2>
+              <p class="sp__sub">El sabor y los ingredientes tampoco. </p>
+              <p class="sp__body">Olvídate de los shakes con químicos y sabor artificial. [Unimos proteína y fruta real para tener los sabores de siempre con la proteína que necesitamos.]</p>
+            </div>
+            <div class="sp__cta-group">
+              <a class="sp__btn" href="#product-section">Pruébalo hoy</a>
+              <p class="sp__note">REDUCE Friction and FUDs (FEAR, UNCERTAINTY, DOUBTS)</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    
   </div>
   <!-- /SECCIÓN 1 -->
 
