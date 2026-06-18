@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="description" content="Perfect Pal — proteína de clara de huevo, sin lactosa, sin azúcar añadida. Envío a Lima Metropolitana." />
   <title>Perfect Pal</title>
 
@@ -32,13 +32,13 @@
       <a class="site-brand" href="#" aria-label="Perfect Pal, inicio">perfect pal</a>
 
       <nav class="site-actions" aria-label="Acciones rápidas">
-        <a class="site-actions__button" href="#" aria-label="Cuenta">
+        <a class="site-actions__button site-actions__button--account" href="#" aria-label="Cuenta">
           <svg class="site-actions__icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M20 21a8 8 0 0 0-16 0"></path>
             <circle cx="12" cy="8" r="4"></circle>
           </svg>
         </a>
-        <a class="site-actions__button" href="#" aria-label="Buscar">
+        <a class="site-actions__button site-actions__button--search" href="#" aria-label="Buscar">
           <svg class="site-actions__icon" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="11" cy="11" r="7"></circle>
             <path d="m20 20-3.5-3.5"></path>
@@ -52,8 +52,28 @@
           </svg>
           <span class="site-actions__badge" aria-hidden="true">0</span>
         </a>
+        <button class="site-nav__hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-nav-drawer">
+          <svg class="site-nav__hamburger-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <line x1="3" y1="6" x2="21" y2="6" stroke-linecap="round"/>
+            <line x1="3" y1="12" x2="21" y2="12" stroke-linecap="round"/>
+            <line x1="3" y1="18" x2="21" y2="18" stroke-linecap="round"/>
+          </svg>
+          <svg class="site-nav__close-icon" viewBox="0 0 24 24" aria-hidden="true" style="display:none">
+            <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+          </svg>
+        </button>
       </nav>
     </header>
+
+    <div id="mobile-nav-drawer" class="mobile-drawer" role="dialog" aria-modal="true" aria-label="Menú de navegación" hidden>
+      <nav class="mobile-drawer__nav">
+        <a class="mobile-drawer__link" href="#">Tienda</a>
+        <a class="mobile-drawer__link" href="#">Proteína 101</a>
+        <a class="mobile-drawer__link" href="calculadora.html">Calculadora</a>
+        <a class="mobile-drawer__link" href="#">Contacto</a>
+      </nav>
+    </div>
+    <div class="mobile-drawer__backdrop" aria-hidden="true"></div>
 
     <main>
       <section class="hero" aria-labelledby="hero-title">
@@ -71,9 +91,22 @@
           </div>
 
           <div class="hero__content">
+            <span class="hero__proof" aria-label="Calificación de clientes">
+              <span class="hero__proof-stars" aria-hidden="true">★★★★★</span>
+              <span>4.9 de 237 reseñas</span>
+              <span class="hero__proof-divider" aria-hidden="true"></span>
+              <span>Lima, Perú</span>
+            </span>
             <h1 id="hero-title" class="hero__title">El huevo fue<br />primero</h1>
             <p class="hero__subtitle">Deja la leche para las gallinas.</p>
-            <a class="hero__cta" href="#product-section">PRUÉBALO HOY</a>
+            <a class="hero__cta" href="#product-section">Pruébalo hoy →</a>
+            <p class="hero__trust" aria-label="Garantías de compra">
+              Envío gratis a Lima
+              <span class="hero__trust-dot" aria-hidden="true">·</span>
+              Garantía 30 días
+              <span class="hero__trust-dot" aria-hidden="true">·</span>
+              Pago seguro
+            </p>
           </div>
         </div>
       </section>
@@ -86,9 +119,9 @@
     <section class="benefits" aria-label="Beneficios del producto">
       <ul class="benefits__list">
         <li class="benefits__item"><span class="benefits__icon" aria-hidden="true">✓</span><span>Sin lactosa</span></li>
-        <li class="benefits__item"><span class="benefits__icon" aria-hidden="true">✓</span><span>Ingredientes naturales</span></li>
-        <li class="benefits__item"><span class="benefits__icon" aria-hidden="true">✓</span><span>0G azúcar añadida</span></li>
-        <li class="benefits__item"><span class="benefits__icon" aria-hidden="true">✓</span><span>Sin químicos</span></li>
+        <li class="benefits__item"><span class="benefits__icon" aria-hidden="true">✓</span><span>100% ingredientes naturales</span></li>
+        <li class="benefits__item"><span class="benefits__icon" aria-hidden="true">✓</span><span>0g azúcar añadida</span></li>
+        <li class="benefits__item"><span class="benefits__icon" aria-hidden="true">✓</span><span>30g proteína por botella</span></li>
       </ul>
     </section>
 
@@ -132,16 +165,16 @@
 
         <!-- Left text content (z-index 2) -->
         <div class="sp__left">
-          <p class="sp__label">SOCIAL PROOF #1</p>
+          <p class="sp__label">4.9 estrellas · 237 clientes verificados</p>
           <div class="sp__content">
             <div class="sp__text">
               <h2 id="sp-headline" class="sp__headline">La proteína <span class="sp__no">NO</span> se negocia.</h2>
-              <p class="sp__sub">El sabor y los ingredientes tampoco. </p>
-              <p class="sp__body">Olvídate de los shakes con químicos y sabor artificial. [Unimos proteína y fruta real para tener los sabores de siempre con la proteína que necesitamos.]</p>
+              <p class="sp__sub">El sabor y los ingredientes tampoco.</p>
+              <p class="sp__body">Olvídate de los shakes con químicos y sabor artificial. Combinamos proteína de clara de huevo con fruta real — para que tengas los sabores que amas y la proteína que tu cuerpo necesita, sin compromisos.</p>
             </div>
             <div class="sp__cta-group">
               <a class="sp__btn" href="#product-section">Pruébalo hoy</a>
-              <p class="sp__note">REDUCE Friction and FUDs (FEAR, UNCERTAINTY, DOUBTS)</p>
+              <p class="sp__note">✓ Garantía de 30 días &nbsp;·&nbsp; Envío gratis a Lima &nbsp;·&nbsp; Pago 100% seguro</p>
             </div>
           </div>
         </div>
@@ -167,17 +200,9 @@
        TODO: migrar a componente React cuando el header
              necesite cart state global
   ════════════════════════════════════════════════════════════ -->
-  <footer style="
-    background: #05070d;
-    border-top: 1px solid rgba(255,255,255,0.07);
-    padding: 28px 48px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-family: 'Open Sans', sans-serif;
-  ">
+  <footer class="site-footer">
     <span style="font-weight:700; font-size:20px; letter-spacing:-0.05em; color:#f4f4f6;">perfect pal</span>
-    <nav style="display:flex; gap:32px;" class="pp-footer-links">
+    <nav class="pp-footer-links">
       <a href="#" style="font-size:13px; color:rgba(255,255,255,0.4); text-decoration:none;">Tienda</a>
       <a href="#" style="font-size:13px; color:rgba(255,255,255,0.4); text-decoration:none;">Proteína 101</a>
       <a href="calculadora.html" style="font-size:13px; color:rgba(255,255,255,0.4); text-decoration:none;">Calculadora</a>
@@ -230,12 +255,12 @@ function msDiff(end) {
 }
 
 function initTimer() {
+  const end = Date.now() + (23 * 3600 + 47 * 60 + 12) * 1000;
   try {
     const saved = JSON.parse(localStorage.getItem('pp_timer_end'));
     if (saved && saved > Date.now()) return msDiff(saved);
+    localStorage.setItem('pp_timer_end', JSON.stringify(end));
   } catch (_) {}
-  const end = Date.now() + (23 * 3600 + 47 * 60 + 12) * 1000;
-  localStorage.setItem('pp_timer_end', JSON.stringify(end));
   return msDiff(end);
 }
 
@@ -255,7 +280,9 @@ function ProductSection({ onAddToCart, onFlavorChange }) {
   const sticky = ctaGone && ctaWasVisible && (sectionVisible || reviewsVisible);
 
   useEffect(() => {
-    const end = JSON.parse(localStorage.getItem('pp_timer_end'));
+    let end;
+    try { end = JSON.parse(localStorage.getItem('pp_timer_end')); } catch (_) {}
+    if (!end) end = Date.now() + (23 * 3600 + 47 * 60 + 12) * 1000;
     const id = setInterval(() => setTimeLeft(msDiff(end)), 1000);
     return () => clearInterval(id);
   }, []);
@@ -687,7 +714,7 @@ function ReviewsSection() {
   return (
     <section id="reviews" style={{ width: '100%', background: '#111', padding: '64px 48px 72px' }} className="pp-reviews-pad">
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 40 }}>
+        <div className="pp-reviews-header" style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 40 }}>
           <div>
             <span style={{ fontFamily: _OS_R, fontWeight: 700, fontSize: 11, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: 10 }}>
               Reseñas verificadas
@@ -804,7 +831,7 @@ const _OSC = "'Open Sans', sans-serif";
 
 function CartQtyStepper({ value, onChange }) {
   const btn = (label, fn) => (
-    <button onClick={fn} style={{ width: 34, height: 34, background: 'none', border: 'none', cursor: 'pointer', fontFamily: _OSC, fontWeight: 700, fontSize: 16, color: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}
+    <button onClick={fn} style={{ width: 44, height: 44, background: 'none', border: 'none', cursor: 'pointer', fontFamily: _OSC, fontWeight: 700, fontSize: 18, color: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}
       onMouseEnter={e => e.currentTarget.style.background = '#f4f4f6'}
       onMouseLeave={e => e.currentTarget.style.background = 'none'}>{label}</button>
   );
@@ -819,15 +846,27 @@ function CartQtyStepper({ value, onChange }) {
 
 function FloatingCart({ cart, selectedFlavor }) {
   const { items, count, subtotal, drawerOpen, setDrawerOpen, addToCart, updateQty, removeItem } = cart;
-  const [panelOpen, setPanelOpen] = React.useState(false);
-  const [activeIdx, setActiveIdx] = React.useState(0);
-  const [qtys,      setQtys]      = React.useState(() => CART_FLAVORS.map(() => 1));
-  const [drag,      setDrag]      = React.useState(0);
-  const dragState = React.useRef({ active: false, startX: 0 });
+  const [panelOpen,  setPanelOpen]  = React.useState(false);
+  const [activeIdx,  setActiveIdx]  = React.useState(0);
+  const [qtys,       setQtys]       = React.useState(() => CART_FLAVORS.map(() => 1));
+  const [drag,       setDrag]       = React.useState(0);
+  const sheetDrag = React.useRef(0);
+  const dragState      = React.useRef({ active: false, startX: 0 });
+  const drawerRef      = React.useRef(null);
+  const sheetDragStart = React.useRef(null);
 
   const qtyInCart = id => { const it = items.find(x => x.id === id); return it ? it.qty : 0; };
 
-  React.useEffect(() => { document.body.style.overflow = drawerOpen ? 'hidden' : ''; return () => { document.body.style.overflow = ''; }; }, [drawerOpen]);
+  React.useEffect(() => {
+    const navOpen = () => document.getElementById('mobile-nav-drawer')?.classList.contains('is-open');
+    if (drawerOpen) {
+      document.body.style.overflow = 'hidden';
+    } else if (!navOpen()) {
+      document.body.style.overflow = '';
+    }
+    if (drawerRef.current) drawerRef.current.dataset.open = drawerOpen ? 'true' : 'false';
+    return () => { if (!navOpen()) document.body.style.overflow = ''; };
+  }, [drawerOpen]);
   React.useEffect(() => { if (drawerOpen) setPanelOpen(false); }, [drawerOpen]);
   React.useEffect(() => {
     if (panelOpen) { const i = CART_FLAVORS.findIndex(f => f.id === selectedFlavor); if (i >= 0) setActiveIdx(i); }
@@ -847,13 +886,13 @@ function FloatingCart({ cart, selectedFlavor }) {
   return (
     <>
       {/* FAB + Popover */}
-      <div style={{ position: 'fixed', right: 28, bottom: 28, zIndex: 290, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 14, pointerEvents: drawerOpen ? 'none' : 'auto', opacity: drawerOpen ? 0 : 1, transition: 'opacity 0.25s ease' }}>
+      <div className="pp-cart-fab-wrap" style={{ position: 'fixed', right: 28, bottom: 28, zIndex: 290, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 14, pointerEvents: drawerOpen ? 'none' : 'auto', opacity: drawerOpen ? 0 : 1, transition: 'opacity 0.25s ease' }}>
 
         {/* Popover de compra rápida */}
         <div style={{ width: SLIDE_W, background: '#fff', borderRadius: 20, boxShadow: '0 16px 48px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #f0f0f4', overflow: 'hidden', transformOrigin: 'bottom right', transform: panelOpen ? 'scale(1) translateY(0)' : 'scale(0.9) translateY(12px)', opacity: panelOpen ? 1 : 0, pointerEvents: panelOpen ? 'auto' : 'none', transition: `all 0.26s ${C_EASE}` }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid #f0f0f4' }}>
             <span style={{ fontFamily: _OSC, fontWeight: 700, fontSize: 11, color: '#aaa', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Compra rápida</span>
-            <button onClick={() => setPanelOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, lineHeight: 0, opacity: 0.5 }}>
+            <button onClick={() => setPanelOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', width: 44, height: 44, lineHeight: 0, opacity: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8 }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" strokeWidth="2.2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
           </div>
@@ -924,16 +963,19 @@ function FloatingCart({ cart, selectedFlavor }) {
       </div>
 
       {/* Backdrop */}
-      <div onClick={() => setDrawerOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 390, background: 'rgba(5,7,13,0.55)', opacity: drawerOpen ? 1 : 0, pointerEvents: drawerOpen ? 'auto' : 'none', transition: 'opacity 0.3s ease', backdropFilter: 'blur(2px)' }} />
+      <div className="pp-cart-backdrop" onClick={() => setDrawerOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 390, background: 'rgba(5,7,13,0.55)', opacity: drawerOpen ? 1 : 0, pointerEvents: drawerOpen ? 'auto' : 'none', transition: 'opacity 0.3s ease', backdropFilter: 'blur(2px)' }} />
 
-      {/* Drawer lateral */}
-      <aside style={{ position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 400, width: 408, maxWidth: '92vw', background: '#fff', display: 'flex', flexDirection: 'column', boxShadow: '-12px 0 48px rgba(0,0,0,0.28)', transform: drawerOpen ? 'translateX(0)' : 'translateX(100%)', transition: `transform 0.36s ${C_EASE}` }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '22px 24px', borderBottom: '1px solid #eee', flexShrink: 0 }}>
+      {/* Drawer lateral / bottom sheet on mobile */}
+      <aside ref={drawerRef} className="pp-cart-drawer" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 400, width: 408, maxWidth: '92vw', background: '#fff', display: 'flex', flexDirection: 'column', boxShadow: '-12px 0 48px rgba(0,0,0,0.28)', transform: drawerOpen ? 'translateX(0)' : 'translateX(100%)', transition: `transform 0.36s ${C_EASE}` }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '22px 24px', borderBottom: '1px solid #eee', flexShrink: 0 }}
+          onTouchStart={e => { sheetDragStart.current = e.touches[0].clientY; }}
+          onTouchMove={e => { const dy = e.touches[0].clientY - sheetDragStart.current; if (dy > 0) sheetDrag.current = dy; }}
+          onTouchEnd={() => { if (sheetDrag.current > 80) setDrawerOpen(false); sheetDrag.current = 0; }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
             <h2 style={{ fontFamily: _OSC, fontWeight: 800, fontSize: 22, color: '#111', letterSpacing: '-0.04em', margin: 0 }}>Tu carrito</h2>
             <span style={{ fontFamily: _OSC, fontSize: 13, color: '#999' }}>{count} {count === 1 ? 'artículo' : 'artículos'}</span>
           </div>
-          <button onClick={() => setDrawerOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, lineHeight: 0, opacity: 0.55 }}
+          <button onClick={() => setDrawerOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', width: 44, height: 44, lineHeight: 0, opacity: 0.55, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8 }}
             onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0.55'}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
           </button>
@@ -1015,7 +1057,7 @@ function FloatingCart({ cart, selectedFlavor }) {
     function FixedBrandHeader({ visible }) {
       const POP = "'Poppins', sans-serif";
       return (
-        <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 300, background: '#05070d', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', minHeight: '5.5rem', padding: '0 clamp(1.25rem, 3vw, 3.5rem)', transform: visible ? 'translateY(0)' : 'translateY(-100%)', transition: 'transform 0.32s cubic-bezier(0.25,0.46,0.45,0.94)' }}>
+        <header className="pp-fixed-brand-header" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 300, background: '#05070d', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', minHeight: '5.5rem', padding: '0 clamp(1.25rem, 3vw, 3.5rem)', transform: visible ? 'translateY(0)' : 'translateY(-100%)', transition: 'transform 0.32s cubic-bezier(0.25,0.46,0.45,0.94)' }}>
           <nav style={{ display: 'flex', alignItems: 'center', gap: 'clamp(1rem, 1.8vw, 1.75rem)' }}>
             {['Tienda', 'Proteína 101', 'Calculadora'].map(l => (
               <a key={l} href="#" style={{ fontFamily: POP, fontSize: '0.95rem', fontWeight: 400, letterSpacing: '-0.02em', color: '#f4f4f6', textDecoration: 'none', opacity: 0.84 }}>{l}</a>
@@ -1067,6 +1109,41 @@ function FloatingCart({ cart, selectedFlavor }) {
     }
 
     ReactDOM.createRoot(document.getElementById('product-root')).render(<LandingApp />);
+  </script>
+
+  <!-- ── Mobile navigation ─────────────────────────────────────────────── -->
+  <script>
+  (function () {
+    var btn      = document.querySelector('.site-nav__hamburger');
+    var drawer   = document.getElementById('mobile-nav-drawer');
+    var backdrop = document.querySelector('.mobile-drawer__backdrop');
+    if (!btn || !drawer) return;
+
+    function open() {
+      drawer.removeAttribute('hidden');
+      drawer.classList.add('is-open');
+      backdrop.classList.add('is-visible');
+      btn.setAttribute('aria-expanded', 'true');
+      btn.querySelector('.site-nav__hamburger-icon').style.display = 'none';
+      btn.querySelector('.site-nav__close-icon').style.display = '';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function close() {
+      drawer.classList.remove('is-open');
+      backdrop.classList.remove('is-visible');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.querySelector('.site-nav__hamburger-icon').style.display = '';
+      btn.querySelector('.site-nav__close-icon').style.display = 'none';
+      document.body.style.overflow = '';
+      setTimeout(function () { if (!drawer.classList.contains('is-open')) drawer.setAttribute('hidden', ''); }, 300);
+    }
+
+    btn.addEventListener('click', function () { drawer.hasAttribute('hidden') ? open() : close(); });
+    backdrop.addEventListener('click', close);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    drawer.querySelectorAll('.mobile-drawer__link').forEach(function (l) { l.addEventListener('click', close); });
+  })();
   </script>
 
 </body>
