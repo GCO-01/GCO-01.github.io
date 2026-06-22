@@ -6,7 +6,7 @@
   <title>Combinado 6 Pack — perfect pal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,800;1,800&family=Arimo:wght@700&family=Inter:wght@400;700&family=La+Belle+Aurore&family=Open+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600;1,700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
@@ -14,62 +14,183 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
     body { font-family: 'Open Sans', sans-serif; background: #05070d; overflow-x: hidden; color: #111; }
+    button { font-family: 'Open Sans', sans-serif; cursor: pointer; }
+    img { display: block; }
+    a { text-decoration: none; }
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: #f4f4f6; }
     ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
-    button { font-family: 'Open Sans', sans-serif; }
-    img { display: block; }
-    @keyframes barScroll { 0%{background-position:0% 0%} 100%{background-position:200% 0%} }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-    .pp-fade { animation: fadeUp 0.4s ease forwards; }
+
+    /* ── Keyframes ──────────────────────────────────────────────────────────── */
+    @keyframes barScroll {
+      0%   { background-position: 0% 0%; }
+      100% { background-position: 200% 0%; }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes badgePop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.45); }
+      100% { transform: scale(1); }
+    }
+
+    /* ── Utility classes ────────────────────────────────────────────────────── */
+    .pp-fade        { animation: fadeUp 0.4s ease forwards; }
+    .pp-badge-pop   { animation: badgePop 0.3s cubic-bezier(0.25,0.46,0.45,0.94); }
     .pp-thumb:hover { transform: scale(1.04); }
     .pp-flavor:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important; }
     .pp-faq-btn:hover { background: #fafafa; }
-    @media (max-width: 1023px) {
-      .product-grid { flex-direction: column !important; }
-      .product-gallery { width: 100% !important; position: static !important; }
-      .product-h1 { font-size: 34px !important; }
-      .reviews-grid { grid-template-columns: repeat(2,1fr) !important; }
+
+    /* ── Mobile carousel / nav ──────────────────────────────────────────────── */
+    .pp-track { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    .pp-track::-webkit-scrollbar { display: none; }
+
+    .pp-nav-dropdown {
+      position: absolute; top: 54px; left: 0; right: 0;
+      background: #05070d; border-bottom: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden; max-height: 0; opacity: 0; z-index: 99;
+      transition: max-height 0.28s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.22s;
     }
-    @media (max-width: 767px) {
-      .product-grid { padding: 24px 20px 0 !important; gap: 32px !important; }
-      .site-nav-links { display: none; }
-      .product-h1 { font-size: 28px !important; }
-      .image-card { height: 360px !important; }
-      .bottle-img { height: 260px !important; }
-      .reviews-grid { grid-template-columns: 1fr !important; }
-      .footer-links { display: none; }
-      .header-pad { padding: 0 20px !important; }
-      .reviews-pad { padding: 48px 20px 56px !important; }
-      .sticky-bar-pad { padding: 0 20px !important; }
+    .pp-nav-dropdown.open { max-height: 240px; opacity: 1; }
+
+    .pp-faq-body {
+      overflow: hidden; max-height: 0;
+      transition: max-height 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
     }
+    .pp-faq-body.open { max-height: 320px; }
   </style>
 </head>
 <body>
   <div id="root"></div>
 
+  <!-- ── Shared data (plain script, no Babel) ──────────────────────────────── -->
+  <script>
+    window.PP_FLAVORS = [
+      { id: 'chocolate', label: 'Chocolate Criollo', desc: 'Cacao de Chiapas, textura aterciopelada',      img: 'assets/bottle-chocolate.png' },
+      { id: 'mango',     label: 'Mango',             desc: 'Mango Ataulfo natural con un toque de canela', img: 'assets/bottle-mango.png'     },
+      { id: 'combinado', label: 'Combinado',          desc: '2 Chocolate + 2 Mango + 2 sabores sorpresa',  img: 'assets/bottle-combinado.png' },
+    ];
+    window.PP_PRICE     = 2299;
+    window.PP_OLD_PRICE = 4179.99;
+    window.ppMoney  = (n) => 'S/ ' + n.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    window.ppFlavor = (id) => window.PP_FLAVORS.find(f => f.id === id);
+  </script>
+
   <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+    const { useState, useEffect, useRef, useCallback } = React;
 
-    const OS = "'Open Sans', sans-serif";
+    // ── Font shorthands ──────────────────────────────────────────────────────────
+    const FO = "'Open Sans',sans-serif";
+    const FP = "'Poppins','Open Sans',sans-serif";
+    const FA = "'Arimo','Open Sans',sans-serif";
+    const FI = "'Inter','Open Sans',sans-serif";
+    const FB = "'La Belle Aurore',cursive";
 
-    // ─── ProductHeader ──────────────────────────────────────────────────────────
+    // ── Shared data ──────────────────────────────────────────────────────────────
+    const FLAVORS  = window.PP_FLAVORS;
+    const PRICE    = window.PP_PRICE;
+
+    const FAQS = [
+      { q: '¿Por qué clara de huevo y no whey?',
+        a: 'La proteína de clara de huevo es más limpia, sin lactosa y fácil de digerir. Perfil de aminoácidos completo. Sin bloating, sin problemas digestivos. Es lo que siempre debió ser un shake de proteína.' },
+      { q: '¿Qué ingredientes lleva?',
+        a: 'Clara de huevo pasteurizada, fruta real (mango Ataulfo o cacao), extracto de vainilla natural. Sin conservadores, sin colorantes artificiales. Lo que dice la etiqueta — y nada más.' },
+      { q: '¿Cuánta proteína tiene por botella?',
+        a: 'Cada botella entrega 30G de proteína pura en solo 189 calorías. Mejor ratio proteína/caloría que la mayoría de proteínas en polvo del mercado — ya mezclado y listo para tomar.' },
+      { q: '¿Cuándo llegará mi pedido?',
+        a: 'Enviamos en 1–3 días hábiles a Lima Metropolitana. Los pedidos de Early Access reciben etiqueta de envío prioritario el mismo día.' },
+    ];
+
+    const BENEFITS = [
+      'Sin lactosa','Sin azúcar añadida',
+      'Proteína de clara de huevo','Ingredientes 100% naturales',
+      'Sin saborizantes artificiales','Solo 189 Calorías',
+    ];
+
+    const REVIEWS = [
+      { name: 'Mariana R.', location: 'Lima, Perú',       rating: 5, date: 'hace 3 días',
+        text: 'Llevaba meses buscando algo así. El de mango sabe increíble y no me cae pesado para nada. Ya pedí mi segundo 6-pack.' },
+      { name: 'Carlos V.',  location: 'Miraflores, Lima',  rating: 5, date: 'hace 5 días',
+        text: 'Finalmente una proteína sin lactosa que sabe bien. El chocolate criollo es mi favorito — se siente real, no artificial. 30G en 189 calorías es brutal.' },
+      { name: 'Sofía M.',   location: 'San Isidro, Lima',  rating: 5, date: 'hace 1 semana',
+        text: 'Pedí el combinado para probar todos los sabores. Llegó en 2 días. El packaging está muy bien cuidado y el producto es exactamente lo que promete.' },
+    ];
+
+    // ── Timer helpers ────────────────────────────────────────────────────────────
+    function msDiff(end) {
+      const s = Math.max(0, Math.floor((end - Date.now()) / 1000));
+      return { h: Math.floor(s / 3600), m: Math.floor(s % 3600 / 60), s: s % 60 };
+    }
+    function initTimer() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('pp_timer_end'));
+        if (saved && saved > Date.now()) return msDiff(saved);
+      } catch (_) {}
+      const end = Date.now() + (23 * 3600 + 47 * 60 + 12) * 1000;
+      try { localStorage.setItem('pp_timer_end', JSON.stringify(end)); } catch (_) {}
+      return msDiff(end);
+    }
+    const pad = n => String(n).padStart(2, '0');
+
+    // ── useIsMobile ──────────────────────────────────────────────────────────────
+    function useIsMobile(breakpoint = 768) {
+      const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
+      const [isMobile, setIsMobile] = useState(mq.matches);
+      useEffect(() => {
+        const handler = e => setIsMobile(e.matches);
+        mq.addEventListener('change', handler);
+        return () => mq.removeEventListener('change', handler);
+      }, []);
+      return isMobile;
+    }
+
+    // ── MQtyStepper (shared) ─────────────────────────────────────────────────────
+    function MQtyStepper({ value, onChange, min = 1, height = 44 }) {
+      return (
+        <div style={{
+          display: 'flex', alignItems: 'center',
+          border: '1.5px solid #dcdce4', borderRadius: 14,
+          background: '#fff', overflow: 'hidden',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.05)', height,
+        }}>
+          <button onClick={() => onChange(Math.max(min, value - 1))} style={{
+            width: height, height, background: 'none', border: 'none',
+            fontFamily: FO, fontWeight: 700, fontSize: 20, color: '#111',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>−</button>
+          <span style={{
+            width: 36, textAlign: 'center',
+            fontFamily: FO, fontWeight: 700, fontSize: 16, color: '#111', userSelect: 'none',
+          }}>{value}</span>
+          <button onClick={() => onChange(value + 1)} style={{
+            width: height, height, background: 'none', border: 'none',
+            fontFamily: FO, fontWeight: 700, fontSize: 20, color: '#111',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>+</button>
+        </div>
+      );
+    }
+
+    // ════════════════════════════════════════════════════════════════════════════
+    // DESKTOP COMPONENTS
+    // ════════════════════════════════════════════════════════════════════════════
+
     function ProductHeader({ cartCount, onCartClick }) {
       return (
         <header style={{
           position: 'sticky', top: 0, zIndex: 100,
-          width: '100%', height: 72,
-          background: '#05070d',
+          width: '100%', height: 72, background: '#05070d',
           borderBottom: '1px solid rgba(255,255,255,0.08)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '0 48px',
-        }} className="header-pad">
-          <nav style={{ display: 'flex', gap: 28 }} className="site-nav-links">
+        }}>
+          <nav style={{ display: 'flex', gap: 28 }}>
             {[{label:'Tienda',href:'#'},{label:'Proteína 101',href:'#'},{label:'Calculadora',href:'calculadora.html'}].map(({label,href}) => (
               <a key={label} href={href} style={{
-                fontFamily: OS, fontSize: 14, letterSpacing: '-0.02em',
-                color: '#f4f4f6', textDecoration: 'none', opacity: 0.8,
-                transition: 'opacity 0.2s',
+                fontFamily: FO, fontSize: 14, letterSpacing: '-0.02em',
+                color: '#f4f4f6', opacity: 0.8, transition: 'opacity 0.2s',
               }}
               onMouseEnter={e => e.target.style.opacity = '1'}
               onMouseLeave={e => e.target.style.opacity = '0.8'}
@@ -79,18 +200,18 @@
 
           <div style={{
             position: 'absolute', left: '50%', transform: 'translateX(-50%)',
-            fontFamily: OS, fontWeight: 700, fontSize: 28,
+            fontFamily: FP, fontWeight: 800, fontSize: 28,
             letterSpacing: '-0.06em', color: '#f4f4f6',
           }}>perfect pal</div>
 
           <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
-            <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, opacity: 0.7 }}>
+            <button style={{ background: 'none', border: 'none', padding: 4, opacity: 0.7 }}>
               <svg width="20" height="20" fill="none" stroke="#f4f4f6" strokeWidth="1.8" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
               </svg>
             </button>
             <button onClick={onCartClick} style={{
-              background: 'none', border: 'none', cursor: 'pointer',
+              background: 'none', border: 'none',
               position: 'relative', padding: 4, opacity: 0.7,
             }}>
               <svg width="20" height="20" fill="none" stroke="#f4f4f6" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -103,7 +224,7 @@
                   width: 16, height: 16, borderRadius: '50%',
                   background: '#db5242',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: OS, fontWeight: 700, fontSize: 9, color: '#fff',
+                  fontFamily: FP, fontWeight: 700, fontSize: 9, color: '#fff',
                 }}>{cartCount}</span>
               )}
             </button>
@@ -112,23 +233,7 @@
       );
     }
 
-    // ─── ProductSection ─────────────────────────────────────────────────────────
     function ProductSection({ onAddToCart }) {
-      const FLAVORS = [
-        { id: 'chocolate', label: 'Chocolate Criollo', desc: 'Cacao de Chiapas, textura aterciopelada',      img: 'assets/bottle-chocolate.png' },
-        { id: 'mango',     label: 'Mango',             desc: 'Mango Ataulfo natural con un toque de canela', img: 'assets/bottle-mango.png'     },
-        { id: 'combinado', label: 'Combinado',          desc: '2 Chocolate + 2 Mango + 2 sabores sorpresa',  img: 'assets/bottle-combinado.png' },
-      ];
-
-      const FAQS = [
-        { q: '¿Por qué clara de huevo y no whey?',    a: 'La proteína de clara de huevo es más limpia, sin lactosa y fácil de digerir. Perfil de aminoácidos completo. Sin bloating, sin problemas digestivos. Es lo que siempre debió ser un shake de proteína.' },
-        { q: '¿Qué ingredientes lleva?',              a: 'Clara de huevo pasteurizada, fruta real (mango Ataulfo o cacao), extracto de vainilla natural. Sin conservadores, sin colorantes artificiales. Lo que dice la etiqueta — y nada más.' },
-        { q: '¿Cuánta proteína tiene por botella?',   a: 'Cada botella entrega 30G de proteína pura en solo 189 calorías. Mejor ratio proteína/caloría que la mayoría de proteínas en polvo del mercado — ya mezclado y listo para tomar.' },
-        { q: '¿Cuándo llegará mi pedido?',            a: 'Enviamos en 1–3 días hábiles a Lima Metropolitana. Los pedidos de Early Access reciben etiqueta de envío prioritario el mismo día.' },
-      ];
-
-      const BENEFITS = ['Sin lactosa','Sin azúcar añadida','Proteína de clara de huevo','Ingredientes 100% naturales','Sin saborizantes artificiales','Solo 189 Calorías'];
-
       const [flavor,   setFlavor]   = useState('combinado');
       const [protein,  setProtein]  = useState('30g');
       const [qty,      setQty]      = useState(1);
@@ -138,21 +243,13 @@
       const [timeLeft, setTimeLeft] = useState(initTimer);
       const ctaRef = useRef(null);
 
-      function initTimer() {
-        try {
-          const saved = JSON.parse(localStorage.getItem('pp_timer_end'));
-          if (saved && saved > Date.now()) return msDiff(saved);
-        } catch (_) {}
-        const end = Date.now() + (23 * 3600 + 47 * 60 + 12) * 1000;
-        localStorage.setItem('pp_timer_end', JSON.stringify(end));
-        return msDiff(end);
-      }
-      function msDiff(end) {
-        const s = Math.max(0, Math.floor((end - Date.now()) / 1000));
-        return { h: Math.floor(s / 3600), m: Math.floor(s % 3600 / 60), s: s % 60 };
-      }
       useEffect(() => {
-        const end = JSON.parse(localStorage.getItem('pp_timer_end'));
+        let end;
+        try { end = JSON.parse(localStorage.getItem('pp_timer_end')); } catch (_) {}
+        if (!end || end < Date.now()) {
+          end = Date.now() + (23 * 3600 + 47 * 60 + 12) * 1000;
+          try { localStorage.setItem('pp_timer_end', JSON.stringify(end)); } catch (_) {}
+        }
         const id = setInterval(() => setTimeLeft(msDiff(end)), 1000);
         return () => clearInterval(id);
       }, []);
@@ -165,21 +262,19 @@
       }, []);
 
       const cur   = FLAVORS.find(f => f.id === flavor);
-      const pad   = n => String(n).padStart(2, '0');
-      const fmtPrice = n => `S/ ${n.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-      const price = fmtPrice(2299 * qty);
+      const price = window.ppMoney(PRICE * qty);
 
       function handleAdd() {
         setAdded(true);
-        onAddToCart();
+        onAddToCart(flavor, qty);
         setTimeout(() => setAdded(false), 2400);
       }
 
-      const divider = { borderBottom: '1px solid #e8e8ec', marginBottom: 22, paddingBottom: 22 };
+      const D = { borderBottom: '1px solid #e8e8ec', marginBottom: 22, paddingBottom: 22 };
 
       return (
         <>
-          {/* ── Sticky purchase bar ──────────────────────────────────────────── */}
+          {/* Sticky purchase bar */}
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, zIndex: 300,
             height: 64, background: '#111',
@@ -188,103 +283,92 @@
             transform: sticky ? 'translateY(0)' : 'translateY(-100%)',
             transition: 'transform 0.32s cubic-bezier(0.25,0.46,0.45,0.94)',
             boxShadow: '0 4px 24px rgba(0,0,0,0.35)',
-          }} className="sticky-bar-pad">
+          }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <img src={cur.img} style={{ height: 42, objectFit: 'contain', filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))' }} alt="" />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <span style={{ fontFamily: OS, fontWeight: 700, fontSize: 14, color: '#f4f4f6', letterSpacing: '-0.03em' }}>{cur.label} · 6 Pack</span>
+                <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 14, color: '#f4f4f6', letterSpacing: '-0.03em' }}>{cur.label} · 6 Pack</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontFamily: OS, fontWeight: 700, fontSize: 14, color: '#e3796c' }}>S/ 2,299.00</span>
-                  <span style={{ fontFamily: OS, fontSize: 12, color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through' }}>S/ 4,179.99</span>
+                  <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 14, color: '#e3796c' }}>S/ 2,299.00</span>
+                  <span style={{ fontFamily: FO, fontSize: 12, color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through' }}>S/ 4,179.99</span>
                 </div>
               </div>
             </div>
             <button onClick={handleAdd} style={{
-              height: 42, padding: '0 28px', borderRadius: 21, border: 'none', cursor: 'pointer',
+              height: 42, padding: '0 28px', borderRadius: 21, border: 'none',
               background: added ? '#302f9b' : 'linear-gradient(135deg,#e3796c,#db5242 55%,#302f9b)',
-              fontFamily: OS, fontWeight: 800, fontSize: 13,
+              fontFamily: FO, fontWeight: 800, fontSize: 13,
               letterSpacing: '-0.01em', color: '#fff', textTransform: 'uppercase',
               transition: 'all 0.3s', boxShadow: '0 4px 16px rgba(219,82,66,0.3)',
             }}>{added ? '¡Agregado! ✓' : 'AGREGAR AL CARRITO'}</button>
           </div>
 
-          {/* ── Main section ─────────────────────────────────────────────────── */}
           <section style={{
             width: '100%',
             background: 'radial-gradient(ellipse 160% 80% at 50% -10%, #ffffff 0%, #f4f4f6 100%)',
             paddingBottom: 96,
           }}>
-
             {/* Announcement bar */}
             <div style={{
               width: '100%', padding: '9px 0',
               background: 'linear-gradient(90deg,#302f9b 0%,#6b3fa0 30%,#db5242 65%,#302f9b 100%)',
-              backgroundSize: '200% 100%',
-              animation: 'barScroll 8s linear infinite',
-              textAlign: 'center',
-              fontFamily: OS, fontWeight: 700, fontSize: 12,
+              backgroundSize: '200% 100%', animation: 'barScroll 8s linear infinite',
+              textAlign: 'center', fontFamily: FO, fontWeight: 700, fontSize: 12,
               color: '#fff', letterSpacing: '0.06em', textTransform: 'uppercase',
             }}>⚡ Early Access — 50% de descuento en primera compra &nbsp;·&nbsp; Envío gratis a Lima Metropolitana &nbsp;·&nbsp; Solo 12 unidades</div>
 
-            {/* Two-column grid */}
             <div style={{
               maxWidth: 1200, margin: '0 auto', padding: '48px 48px 0',
               display: 'flex', gap: 64, alignItems: 'flex-start',
-            }} className="product-grid">
-
-              {/* ── LEFT: Product gallery ─────────────────────────────────── */}
-              <div style={{ width: 460, flexShrink: 0, position: 'sticky', top: 88 }} className="product-gallery">
-
-                {/* Main image card */}
+            }}>
+              {/* LEFT: Gallery */}
+              <div style={{ width: 460, flexShrink: 0, position: 'sticky', top: 88 }}>
                 <div style={{
                   width: '100%', height: 500, borderRadius: 20,
-                  background: 'linear-gradient(160deg, #f8f8fb 0%, #f0f0f4 100%)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.06), 0 16px 48px rgba(0,0,0,0.10)',
+                  background: 'linear-gradient(160deg,#f8f8fb 0%,#f0f0f4 100%)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06),0 16px 48px rgba(0,0,0,0.10)',
                   position: 'relative', overflow: 'hidden',
-                }} className="image-card">
-                  {/* Ribbon */}
+                }}>
                   <div style={{
                     position: 'absolute', top: 16, left: 16, right: 16, height: 28,
                     borderRadius: 7,
                     background: 'linear-gradient(90deg,#302f9b 0%,#db5242 55%,rgba(255,255,255,0.6) 100%)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2,
                   }}>
-                    <span style={{ fontFamily: OS, fontStyle: 'italic', fontWeight: 600, fontSize: 11, color: '#fff', letterSpacing: '0.12em' }}>EARLY ACCESS · 50% OFF</span>
+                    <span style={{ fontFamily: FO, fontStyle: 'italic', fontWeight: 600, fontSize: 11, color: '#fff', letterSpacing: '0.12em' }}>
+                      EARLY ACCESS · 50% OFF
+                    </span>
                   </div>
-                  {/* Bottle */}
-                  <img key={flavor} src={cur.img} alt={cur.label} className="pp-fade bottle-img" style={{
-                    position: 'absolute', bottom: 72, left: '50%',
-                    transform: 'translateX(-50%)',
+                  <img key={flavor} src={cur.img} alt={cur.label} className="pp-fade" style={{
+                    position: 'absolute', bottom: 72, left: '50%', transform: 'translateX(-50%)',
                     height: 350, width: 'auto', objectFit: 'contain',
                     filter: 'drop-shadow(0 12px 32px rgba(0,0,0,0.14))',
                   }} />
-                  {/* Stats bar */}
                   <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 72, display: 'flex' }}>
                     <div style={{
                       flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1,
                       borderTop: '2.5px solid #1a1a1a', borderRight: '1.5px solid #e0e0e0',
                     }}>
-                      <span style={{ fontFamily: OS, fontWeight: 800, fontSize: 26, color: '#111', lineHeight: 1, letterSpacing: '-0.05em' }}>30G</span>
-                      <span style={{ fontFamily: OS, fontWeight: 600, fontSize: 10, color: '#777', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Proteína</span>
+                      <span style={{ fontFamily: FO, fontWeight: 800, fontSize: 26, color: '#111', lineHeight: 1, letterSpacing: '-0.05em' }}>30G</span>
+                      <span style={{ fontFamily: FO, fontWeight: 600, fontSize: 10, color: '#777', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Proteína</span>
                     </div>
                     <div style={{
                       flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1,
                       background: '#111', borderRadius: '0 0 20px 0',
                     }}>
-                      <span style={{ fontFamily: OS, fontWeight: 800, fontSize: 26, color: '#f4f4f6', lineHeight: 1, letterSpacing: '-0.05em' }}>189</span>
-                      <span style={{ fontFamily: OS, fontWeight: 600, fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Calorías</span>
+                      <span style={{ fontFamily: FO, fontWeight: 800, fontSize: 26, color: '#f4f4f6', lineHeight: 1, letterSpacing: '-0.05em' }}>189</span>
+                      <span style={{ fontFamily: FO, fontWeight: 600, fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Calorías</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Flavor thumbnails */}
+                {/* Thumbnails */}
                 <div style={{ display: 'flex', gap: 10, marginTop: 14, justifyContent: 'center' }}>
                   {FLAVORS.map(f => (
                     <div key={f.id} className="pp-thumb" onClick={() => setFlavor(f.id)} style={{
-                      width: 84, height: 84, borderRadius: 12,
-                      background: '#fff', cursor: 'pointer',
+                      width: 84, height: 84, borderRadius: 12, background: '#fff', cursor: 'pointer',
                       border: `2px solid ${flavor === f.id ? '#db5242' : '#e4e4ea'}`,
-                      boxShadow: flavor === f.id ? '0 0 0 3px rgba(219,82,66,0.15), 0 4px 10px rgba(0,0,0,0.08)' : '0 2px 6px rgba(0,0,0,0.05)',
+                      boxShadow: flavor === f.id ? '0 0 0 3px rgba(219,82,66,0.15),0 4px 10px rgba(0,0,0,0.08)' : '0 2px 6px rgba(0,0,0,0.05)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
                       transition: 'all 0.2s cubic-bezier(0.25,0.46,0.45,0.94)',
                     }}>
@@ -300,15 +384,15 @@
                   display: 'flex', alignItems: 'center', justifyContent: 'space-around',
                   border: '1px solid #f0f0f4',
                 }}>
-                  {[['Sin lactosa','🥛'],['Natural','🌿'],['Sin azúcar','✓']].map(([l, ic]) => (
+                  {[['Sin lactosa','🥛'],['Natural','🌿'],['Sin azúcar','✓']].map(([l,ic]) => (
                     <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                       <span style={{ fontSize: 14 }}>{ic}</span>
-                      <span style={{ fontFamily: OS, fontWeight: 600, fontSize: 11, color: '#444', letterSpacing: '-0.01em' }}>{l}</span>
+                      <span style={{ fontFamily: FO, fontWeight: 600, fontSize: 11, color: '#444', letterSpacing: '-0.01em' }}>{l}</span>
                     </div>
                   ))}
                 </div>
 
-                {/* Huevito mascot card */}
+                {/* Huevito card */}
                 <div style={{
                   marginTop: 12, padding: '14px 16px', borderRadius: 12,
                   background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
@@ -317,13 +401,13 @@
                 }}>
                   <img src="assets/huevito.png" alt="huevito" style={{ height: 52, width: 'auto', objectFit: 'contain' }} />
                   <div>
-                    <div style={{ fontFamily: OS, fontWeight: 700, fontSize: 13, color: '#111', letterSpacing: '-0.02em', marginBottom: 3 }}>Proteína de clara de huevo</div>
-                    <div style={{ fontFamily: OS, fontSize: 12, color: '#777', lineHeight: 1.5 }}>Limpia, sin lactosa y con perfil completo de aminoácidos.</div>
+                    <div style={{ fontFamily: FO, fontWeight: 700, fontSize: 13, color: '#111', letterSpacing: '-0.02em', marginBottom: 3 }}>Proteína de clara de huevo</div>
+                    <div style={{ fontFamily: FO, fontSize: 12, color: '#777', lineHeight: 1.5 }}>Limpia, sin lactosa y con perfil completo de aminoácidos.</div>
                   </div>
                 </div>
               </div>
 
-              {/* ── RIGHT: Purchase panel ──────────────────────────────────── */}
+              {/* RIGHT: Purchase panel */}
               <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
 
                 {/* Badges */}
@@ -331,71 +415,66 @@
                   <span style={{
                     padding: '5px 14px', borderRadius: 999,
                     background: 'linear-gradient(135deg,#302f9b,#db5242)',
-                    fontFamily: OS, fontWeight: 700, fontSize: 11, color: '#fff', letterSpacing: '0.08em', textTransform: 'uppercase',
+                    fontFamily: FO, fontWeight: 700, fontSize: 11, color: '#fff', letterSpacing: '0.08em', textTransform: 'uppercase',
                   }}>Early Access</span>
                   <span style={{
                     padding: '5px 14px', borderRadius: 999,
                     background: '#f0f0f4', border: '1px solid #e0e0e6',
-                    fontFamily: OS, fontWeight: 700, fontSize: 11, color: '#666', letterSpacing: '0.06em', textTransform: 'uppercase',
+                    fontFamily: FO, fontWeight: 700, fontSize: 11, color: '#666', letterSpacing: '0.06em', textTransform: 'uppercase',
                   }}>6 Pack · {protein.toUpperCase()}</span>
                 </div>
 
-                {/* Title */}
-                <h1 className="product-h1" style={{
-                  fontFamily: OS, fontWeight: 800, fontSize: 42,
-                  color: '#111', letterSpacing: '-0.045em', lineHeight: 1.05, marginBottom: 12,
-                }}>{cur.label}</h1>
+                <h1 style={{ fontFamily: FP, fontWeight: 800, fontSize: 42, color: '#111', letterSpacing: '-0.045em', lineHeight: 1.05, marginBottom: 12 }}>{cur.label}</h1>
 
-                {/* Social proof */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20, ...divider }}>
+                {/* Rating */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20, ...D }}>
                   <div style={{ display: 'flex', gap: 2 }}>
                     {[0,1,2,3,4].map(i => (
                       <svg key={i} width="15" height="15" viewBox="0 0 24 24" fill="#db5242"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                     ))}
                   </div>
-                  <span style={{ fontFamily: OS, fontWeight: 700, fontSize: 14, color: '#111' }}>4.9</span>
-                  <span style={{ fontFamily: OS, fontSize: 14, color: '#bbb' }}>·</span>
-                  <a href="#reviews" style={{ fontFamily: OS, fontSize: 13, color: '#555', textDecoration: 'underline', textUnderlineOffset: 2 }}>237 reseñas verificadas</a>
+                  <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 14, color: '#111' }}>4.9</span>
+                  <span style={{ fontFamily: FO, fontSize: 14, color: '#bbb' }}>·</span>
+                  <a href="#reviews" style={{ fontFamily: FO, fontSize: 13, color: '#555', textDecoration: 'underline', textUnderlineOffset: 2 }}>237 reseñas verificadas</a>
                 </div>
 
                 {/* Price */}
-                <div style={{ ...divider }}>
+                <div style={{ ...D }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-                    <span style={{ fontFamily: OS, fontSize: 16, color: '#bbb', textDecoration: 'line-through' }}>S/ 4,179.99</span>
-                    <span style={{ fontFamily: OS, fontWeight: 700, fontSize: 38, color: '#111', letterSpacing: '-0.03em', lineHeight: 1 }}>S/ 2,299.00</span>
+                    <span style={{ fontFamily: FO, fontSize: 16, color: '#bbb', textDecoration: 'line-through' }}>S/ 4,179.99</span>
+                    <span style={{ fontFamily: FA, fontWeight: 700, fontSize: 38, color: '#111', letterSpacing: '-0.03em', lineHeight: 1 }}>S/ 2,299.00</span>
                     <div style={{ padding: '5px 14px', borderRadius: 999, background: '#db5242' }}>
-                      <span style={{ fontFamily: OS, fontWeight: 700, fontSize: 13, color: '#fff' }}>Ahorras S/ 1,880 · 45%</span>
+                      <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 13, color: '#fff' }}>Ahorras S/ 1,880 · 45%</span>
                     </div>
                   </div>
-                  <p style={{ fontFamily: OS, fontStyle: 'italic', fontSize: 16, lineHeight: 1.75, color: '#555' }}>
+                  <p style={{ fontFamily: FB, fontSize: 16, lineHeight: 1.75, color: '#555' }}>
                     Six pack de shakes con proteína de clara de huevo e ingredientes naturales. Sin saborizantes. Sin lactosa ni azúcar añadida.
                   </p>
                 </div>
 
                 {/* Urgency */}
                 <div style={{
-                  ...divider,
+                  ...D,
                   padding: '12px 16px', borderRadius: 10,
                   background: 'rgba(219,82,66,0.05)', border: '1px solid rgba(219,82,66,0.18)',
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 }}>
-                  <span style={{ fontFamily: OS, fontStyle: 'italic', fontWeight: 700, fontSize: 13, color: '#c0392b' }}>
+                  <span style={{ fontFamily: FO, fontStyle: 'italic', fontWeight: 700, fontSize: 13, color: '#c0392b' }}>
                     ⚡ Solo quedan <strong>12 unidades</strong>
                   </span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontFamily: OS, fontSize: 11, color: '#999' }}>Oferta termina en</span>
-                    <div style={{
-                      background: '#111', borderRadius: 6, padding: '4px 10px',
-                      fontFamily: OS, fontWeight: 700, fontSize: 14, color: '#f4f4f6', letterSpacing: '0.04em',
-                    }}>{pad(timeLeft.h)}:{pad(timeLeft.m)}:{pad(timeLeft.s)}</div>
+                    <span style={{ fontFamily: FO, fontSize: 11, color: '#999' }}>Oferta termina en</span>
+                    <div style={{ background: '#111', borderRadius: 6, padding: '4px 10px', fontFamily: FO, fontWeight: 700, fontSize: 14, color: '#f4f4f6', letterSpacing: '0.04em' }}>
+                      {pad(timeLeft.h)}:{pad(timeLeft.m)}:{pad(timeLeft.s)}
+                    </div>
                   </div>
                 </div>
 
                 {/* Flavor selector */}
-                <div style={{ ...divider }}>
+                <div style={{ ...D }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
-                    <span style={{ fontFamily: OS, fontWeight: 700, fontSize: 13, color: '#111', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Sabor</span>
-                    <span style={{ fontFamily: OS, fontStyle: 'italic', fontSize: 12, color: '#888' }}>{cur.desc}</span>
+                    <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 13, color: '#111', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Sabor</span>
+                    <span style={{ fontFamily: FO, fontStyle: 'italic', fontSize: 12, color: '#888' }}>{cur.desc}</span>
                   </div>
                   <div style={{ display: 'flex', gap: 10 }}>
                     {FLAVORS.map(f => (
@@ -408,20 +487,17 @@
                         transition: 'all 0.22s cubic-bezier(0.25,0.46,0.45,0.94)',
                       }}>
                         <img src={f.img} alt={f.label} style={{ height: 52, width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.1))' }} />
-                        <span style={{ fontFamily: OS, fontWeight: 700, fontSize: 11, color: flavor === f.id ? '#f4f4f6' : '#444', textAlign: 'center', lineHeight: 1.3 }}>{f.label}</span>
+                        <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 11, color: flavor === f.id ? '#f4f4f6' : '#444', textAlign: 'center', lineHeight: 1.3 }}>{f.label}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Protein selector */}
-                <div style={{ ...divider }}>
-                  <span style={{ fontFamily: OS, fontWeight: 700, fontSize: 13, color: '#111', letterSpacing: '0.04em', textTransform: 'uppercase', display: 'block', marginBottom: 14 }}>Proteína por botella</span>
+                <div style={{ ...D }}>
+                  <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 13, color: '#111', letterSpacing: '0.04em', textTransform: 'uppercase', display: 'block', marginBottom: 14 }}>Proteína por botella</span>
                   <div style={{ display: 'flex', gap: 12 }}>
-                    {[
-                      { id: '30g', label: '30G', badge: '★ Más popular' },
-                      { id: '20g', label: '20G', badge: null },
-                    ].map(opt => (
+                    {[{ id: '30g', label: '30G', badge: '★ Más popular' }, { id: '20g', label: '20G', badge: null }].map(opt => (
                       <div key={opt.id} onClick={() => setProtein(opt.id)} style={{
                         width: 128, height: 58, borderRadius: 20, cursor: 'pointer',
                         background: protein === opt.id ? '#111' : '#fff',
@@ -429,18 +505,17 @@
                         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3,
                         boxShadow: protein === opt.id ? '0 4px 14px rgba(0,0,0,0.2)' : '0 1px 4px rgba(0,0,0,0.04)',
                         transition: 'all 0.2s cubic-bezier(0.25,0.46,0.45,0.94)',
-                        position: 'relative',
                       }}>
-                        <span style={{ fontFamily: OS, fontWeight: 800, fontSize: 18, color: protein === opt.id ? '#f4f4f6' : '#111', letterSpacing: '-0.03em' }}>{opt.label}</span>
-                        {opt.badge && <span style={{ fontFamily: OS, fontSize: 9, color: protein === opt.id ? 'rgba(255,255,255,0.6)' : '#db5242', fontWeight: 600 }}>{opt.badge}</span>}
+                        <span style={{ fontFamily: FO, fontWeight: 800, fontSize: 18, color: protein === opt.id ? '#f4f4f6' : '#111', letterSpacing: '-0.03em' }}>{opt.label}</span>
+                        {opt.badge && <span style={{ fontFamily: FO, fontSize: 9, color: protein === opt.id ? 'rgba(255,255,255,0.6)' : '#db5242', fontWeight: 600 }}>{opt.badge}</span>}
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Quantity + CTA */}
-                <div ref={ctaRef} style={{ ...divider }}>
-                  <span style={{ fontFamily: OS, fontWeight: 700, fontSize: 13, color: '#111', letterSpacing: '0.04em', textTransform: 'uppercase', display: 'block', marginBottom: 14 }}>Cantidad</span>
+                {/* Qty + CTA */}
+                <div ref={ctaRef} style={{ ...D }}>
+                  <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 13, color: '#111', letterSpacing: '0.04em', textTransform: 'uppercase', display: 'block', marginBottom: 14 }}>Cantidad</span>
                   <div style={{ display: 'flex', gap: 12, alignItems: 'stretch' }}>
                     <div style={{
                       display: 'flex', alignItems: 'center',
@@ -451,33 +526,32 @@
                       {[['−', () => setQty(q => Math.max(1, q - 1))], [qty, null], ['+', () => setQty(q => q + 1)]].map(([label, fn], i) =>
                         fn ? (
                           <button key={i} onClick={fn} style={{
-                            width: 50, height: 60, background: 'none', border: 'none', cursor: 'pointer',
-                            fontFamily: OS, fontWeight: 700, fontSize: 22, color: '#111',
+                            width: 50, height: 60, background: 'none', border: 'none',
+                            fontFamily: FO, fontWeight: 700, fontSize: 22, color: '#111',
                             transition: 'background 0.15s',
                           }}
                           onMouseEnter={e => e.currentTarget.style.background = '#f4f4f6'}
                           onMouseLeave={e => e.currentTarget.style.background = 'none'}
                           >{label}</button>
                         ) : (
-                          <span key={i} style={{ width: 44, textAlign: 'center', fontFamily: OS, fontWeight: 700, fontSize: 20, color: '#111', userSelect: 'none' }}>{label}</span>
+                          <span key={i} style={{ width: 44, textAlign: 'center', fontFamily: FO, fontWeight: 700, fontSize: 20, color: '#111', userSelect: 'none' }}>{label}</span>
                         )
                       )}
                     </div>
                     <button onClick={handleAdd} style={{
-                      flex: 1, height: 60, borderRadius: 20, border: 'none', cursor: 'pointer',
-                      background: added ? '#302f9b' : 'linear-gradient(180deg, #e3796c 0%, #db5242 38%, #302f9b 100%)',
-                      fontFamily: OS, fontWeight: 800, fontSize: 17,
+                      flex: 1, height: 60, borderRadius: 20, border: 'none',
+                      background: added ? '#302f9b' : 'linear-gradient(180deg,#e3796c 0%,#db5242 38%,#302f9b 100%)',
+                      fontFamily: FP, fontWeight: 800, fontSize: 17,
                       letterSpacing: '-0.01em', color: '#fff', textTransform: 'uppercase',
                       boxShadow: added ? '0 6px 20px rgba(48,47,155,0.35)' : '0 8px 28px rgba(219,82,66,0.38)',
-                      transition: 'all 0.3s cubic-bezier(0.25,0.46,0.45,0.94)',
-                      whiteSpace: 'nowrap',
+                      transition: 'all 0.3s cubic-bezier(0.25,0.46,0.45,0.94)', whiteSpace: 'nowrap',
                     }}
                     onMouseEnter={e => { if (!added) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 14px 36px rgba(219,82,66,0.48)'; }}}
                     onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = added ? '0 6px 20px rgba(48,47,155,0.35)' : '0 8px 28px rgba(219,82,66,0.38)'; }}>
                       {added ? '¡Agregado al carrito! ✓' : `AGREGAR — ${price}`}
                     </button>
                   </div>
-                  <p style={{ fontFamily: OS, fontStyle: 'italic', fontSize: 12, color: '#db5242', marginTop: 10 }}>
+                  <p style={{ fontFamily: FO, fontStyle: 'italic', fontSize: 12, color: '#db5242', marginTop: 10 }}>
                     ⚡ Solo quedan 12 unidades — Early Access · Envío gratis a Lima
                   </p>
                 </div>
@@ -497,57 +571,44 @@
                       borderRight: i < 2 ? '1px solid #ebebf0' : 'none',
                     }}>
                       {icon}
-                      <span style={{ fontFamily: OS, fontWeight: 700, fontSize: 12, color: '#555' }}>{label}</span>
+                      <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 12, color: '#555' }}>{label}</span>
                     </div>
                   ))}
                 </div>
 
-                {/* Benefits checklist */}
-                <div style={{
-                  ...divider,
-                  display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 20px',
-                }}>
+                {/* Benefits */}
+                <div style={{ ...D, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 20px' }}>
                   {BENEFITS.map(b => (
                     <div key={b} style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                      <div style={{
-                        width: 18, height: 18, borderRadius: '50%', background: '#111',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                      }}>
-                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-                          <path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
+                      <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       </div>
-                      <span style={{ fontFamily: OS, fontSize: 13, color: '#444' }}>{b}</span>
+                      <span style={{ fontFamily: FO, fontSize: 13, color: '#444' }}>{b}</span>
                     </div>
                   ))}
                 </div>
 
-                {/* FAQ accordion */}
+                {/* FAQ */}
                 <div>
-                  <span style={{ fontFamily: OS, fontWeight: 700, fontSize: 11, color: '#aaa', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>Preguntas frecuentes</span>
+                  <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 11, color: '#aaa', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>Preguntas frecuentes</span>
                   {FAQS.map((item, i) => (
                     <div key={i} style={{ borderBottom: '1px solid #eee' }}>
                       <button className="pp-faq-btn" onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{
                         width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                        padding: '14px 8px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
+                        padding: '14px 8px', background: 'none', border: 'none', textAlign: 'left',
                         borderRadius: 8, transition: 'background 0.15s',
                       }}>
-                        <span style={{ fontFamily: OS, fontWeight: 700, fontSize: 14, color: '#111', paddingRight: 16 }}>{item.q}</span>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2.2" strokeLinecap="round" style={{
-                          transform: openFaq === i ? 'rotate(180deg)' : 'rotate(0deg)',
-                          transition: 'transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94)', flexShrink: 0,
-                        }}><path d="M6 9l6 6 6-6"/></svg>
+                        <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 14, color: '#111', paddingRight: 16 }}>{item.q}</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2.2" strokeLinecap="round"
+                          style={{ transform: openFaq === i ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94)', flexShrink: 0 }}
+                        ><path d="M6 9l6 6 6-6"/></svg>
                       </button>
-                      <div style={{
-                        overflow: 'hidden', maxHeight: openFaq === i ? 200 : 0,
-                        transition: 'max-height 0.3s cubic-bezier(0.25,0.46,0.45,0.94)',
-                      }}>
-                        <p style={{ fontFamily: OS, fontSize: 14, lineHeight: 1.75, color: '#666', padding: '0 8px 16px 8px' }}>{item.a}</p>
+                      <div style={{ overflow: 'hidden', maxHeight: openFaq === i ? 200 : 0, transition: 'max-height 0.3s cubic-bezier(0.25,0.46,0.45,0.94)' }}>
+                        <p style={{ fontFamily: FO, fontSize: 14, lineHeight: 1.75, color: '#666', padding: '0 8px 16px 8px' }}>{item.a}</p>
                       </div>
                     </div>
                   ))}
                 </div>
-
               </div>
             </div>
           </section>
@@ -555,31 +616,19 @@
       );
     }
 
-    // ─── ReviewsSection ─────────────────────────────────────────────────────────
-    function ReviewsSection() {
-      const REVIEWS = [
-        { name: 'Mariana R.', location: 'Lima, Perú',      rating: 5, date: 'hace 3 días',
-          text: 'Llevaba meses buscando algo así. El de mango sabe increíble y no me cae pesado para nada. Ya pedí mi segundo 6-pack.' },
-        { name: 'Carlos V.',  location: 'Miraflores, Lima', rating: 5, date: 'hace 5 días',
-          text: 'Finalmente una proteína sin lactosa que sabe bien. El chocolate criollo es mi favorito — se siente real, no artificial. 30G en 189 calorías es brutal.' },
-        { name: 'Sofía M.',   location: 'San Isidro, Lima', rating: 5, date: 'hace 1 semana',
-          text: 'Pedí el combinado para probar todos los sabores. Llegó en 2 días. El packaging está muy bien cuidado y el producto es exactamente lo que promete.' },
-      ];
-
+    function ReviewsSection({ onScrollToProduct }) {
       return (
-        <section id="reviews" style={{ width: '100%', background: '#111', padding: '64px 48px 72px' }} className="reviews-pad">
+        <section id="reviews" style={{ width: '100%', background: '#111', padding: '64px 48px 72px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-
-            {/* Header */}
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 40 }}>
               <div>
-                <span style={{ fontFamily: OS, fontWeight: 700, fontSize: 11, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: 10 }}>Reseñas verificadas</span>
-                <h2 style={{ fontFamily: OS, fontWeight: 800, fontSize: 36, color: '#f4f4f6', letterSpacing: '-0.04em', lineHeight: 1, margin: 0 }}>Lo que dicen los clientes</h2>
+                <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 11, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: 10 }}>Reseñas verificadas</span>
+                <h2 style={{ fontFamily: FP, fontWeight: 800, fontSize: 36, color: '#f4f4f6', letterSpacing: '-0.04em', lineHeight: 1, margin: 0 }}>Lo que dicen los clientes</h2>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontFamily: OS, fontWeight: 700, fontSize: 48, color: '#f4f4f6', lineHeight: 1, letterSpacing: '-0.03em' }}>4.9</div>
-                  <div style={{ fontFamily: OS, fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 4 }}>de 237 reseñas</div>
+                  <div style={{ fontFamily: FA, fontWeight: 700, fontSize: 48, color: '#f4f4f6', lineHeight: 1, letterSpacing: '-0.03em' }}>4.9</div>
+                  <div style={{ fontFamily: FO, fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 4 }}>de 237 reseñas</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   {[0,1,2,3,4].map(i => (
@@ -589,13 +638,11 @@
               </div>
             </div>
 
-            {/* Review cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }} className="reviews-grid">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
               {REVIEWS.map((r, i) => (
                 <div key={i} style={{
                   background: 'rgba(255,255,255,0.04)', borderRadius: 16,
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  padding: '24px 24px 22px',
+                  border: '1px solid rgba(255,255,255,0.08)', padding: '24px 24px 22px',
                   display: 'flex', flexDirection: 'column', gap: 14,
                 }}>
                   <div style={{ display: 'flex', gap: 2 }}>
@@ -603,27 +650,26 @@
                       <svg key={j} width="14" height="14" viewBox="0 0 24 24" fill={j < r.rating ? '#db5242' : 'rgba(255,255,255,0.15)'}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                     ))}
                   </div>
-                  <p style={{ fontFamily: OS, fontSize: 14, lineHeight: 1.7, color: 'rgba(255,255,255,0.75)', margin: 0, flex: 1 }}>"{r.text}"</p>
+                  <p style={{ fontFamily: FO, fontSize: 14, lineHeight: 1.7, color: 'rgba(255,255,255,0.75)', margin: 0, flex: 1 }}>"{r.text}"</p>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <div style={{ fontFamily: OS, fontWeight: 700, fontSize: 13, color: '#f4f4f6', letterSpacing: '-0.02em' }}>{r.name}</div>
-                      <div style={{ fontFamily: OS, fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{r.location}</div>
+                      <div style={{ fontFamily: FO, fontWeight: 700, fontSize: 13, color: '#f4f4f6', letterSpacing: '-0.02em' }}>{r.name}</div>
+                      <div style={{ fontFamily: FO, fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{r.location}</div>
                     </div>
-                    <span style={{ fontFamily: OS, fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>{r.date}</span>
+                    <span style={{ fontFamily: FO, fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>{r.date}</span>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Bottom CTA */}
             <div style={{ marginTop: 48, textAlign: 'center' }}>
-              <p style={{ fontFamily: OS, fontStyle: 'italic', fontSize: 18, color: 'rgba(255,255,255,0.5)', marginBottom: 20 }}>
+              <p style={{ fontFamily: FO, fontStyle: 'italic', fontSize: 18, color: 'rgba(255,255,255,0.5)', marginBottom: 20 }}>
                 La proteína NO se negocia. El sabor y los ingredientes tampoco.
               </p>
-              <button onClick={() => document.getElementById('product-section').scrollIntoView({ behavior: 'smooth' })} style={{
-                height: 56, padding: '0 48px', borderRadius: 28, border: 'none', cursor: 'pointer',
-                background: 'linear-gradient(180deg, #e3796c 0%, #db5242 38%, #302f9b 100%)',
-                fontFamily: OS, fontWeight: 800, fontSize: 15, letterSpacing: '-0.01em',
+              <button onClick={onScrollToProduct} style={{
+                height: 56, padding: '0 48px', borderRadius: 28, border: 'none',
+                background: 'linear-gradient(180deg,#e3796c 0%,#db5242 38%,#302f9b 100%)',
+                fontFamily: FP, fontWeight: 800, fontSize: 15, letterSpacing: '-0.01em',
                 color: '#fff', textTransform: 'uppercase',
                 boxShadow: '0 8px 28px rgba(219,82,66,0.35)',
                 transition: 'all 0.25s cubic-bezier(0.25,0.46,0.45,0.94)',
@@ -638,43 +684,663 @@
       );
     }
 
-    // ─── App ─────────────────────────────────────────────────────────────────────
-    function App() {
-      const [cartCount, setCartCount] = React.useState(0);
-      return (
-        <div>
-          <ProductHeader cartCount={cartCount} onCartClick={() => {}} />
-          <div id="product-section">
-            <ProductSection onAddToCart={() => setCartCount(c => c + 1)} cartCount={cartCount} />
-          </div>
-          <ReviewsSection />
+    // ════════════════════════════════════════════════════════════════════════════
+    // MOBILE COMPONENTS
+    // ════════════════════════════════════════════════════════════════════════════
 
-          <footer style={{
-            background: '#05070d',
-            borderTop: '1px solid rgba(255,255,255,0.07)',
-            padding: '28px 48px',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    function MProductHeader({ cartCount, onCartClick }) {
+      const [navOpen,   setNavOpen]   = useState(false);
+      const [animating, setAnimating] = useState(false);
+      const prevCount = useRef(cartCount);
+
+      useEffect(() => {
+        if (cartCount > prevCount.current) {
+          setAnimating(true);
+          const t = setTimeout(() => setAnimating(false), 300);
+          prevCount.current = cartCount;
+          return () => clearTimeout(t);
+        }
+        prevCount.current = cartCount;
+      }, [cartCount]);
+
+      const NAV = [
+        { label: 'Tienda',       href: '#' },
+        { label: 'Proteína 101', href: '#' },
+        { label: 'Calculadora',  href: 'calculadora.html' },
+        { label: 'Contacto',     href: '#' },
+      ];
+
+      return (
+        <div style={{ position: 'sticky', top: 0, zIndex: 100 }}>
+          <header style={{
+            height: 54, background: '#05070d',
+            borderBottom: '1px solid rgba(255,255,255,0.08)',
+            display: 'flex', alignItems: 'center',
+            padding: '0 8px', position: 'relative',
           }}>
-            <span style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 700, fontSize: 20, letterSpacing: '-0.05em', color: '#f4f4f6' }}>perfect pal</span>
-            <div style={{ display: 'flex', gap: 32 }} className="footer-links">
-              {[{l:'Tienda',h:'#'},{l:'Proteína 101',h:'#'},{l:'Calculadora',h:'calculadora.html'},{l:'Contacto',h:'#'}].map(({l,h}) => (
-                <a key={l} href={h} style={{
-                  fontFamily: "'Open Sans', sans-serif", fontSize: 13, color: 'rgba(255,255,255,0.4)',
-                  textDecoration: 'none', transition: 'color 0.2s',
-                }}
-                onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.8)'}
-                onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.4)'}
-                >{l}</a>
+            <button onClick={() => setNavOpen(o => !o)} aria-label="Menú" style={{
+              minWidth: 44, minHeight: 44, background: 'none', border: 'none',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f4f4f6',
+            }}>
+              {navOpen
+                ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+              }
+            </button>
+
+            <div style={{
+              position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+              fontFamily: FP, fontWeight: 800, fontSize: 22,
+              letterSpacing: '-0.06em', color: '#f4f4f6', whiteSpace: 'nowrap',
+            }}>perfect pal</div>
+
+            <button onClick={onCartClick} aria-label="Carrito" style={{
+              minWidth: 44, minHeight: 44, background: 'none', border: 'none',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginLeft: 'auto', position: 'relative', color: '#f4f4f6',
+            }}>
+              <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+              {cartCount > 0 && (
+                <span key={cartCount} className={animating ? 'pp-badge-pop' : ''} style={{
+                  position: 'absolute', top: 6, right: 6,
+                  width: 18, height: 18, borderRadius: '50%', background: '#db5242',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontFamily: FP, fontWeight: 700, fontSize: 10, color: '#fff',
+                }}>{cartCount}</span>
+              )}
+            </button>
+          </header>
+
+          <nav className={`pp-nav-dropdown${navOpen ? ' open' : ''}`}>
+            <div style={{ padding: '8px 0 16px' }}>
+              {NAV.map(({ label, href }) => (
+                <a key={label} href={href} onClick={() => setNavOpen(false)} style={{
+                  display: 'block', padding: '13px 20px',
+                  fontFamily: FO, fontWeight: 600, fontSize: 16, color: '#f4f4f6', letterSpacing: '-0.02em',
+                }}>{label}</a>
               ))}
             </div>
-            <span style={{ fontFamily: "'Open Sans', sans-serif", fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>© 2025 perfect pal · Hecho con ❤️ en Lima, Perú</span>
-          </footer>
+          </nav>
         </div>
       );
     }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+    function MProductSection({ flavor, setFlavor, qty, setQty, onAddToCart, onCtaVisibilityChange }) {
+      const [added,    setAdded]    = useState(false);
+      const [openFaq,  setOpenFaq]  = useState(null);
+      const [timeLeft, setTimeLeft] = useState(initTimer);
+      const ctaRef = useRef(null);
+
+      useEffect(() => {
+        let end;
+        try { end = JSON.parse(localStorage.getItem('pp_timer_end')); } catch (_) {}
+        if (!end || end < Date.now()) {
+          end = Date.now() + (23 * 3600 + 47 * 60 + 12) * 1000;
+          try { localStorage.setItem('pp_timer_end', JSON.stringify(end)); } catch (_) {}
+        }
+        const id = setInterval(() => setTimeLeft(msDiff(end)), 1000);
+        return () => clearInterval(id);
+      }, []);
+
+      useEffect(() => {
+        if (!ctaRef.current) return;
+        const obs = new IntersectionObserver(
+          ([e]) => onCtaVisibilityChange(e.isIntersecting),
+          { threshold: 0 }
+        );
+        obs.observe(ctaRef.current);
+        return () => obs.disconnect();
+      }, [onCtaVisibilityChange]);
+
+      const cur = FLAVORS.find(f => f.id === flavor);
+
+      function handleAdd() {
+        onAddToCart(flavor, qty);
+        setAdded(true);
+        setTimeout(() => setAdded(false), 2200);
+      }
+
+      const D = { borderBottom: '1px solid #e8e8ec', marginBottom: 18, paddingBottom: 18 };
+      const fmtPrice = window.ppMoney(PRICE * qty);
+
+      return (
+        <section id="product-section" style={{ background: 'radial-gradient(ellipse 150% 60% at 50% -4%, #fff 0%, #f4f4f6 100%)' }}>
+          {/* Announcement bar */}
+          <div style={{
+            padding: '9px 0', textAlign: 'center',
+            background: 'linear-gradient(90deg,#302f9b 0%,#6b3fa0 30%,#db5242 65%,#302f9b 100%)',
+            backgroundSize: '200% 100%', animation: 'barScroll 8s linear infinite',
+            fontFamily: FI, fontWeight: 700, fontSize: 10,
+            color: '#fff', letterSpacing: '0.06em', textTransform: 'uppercase',
+          }}>⚡ Early Access — 50% OFF · Envío gratis Lima · Solo 12 unidades</div>
+
+          <div style={{ padding: '0 20px 96px' }}>
+            {/* Image card */}
+            <div style={{
+              width: '100%', height: 380, borderRadius: 20, marginTop: 20, marginBottom: 14,
+              background: 'linear-gradient(160deg,#f8f8fb 0%,#f0f0f4 100%)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.06),0 16px 48px rgba(0,0,0,0.10)',
+              position: 'relative', overflow: 'hidden',
+            }}>
+              <div style={{
+                position: 'absolute', top: 14, left: 14, right: 14, height: 26, borderRadius: 6, zIndex: 2,
+                background: 'linear-gradient(90deg,#302f9b 0%,#db5242 55%,rgba(255,255,255,0.6) 100%)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <span style={{ fontFamily: FI, fontStyle: 'italic', fontWeight: 700, fontSize: 10, color: '#fff', letterSpacing: '0.12em' }}>EARLY ACCESS · 50% OFF</span>
+              </div>
+              <img key={flavor} src={cur.img} alt={cur.label} className="pp-fade" style={{
+                position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+                bottom: 64, height: 268, width: 'auto', objectFit: 'contain',
+                filter: 'drop-shadow(0 12px 32px rgba(0,0,0,0.14))',
+              }} />
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 64, display: 'flex' }}>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1, borderTop: '2.5px solid #1a1a1a', borderRight: '1.5px solid #e0e0e0' }}>
+                  <span style={{ fontFamily: FP, fontWeight: 800, fontSize: 24, color: '#111', lineHeight: 1, letterSpacing: '-0.05em' }}>30G</span>
+                  <span style={{ fontFamily: FI, fontWeight: 700, fontSize: 9, color: '#777', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Proteína</span>
+                </div>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1, background: '#111', borderRadius: '0 0 20px 0' }}>
+                  <span style={{ fontFamily: FP, fontWeight: 800, fontSize: 24, color: '#f4f4f6', lineHeight: 1, letterSpacing: '-0.05em' }}>189</span>
+                  <span style={{ fontFamily: FI, fontWeight: 700, fontSize: 9, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Calorías</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Thumbnails */}
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginBottom: 20 }}>
+              {FLAVORS.map(f => (
+                <div key={f.id} onClick={() => setFlavor(f.id)} style={{
+                  width: 72, height: 72, borderRadius: 12, cursor: 'pointer', background: '#fff',
+                  border: `2px solid ${flavor === f.id ? '#db5242' : '#e4e4ea'}`,
+                  boxShadow: flavor === f.id ? '0 0 0 3px rgba(219,82,66,0.15),0 4px 10px rgba(0,0,0,0.08)' : '0 2px 6px rgba(0,0,0,0.05)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+                  transition: 'all 0.2s cubic-bezier(0.25,0.46,0.45,0.94)',
+                }}>
+                  <img src={f.img} alt={f.label} style={{ height: 56, width: 'auto', objectFit: 'contain' }} />
+                </div>
+              ))}
+            </div>
+
+            {/* Badges */}
+            <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
+              <span style={{ padding: '5px 14px', borderRadius: 999, background: 'linear-gradient(135deg,#302f9b,#db5242)', fontFamily: FI, fontWeight: 700, fontSize: 11, color: '#fff', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Early Access</span>
+              <span style={{ padding: '5px 14px', borderRadius: 999, background: '#f0f0f4', border: '1px solid #e0e0e6', fontFamily: FI, fontWeight: 700, fontSize: 11, color: '#666', letterSpacing: '0.06em', textTransform: 'uppercase' }}>6 Pack · 30G</span>
+            </div>
+
+            <h1 style={{ fontFamily: FP, fontWeight: 800, fontSize: 32, color: '#111', letterSpacing: '-0.045em', lineHeight: 1.08, marginBottom: 14 }}>{cur.label}</h1>
+
+            {/* Rating */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, ...D }}>
+              <div style={{ display: 'flex', gap: 2 }}>
+                {[0,1,2,3,4].map(i => (<svg key={i} width="14" height="14" viewBox="0 0 24 24" fill="#db5242"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>))}
+              </div>
+              <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 14, color: '#111' }}>4.9</span>
+              <span style={{ color: '#ccc' }}>·</span>
+              <a href="#reviews" style={{ fontFamily: FO, fontSize: 13, color: '#555', textDecoration: 'underline', textUnderlineOffset: 2 }}>237 reseñas verificadas</a>
+            </div>
+
+            {/* Price */}
+            <div style={{ ...D }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap', marginBottom: 10 }}>
+                <span style={{ fontFamily: FA, fontWeight: 700, fontSize: 34, color: '#111', letterSpacing: '-0.03em', lineHeight: 1 }}>S/ 2,299.00</span>
+                <span style={{ fontFamily: FO, fontSize: 15, color: '#bbb', textDecoration: 'line-through' }}>S/ 4,179.99</span>
+                <span style={{ padding: '4px 10px', borderRadius: 999, background: '#db5242', fontFamily: FO, fontWeight: 700, fontSize: 12, color: '#fff' }}>Ahorras 45%</span>
+              </div>
+              <p style={{ fontFamily: FB, fontSize: 15, color: '#555', lineHeight: 1.7 }}>
+                Six pack de shakes con proteína de clara de huevo e ingredientes naturales. Sin saborizantes. Sin lactosa ni azúcar añadida.
+              </p>
+            </div>
+
+            {/* Urgency + timer */}
+            <div style={{ ...D, padding: '12px 14px', borderRadius: 10, background: 'rgba(219,82,66,0.05)', border: '1px solid rgba(219,82,66,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+              <span style={{ fontFamily: FO, fontStyle: 'italic', fontWeight: 700, fontSize: 12, color: '#c0392b' }}>⚡ Solo <strong>12 unidades</strong></span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                <span style={{ fontFamily: FI, fontSize: 10, color: '#999' }}>Termina en</span>
+                <div style={{ background: '#111', borderRadius: 6, padding: '4px 10px', fontFamily: FO, fontWeight: 700, fontSize: 14, color: '#f4f4f6', letterSpacing: '0.04em' }}>
+                  {pad(timeLeft.h)}:{pad(timeLeft.m)}:{pad(timeLeft.s)}
+                </div>
+              </div>
+            </div>
+
+            {/* Flavor selector */}
+            <div style={{ ...D }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 12 }}>
+                <span style={{ fontFamily: FI, fontWeight: 700, fontSize: 12, color: '#111', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Sabor</span>
+                <span style={{ fontFamily: FO, fontStyle: 'italic', fontSize: 12, color: '#888' }}>{cur.desc}</span>
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {FLAVORS.map(f => (
+                  <div key={f.id} onClick={() => setFlavor(f.id)} style={{
+                    flex: 1, padding: '12px 8px 10px', borderRadius: 14, cursor: 'pointer',
+                    background: flavor === f.id ? '#111' : '#fff',
+                    border: `1.5px solid ${flavor === f.id ? '#111' : '#e0e0e6'}`,
+                    boxShadow: flavor === f.id ? '0 6px 20px rgba(0,0,0,0.2)' : '0 1px 4px rgba(0,0,0,0.04)',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                    transition: 'all 0.22s cubic-bezier(0.25,0.46,0.45,0.94)',
+                  }}>
+                    <img src={f.img} alt={f.label} style={{ height: 46, width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.1))' }} />
+                    <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 10, color: flavor === f.id ? '#f4f4f6' : '#444', textAlign: 'center', lineHeight: 1.3 }}>{f.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Qty + CTA */}
+            <div ref={ctaRef} style={{ ...D }}>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                <MQtyStepper value={qty} onChange={setQty} height={54} />
+                <button onClick={handleAdd} style={{
+                  flex: 1, height: 54, borderRadius: 16, border: 'none',
+                  background: added ? '#302f9b' : 'linear-gradient(180deg,#e3796c 0%,#db5242 38%,#302f9b 100%)',
+                  fontFamily: FP, fontWeight: 800, fontSize: 14,
+                  letterSpacing: '-0.01em', color: '#fff', textTransform: 'uppercase',
+                  boxShadow: added ? '0 6px 20px rgba(48,47,155,0.35)' : '0 8px 24px rgba(219,82,66,0.36)',
+                  transition: 'all 0.3s cubic-bezier(0.25,0.46,0.45,0.94)', whiteSpace: 'nowrap',
+                }}>{added ? '¡Agregado! ✓' : `AGREGAR — ${fmtPrice}`}</button>
+              </div>
+              <p style={{ fontFamily: FO, fontStyle: 'italic', fontSize: 11, color: '#db5242', marginTop: 8 }}>⚡ Solo 12 unidades — Early Access · Envío gratis a Lima</p>
+            </div>
+
+            {/* Trust trio */}
+            <div style={{ display: 'flex', marginBottom: 18, padding: '12px 0', background: '#fafafa', borderRadius: 12, border: '1px solid #f0f0f4' }}>
+              {[
+                { icon: <svg width="18" height="18" fill="none" stroke="#555" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, label: 'Garantía 30 días' },
+                { icon: <svg width="18" height="18" fill="none" stroke="#555" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>, label: 'Envío gratis' },
+                { icon: <svg width="18" height="18" fill="none" stroke="#555" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>, label: 'Pago seguro' },
+              ].map(({ icon, label }, i) => (
+                <div key={label} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, flexDirection: 'column', borderRight: i < 2 ? '1px solid #ebebf0' : 'none', padding: '6px 0' }}>
+                  {icon}
+                  <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 11, color: '#555', textAlign: 'center' }}>{label}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Benefits */}
+            <div style={{ ...D, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 12px' }}>
+              {BENEFITS.map(b => (
+                <div key={b} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </div>
+                  <span style={{ fontFamily: FO, fontSize: 12, color: '#444', lineHeight: 1.3 }}>{b}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Huevito card */}
+            <div style={{ ...D, padding: '14px 16px', borderRadius: 14, background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '1px solid #f0f0f4', display: 'flex', alignItems: 'center', gap: 14 }}>
+              <img src="assets/huevito.png" alt="huevito" style={{ height: 54, width: 'auto', objectFit: 'contain', flexShrink: 0 }} />
+              <div>
+                <div style={{ fontFamily: FP, fontWeight: 800, fontSize: 14, color: '#111', letterSpacing: '-0.02em', marginBottom: 4 }}>Proteína de clara de huevo</div>
+                <div style={{ fontFamily: FO, fontSize: 12, color: '#777', lineHeight: 1.5 }}>Limpia, sin lactosa y con perfil completo de aminoácidos.</div>
+              </div>
+            </div>
+
+            {/* FAQ */}
+            <div>
+              <span style={{ fontFamily: FI, fontWeight: 700, fontSize: 11, color: '#aaa', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>Preguntas frecuentes</span>
+              {FAQS.map((item, i) => (
+                <div key={i} style={{ borderBottom: '1px solid #eee' }}>
+                  <button onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{
+                    width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: '14px 8px', background: 'none', border: 'none', textAlign: 'left', minHeight: 52,
+                  }}>
+                    <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 14, color: '#111', paddingRight: 12, lineHeight: 1.4 }}>{item.q}</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2.2" strokeLinecap="round"
+                      style={{ transform: openFaq === i ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94)', flexShrink: 0 }}
+                    ><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  <div className={`pp-faq-body${openFaq === i ? ' open' : ''}`}>
+                    <p style={{ fontFamily: FO, fontSize: 14, lineHeight: 1.75, color: '#666', padding: '0 8px 16px 8px' }}>{item.a}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function MReviewsSection({ onScrollToProduct }) {
+      const trackRef   = useRef(null);
+      const pausedRef  = useRef(false);
+      const resumeRef  = useRef(null);
+      const [activeIdx, setActiveIdx] = useState(0);
+      const reducedMotion = useRef(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+      useEffect(() => {
+        if (reducedMotion.current) return;
+        let idx = 0;
+        const id = setInterval(() => {
+          if (pausedRef.current || !trackRef.current) return;
+          idx = (idx + 1) % REVIEWS.length;
+          trackRef.current.scrollTo({ left: idx * trackRef.current.offsetWidth, behavior: 'smooth' });
+          setActiveIdx(idx);
+        }, 4500);
+        return () => clearInterval(id);
+      }, []);
+
+      useEffect(() => {
+        const track = trackRef.current;
+        if (!track) return;
+        const onScroll = () => {
+          const w = track.offsetWidth;
+          if (w) setActiveIdx(Math.round(track.scrollLeft / w));
+        };
+        track.addEventListener('scroll', onScroll, { passive: true });
+        return () => track.removeEventListener('scroll', onScroll);
+      }, []);
+
+      function pauseAutoplay() {
+        pausedRef.current = true;
+        if (resumeRef.current) clearTimeout(resumeRef.current);
+        resumeRef.current = setTimeout(() => { pausedRef.current = false; }, 5000);
+      }
+
+      function scrollToIdx(i) {
+        pauseAutoplay(); setActiveIdx(i);
+        if (trackRef.current) trackRef.current.scrollTo({ left: i * trackRef.current.offsetWidth, behavior: 'smooth' });
+      }
+
+      return (
+        <section id="reviews" style={{ background: '#111', padding: '40px 0 44px' }}>
+          <div style={{ padding: '0 16px' }}>
+            <span style={{ fontFamily: FI, fontWeight: 700, fontSize: 11, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: 10 }}>Reseñas verificadas</span>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 28 }}>
+              <h2 style={{ fontFamily: FP, fontWeight: 800, fontSize: 28, color: '#f4f4f6', letterSpacing: '-0.04em', lineHeight: 1.05 }}>Lo que dicen<br/>los clientes</h2>
+              <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                <div style={{ fontFamily: FA, fontWeight: 700, fontSize: 40, color: '#f4f4f6', lineHeight: 1, letterSpacing: '-0.03em' }}>4.9</div>
+                <div style={{ display: 'flex', gap: 2, justifyContent: 'flex-end', margin: '4px 0 2px' }}>
+                  {[0,1,2,3,4].map(i => (<svg key={i} width="12" height="12" viewBox="0 0 24 24" fill="#db5242"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>))}
+                </div>
+                <div style={{ fontFamily: FO, fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>de 237 reseñas</div>
+              </div>
+            </div>
+
+            <div ref={trackRef} className="pp-track" onTouchStart={pauseAutoplay} onPointerDown={pauseAutoplay}
+              style={{ display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory' }}>
+              {REVIEWS.map((r, i) => (
+                <div key={i} style={{ flex: '0 0 100%', scrollSnapAlign: 'center', padding: '0 1px' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, border: '1px solid rgba(255,255,255,0.08)', padding: '24px 20px 22px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    <div style={{ display: 'flex', gap: 2 }}>
+                      {[0,1,2,3,4].map(j => (<svg key={j} width="14" height="14" viewBox="0 0 24 24" fill={j < r.rating ? '#db5242' : 'rgba(255,255,255,0.15)'}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>))}
+                    </div>
+                    <p style={{ fontFamily: FO, fontSize: 14, lineHeight: 1.7, color: 'rgba(255,255,255,0.75)', margin: 0 }}>"{r.text}"</p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontFamily: FO, fontWeight: 700, fontSize: 13, color: '#f4f4f6', letterSpacing: '-0.02em' }}>{r.name}</div>
+                        <div style={{ fontFamily: FO, fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{r.location}</div>
+                      </div>
+                      <span style={{ fontFamily: FO, fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>{r.date}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 20, marginBottom: 28 }}>
+              {REVIEWS.map((_, i) => (
+                <button key={i} onClick={() => scrollToIdx(i)} aria-label={`Reseña ${i + 1}`} style={{
+                  width: activeIdx === i ? 24 : 8, height: 8, borderRadius: 4, border: 'none',
+                  background: activeIdx === i ? '#db5242' : 'rgba(255,255,255,0.2)',
+                  transition: 'all 0.25s cubic-bezier(0.25,0.46,0.45,0.94)', padding: 0,
+                }} />
+              ))}
+            </div>
+
+            <p style={{ fontFamily: FO, fontStyle: 'italic', fontSize: 15, color: 'rgba(255,255,255,0.5)', textAlign: 'center', marginBottom: 16 }}>
+              La proteína NO se negocia. El sabor y los ingredientes tampoco.
+            </p>
+            <button onClick={onScrollToProduct} style={{
+              width: '100%', height: 56, borderRadius: 28, border: 'none',
+              background: 'linear-gradient(180deg,#e3796c 0%,#db5242 38%,#302f9b 100%)',
+              fontFamily: FP, fontWeight: 800, fontSize: 14, letterSpacing: '-0.01em', color: '#fff', textTransform: 'uppercase',
+              boxShadow: '0 8px 28px rgba(219,82,66,0.35)',
+            }}>QUIERO MI 6-PACK AHORA</button>
+          </div>
+        </section>
+      );
+    }
+
+    function MBottomBar({ flavor, qty, ctaVisible, cartOpen, onAdd }) {
+      const cur = FLAVORS.find(f => f.id === flavor);
+      const visible = !ctaVisible && !cartOpen;
+
+      return (
+        <div style={{
+          position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 250,
+          background: '#fff', borderTop: '1px solid #e8e8ec',
+          boxShadow: '0 -4px 20px rgba(0,0,0,0.10)',
+          padding: `12px 16px calc(12px + env(safe-area-inset-bottom, 0px))`,
+          display: 'flex', alignItems: 'center', gap: 12,
+          transform: visible ? 'translateY(0)' : 'translateY(120%)',
+          transition: 'transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94)',
+          willChange: 'transform',
+        }}>
+          {cur && <img src={cur.img} alt={cur.label} style={{ height: 40, width: 'auto', objectFit: 'contain', flexShrink: 0 }} />}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: FO, fontWeight: 700, fontSize: 13, color: '#111', letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {cur ? cur.label : ''} · 6 Pack
+            </div>
+            <div style={{ fontFamily: FA, fontWeight: 700, fontSize: 15, color: '#db5242' }}>{window.ppMoney(PRICE * qty)}</div>
+          </div>
+          <button onClick={onAdd} style={{
+            height: 44, padding: '0 20px', borderRadius: 22, border: 'none', flexShrink: 0,
+            background: 'linear-gradient(180deg,#e3796c 0%,#db5242 38%,#302f9b 100%)',
+            fontFamily: FP, fontWeight: 800, fontSize: 13, letterSpacing: '-0.01em', color: '#fff', textTransform: 'uppercase',
+            boxShadow: '0 4px 16px rgba(219,82,66,0.36)',
+          }}>AGREGAR</button>
+        </div>
+      );
+    }
+
+    function MobileCart({ cartItems, cartOpen, onClose, onUpdateQty, onRemove, onScrollToProduct }) {
+      const totalQty = cartItems.reduce((s, it) => s + it.qty, 0);
+      const subtotal = cartItems.reduce((s, it) => s + PRICE * it.qty, 0);
+
+      useEffect(() => {
+        document.body.style.overflow = cartOpen ? 'hidden' : '';
+        return () => { document.body.style.overflow = ''; };
+      }, [cartOpen]);
+
+      return (
+        <>
+          <div onClick={onClose} style={{
+            position: 'fixed', inset: 0, zIndex: 300,
+            background: 'rgba(5,7,13,0.55)',
+            backdropFilter: 'blur(2px)', WebkitBackdropFilter: 'blur(2px)',
+            opacity: cartOpen ? 1 : 0, pointerEvents: cartOpen ? 'auto' : 'none',
+            transition: 'opacity 0.3s',
+          }} />
+
+          <div style={{
+            position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 301,
+            height: '90%', borderRadius: '22px 22px 0 0',
+            background: '#fff', display: 'flex', flexDirection: 'column',
+            transform: cartOpen ? 'translateY(0)' : 'translateY(101%)',
+            transition: 'transform 0.36s cubic-bezier(0.25,0.46,0.45,0.94)',
+          }}>
+            <div style={{ width: 36, height: 4, borderRadius: 2, background: '#ddd', margin: '12px auto 0', flexShrink: 0 }} />
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px 0', flexShrink: 0 }}>
+              <span style={{ fontFamily: FP, fontWeight: 800, fontSize: 20, color: '#111', letterSpacing: '-0.04em' }}>
+                Tu carrito{' '}{totalQty > 0 && <span style={{ fontFamily: FO, fontWeight: 400, fontSize: 15, color: '#999' }}>({totalQty})</span>}
+              </span>
+              <button onClick={onClose} aria-label="Cerrar carrito" style={{ minWidth: 44, minHeight: 44, background: 'none', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#111' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+
+            {totalQty > 0 && (
+              <div style={{ margin: '10px 20px 0', padding: '8px 14px', borderRadius: 8, background: 'rgba(48,47,155,0.07)', border: '1px solid rgba(48,47,155,0.15)', flexShrink: 0 }}>
+                <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 12, color: '#302f9b' }}>🚚 ¡Envío gratis a Lima Metropolitana!</span>
+              </div>
+            )}
+
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+              {cartItems.length === 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 16, paddingBottom: 40 }}>
+                  <svg width="56" height="56" fill="none" stroke="#ccc" strokeWidth="1.5" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                  <span style={{ fontFamily: FO, fontSize: 16, color: '#aaa' }}>Tu carrito está vacío</span>
+                  <button onClick={() => { onClose(); onScrollToProduct(); }} style={{ padding: '12px 28px', borderRadius: 24, border: 'none', background: '#111', fontFamily: FO, fontWeight: 700, fontSize: 14, color: '#fff' }}>Ver producto</button>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {cartItems.map(item => {
+                    const f = FLAVORS.find(fl => fl.id === item.id);
+                    if (!f) return null;
+                    return (
+                      <div key={item.id} style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '12px', borderRadius: 14, background: '#fafafa', border: '1px solid #f0f0f4' }}>
+                        <div style={{ width: 56, height: 56, borderRadius: 10, background: '#f4f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <img src={f.img} alt={f.label} style={{ height: 48, width: 'auto', objectFit: 'contain' }} />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontFamily: FO, fontWeight: 700, fontSize: 13, color: '#111', marginBottom: 2, letterSpacing: '-0.02em' }}>{f.label}</div>
+                          <div style={{ fontFamily: FO, fontSize: 11, color: '#999', marginBottom: 8 }}>6 Pack · 30G</div>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <MQtyStepper value={item.qty} onChange={v => onUpdateQty(item.id, v)} height={36} />
+                            <div style={{ textAlign: 'right' }}>
+                              <div style={{ fontFamily: FA, fontWeight: 700, fontSize: 15, color: '#111' }}>{window.ppMoney(PRICE * item.qty)}</div>
+                              <button onClick={() => onRemove(item.id)} style={{ background: 'none', border: 'none', fontFamily: FO, fontSize: 11, color: '#db5242', padding: '4px 0' }}>Eliminar</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {cartItems.length > 0 && (
+              <div style={{ flexShrink: 0, padding: `16px 20px calc(16px + env(safe-area-inset-bottom, 0px))`, borderTop: '1px solid #f0f0f4' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+                  <span style={{ fontFamily: FO, fontSize: 14, color: '#555' }}>Subtotal</span>
+                  <span style={{ fontFamily: FA, fontWeight: 700, fontSize: 22, color: '#111', letterSpacing: '-0.03em' }}>{window.ppMoney(subtotal)}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+                  <span style={{ fontFamily: FO, fontSize: 13, color: '#555' }}>Envío</span>
+                  <span style={{ fontFamily: FO, fontWeight: 700, fontSize: 13, color: '#302f9b' }}>Gratis</span>
+                </div>
+                <button style={{ width: '100%', height: 54, borderRadius: 16, border: 'none', background: 'linear-gradient(180deg,#e3796c 0%,#db5242 38%,#302f9b 100%)', fontFamily: FP, fontWeight: 800, fontSize: 15, letterSpacing: '-0.01em', color: '#fff', textTransform: 'uppercase', boxShadow: '0 8px 24px rgba(219,82,66,0.36)', marginBottom: 12 }}>FINALIZAR COMPRA</button>
+                <button onClick={onClose} style={{ width: '100%', background: 'none', border: 'none', fontFamily: FO, fontSize: 14, color: '#555', padding: '6px 0' }}>Seguir comprando</button>
+              </div>
+            )}
+          </div>
+        </>
+      );
+    }
+
+    // ════════════════════════════════════════════════════════════════════════════
+    // APP ROOT
+    // ════════════════════════════════════════════════════════════════════════════
+
+    function App() {
+      const isMobile = useIsMobile();
+
+      // Shared state
+      const [flavor,     setFlavor]     = useState('combinado');
+      const [qty,        setQty]        = useState(1);
+      const [cartItems,  setCartItems]  = useState([]);
+      const [cartOpen,   setCartOpen]   = useState(false);
+      const [ctaVisible, setCtaVisible] = useState(true);
+
+      const cartCount = cartItems.reduce((s, it) => s + it.qty, 0);
+
+      const handleAddToCart = useCallback((flavorId, qtyToAdd) => {
+        setCartItems(items => {
+          const existing = items.find(it => it.id === flavorId);
+          if (existing) return items.map(it => it.id === flavorId ? { ...it, qty: it.qty + qtyToAdd } : it);
+          return [...items, { id: flavorId, qty: qtyToAdd }];
+        });
+        setCartOpen(true);
+      }, []);
+
+      const handleUpdateQty = useCallback((id, v) => {
+        if (v < 1) return;
+        setCartItems(items => items.map(it => it.id === id ? { ...it, qty: v } : it));
+      }, []);
+
+      const handleRemove = useCallback(id => {
+        setCartItems(items => items.filter(it => it.id !== id));
+      }, []);
+
+      function scrollToProduct() {
+        document.getElementById('product-section')?.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      const footer = (
+        <footer style={{
+          background: '#05070d', borderTop: '1px solid rgba(255,255,255,0.07)',
+          padding: isMobile ? '28px 20px' : '28px 48px',
+          display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'center' : 'space-between',
+          flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 0,
+        }}>
+          <span style={{ fontFamily: FP, fontWeight: 800, fontSize: isMobile ? 22 : 20, letterSpacing: '-0.05em', color: '#f4f4f6' }}>perfect pal</span>
+          <div style={{ display: 'flex', gap: isMobile ? 20 : 32, flexWrap: 'wrap', justifyContent: 'center' }}>
+            {[{l:'Tienda',h:'#'},{l:'Proteína 101',h:'#'},{l:'Calculadora',h:'calculadora.html'},{l:'Contacto',h:'#'}].map(({l,h}) => (
+              <a key={l} href={h} style={{ fontFamily: FO, fontSize: 13, color: 'rgba(255,255,255,0.4)' }}
+                onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.8)'}
+                onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.4)'}
+              >{l}</a>
+            ))}
+          </div>
+          <span style={{ fontFamily: FO, fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>© 2025 perfect pal · Hecho con ❤️ en Lima, Perú</span>
+        </footer>
+      );
+
+      if (isMobile) {
+        return (
+          <div>
+            <MProductHeader cartCount={cartCount} onCartClick={() => setCartOpen(true)} />
+            <MProductSection
+              flavor={flavor} setFlavor={setFlavor}
+              qty={qty} setQty={setQty}
+              onAddToCart={handleAddToCart}
+              onCtaVisibilityChange={setCtaVisible}
+            />
+            <MReviewsSection onScrollToProduct={scrollToProduct} />
+            {footer}
+            <div style={{ height: 92 }} />
+            <MBottomBar
+              flavor={flavor} qty={qty}
+              ctaVisible={ctaVisible} cartOpen={cartOpen}
+              onAdd={() => handleAddToCart(flavor, qty)}
+            />
+            <MobileCart
+              cartItems={cartItems} cartOpen={cartOpen}
+              onClose={() => setCartOpen(false)}
+              onUpdateQty={handleUpdateQty}
+              onRemove={handleRemove}
+              onScrollToProduct={scrollToProduct}
+            />
+          </div>
+        );
+      }
+
+      return (
+        <div>
+          <ProductHeader cartCount={cartCount} onCartClick={() => setCartOpen(true)} />
+          <div id="product-section">
+            <ProductSection onAddToCart={handleAddToCart} />
+          </div>
+          <ReviewsSection onScrollToProduct={scrollToProduct} />
+          {footer}
+          <MobileCart
+            cartItems={cartItems} cartOpen={cartOpen}
+            onClose={() => setCartOpen(false)}
+            onUpdateQty={handleUpdateQty}
+            onRemove={handleRemove}
+            onScrollToProduct={scrollToProduct}
+          />
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
 </html>

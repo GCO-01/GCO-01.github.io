@@ -489,6 +489,13 @@ main {
 }
 
 /* ── Social Proof Section ─────────────────────────────────────── */
+
+/* Transparent wrapper — children behave as direct children of sp__inner on desktop */
+.sp__visual { display: contents; }
+
+/* Note variants: desktop shows guarantee copy, mobile shows urgency copy */
+.sp__note--mobile { display: none; }
+
 .sp {
   background: #fff;
   position: relative;
@@ -1034,16 +1041,237 @@ body::after {
   }
 }
 
-/* SP section: compact at 600px */
-@media (max-width: 600px) {
-  .sp__inner { padding: 32px 20px 40px; gap: 24px 16px; }
-  .sp__headline { font-size: clamp(2rem, 11vw, 2.75rem); line-height: 1.1; }
-  .sp__bottle--choc,
-  .sp__bottle--mango { max-width: 68px; }
-  .sp__btn { font-size: 16px; padding: 14px 20px; border-radius: 14px; }
+/* ── SP Section: mobile layout ≤767px ────────────────────────── */
+@keyframes spFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
 }
-@media (max-width: 400px) {
-  .sp__headline { font-size: 2rem; }
+
+@media (max-width: 767px) {
+  /* ─ Container: single flex column, left-aligned ─ */
+  .sp__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+    height: auto;
+    padding: 24px 20px 40px;
+    background: radial-gradient(120% 80% at 50% 0%, #ffffff 38%, #f1f1f6 100%);
+    gap: 0;
+  }
+
+  /* ─ Flatten text wrappers so children become direct flex items ─ */
+  .sp__left,
+  .sp__content,
+  .sp__text {
+    display: contents;
+  }
+
+  /* ─ Ordering: label → headline → sub → visual → body → cta ─ */
+  .sp__label     { order: 1; }
+  .sp__headline  { order: 2; }
+  .sp__sub       { order: 3; }
+  .sp__visual    { order: 4; }
+  .sp__body      { order: 5; }
+  .sp__cta-group { order: 6; }
+
+  /* ─ Eyebrow / rating label: hidden in mobile ─ */
+  .sp__label {
+    display: none;
+  }
+
+  /* ─ Headline ─ */
+  .sp__headline {
+    font-size: clamp(40px, 12vw, 48px) !important;
+    line-height: 0.98 !important;
+    letter-spacing: -0.05em;
+    font-weight: 800;
+    text-align: left;
+    margin: 0;
+    position: static;
+    left: auto;
+    top: auto;
+    transform: none;
+  }
+
+  /* ─ Subtitle ─ */
+  .sp__sub {
+    font-size: 20px;
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    color: #222;
+    text-align: left;
+    margin: 14px 0 0;
+    position: static;
+    left: auto;
+    top: auto;
+    transform: none;
+  }
+
+  /* ─ Visual container: relative stage for image + badges ─ */
+  .sp__visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    height: 340px;
+    margin: 32px 0 20px;
+  }
+
+  /* Ellipse: CSS circle replacing SVG */
+  .sp__ellipse {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 290px;
+    height: 290px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 38%, #ffffff 0%, #e9e9ee 72%);
+    z-index: 0;
+  }
+  .sp__ellipse img { display: none; }
+
+  /* Bottles: centered, pinned to bottom of visual block */
+  .sp__bottles {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+    height: 300px;
+    z-index: 1;
+    top: auto;
+    right: auto;
+  }
+  .sp__bottle--choc,
+  .sp__bottle--mango {
+    height: 300px !important;
+    width: auto !important;
+    max-width: none !important;
+    filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.2));
+    transform: none;
+  }
+
+  /* Badges: floating cards over the image block */
+  .sp__badge {
+    position: absolute;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+    width: auto;
+    min-width: 0;
+    max-width: 130px;
+    z-index: 2;
+    filter: none;
+    left: auto;
+    top: auto;
+    right: auto;
+    bottom: auto;
+  }
+  .sp__badge--ingr {
+    top: 18px;
+    left: 2px;
+    padding: 9px 12px;
+    gap: 6px;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    animation: spFloat 4s ease-in-out infinite;
+    animation-delay: 0s;
+  }
+  .sp__badge--prot {
+    bottom: 10px;
+    right: 2px;
+    padding: 9px 12px;
+    gap: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    animation: spFloat 4s ease-in-out infinite;
+    animation-delay: 0.8s;
+  }
+
+  /* Badge icons: compact sizes */
+  .sp__badge-icons { gap: 3px; }
+  .sp__icon-wrap--almond      { width: 22px; height: 46px; }
+  .sp__icon-wrap--mango-fruit { width: 30px; height: 40px; }
+  .sp__icon-wrap--egg         { width: 27px; height: 37px; }
+
+  /* Badge text */
+  .sp__badge-text {
+    font-family: 'Lato', 'Open Sans', sans-serif;
+    font-size: 11px;
+    line-height: 1.25;
+    text-align: left;
+    flex: none;
+    width: auto;
+  }
+  .sp__badge-text strong { color: var(--color-accent-start); }
+  .sp__badge-text--prot  { width: auto; color: #111; }
+
+  /* ─ Body copy ─ */
+  .sp__body {
+    font-family: 'Lato', 'Open Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #555;
+    text-align: center;
+    margin: 0 0 6px;
+    position: static;
+    left: auto;
+    top: auto;
+    transform: none;
+  }
+
+  /* ─ CTA group ─ */
+  .sp__cta-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 24px;
+  }
+
+  /* CTA button: full-width, horizontal brand gradient */
+  .sp__btn {
+    width: 100%;
+    height: 60px;
+    padding: 0 20px;
+    border-radius: 18px;
+    border: none;
+    background: linear-gradient(90deg, #e3796c 0%, #db5242 45%, #302f9b 100%);
+    background-image: linear-gradient(90deg, #e3796c 0%, #db5242 45%, #302f9b 100%);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+    color: #fff;
+    text-transform: uppercase;
+    box-shadow: 0 12px 24px rgba(219, 82, 66, 0.32);
+  }
+  .sp__btn:hover  { opacity: 0.92; transform: translateY(-1px); }
+  .sp__btn:active { opacity: 0.88; transform: translateY(0); }
+
+  /* Urgency note: show mobile copy, hide desktop trust */
+  .sp__note {
+    font-family: 'Lato', 'Open Sans', sans-serif;
+    font-size: 13px;
+    color: #db5242;
+    font-style: italic;
+    font-weight: 600;
+    text-align: center;
+    width: 100%;
+    margin: 0;
+  }
+  .sp__note--desktop { display: none; }
+  .sp__note--mobile  { display: block; }
 }
 
 @media (prefers-reduced-motion: reduce) {
