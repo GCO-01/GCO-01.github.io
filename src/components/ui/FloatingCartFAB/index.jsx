@@ -37,23 +37,34 @@ export function FloatingCartFAB() {
   const [popOpen, setPopOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState(0);
   const [qty, setQty] = useState(1);
-  const [dragOffset, setDragOffset] = useState(0);
+  const dragOffset = useRef(0);
   const isDragging = useRef(false);
   const startX = useRef(0);
+  const trackRef = useRef(null);
 
   // Ocultar FAB cuando el CartDrawer está abierto
   if (drawerOpen) return null;
+
+  function applyTrackTransform() {
+    if (!trackRef.current) return;
+    trackRef.current.style.transition = isDragging.current
+      ? 'none'
+      : 'transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    trackRef.current.style.transform =
+      `translateX(calc(${-activeIdx * SLIDE_W}px + ${dragOffset.current}px))`;
+  }
 
   // --- Drag handlers (mouse) ---
   function handleMouseDown(e) {
     isDragging.current = true;
     startX.current = e.clientX;
-    setDragOffset(0);
+    dragOffset.current = 0;
   }
 
   function handleMouseMove(e) {
     if (!isDragging.current) return;
-    setDragOffset(e.clientX - startX.current);
+    dragOffset.current = e.clientX - startX.current;
+    applyTrackTransform();
   }
 
   function handleMouseUp() {
@@ -65,12 +76,13 @@ export function FloatingCartFAB() {
   function handleTouchStart(e) {
     isDragging.current = true;
     startX.current = e.touches[0].clientX;
-    setDragOffset(0);
+    dragOffset.current = 0;
   }
 
   function handleTouchMove(e) {
     if (!isDragging.current) return;
-    setDragOffset(e.touches[0].clientX - startX.current);
+    dragOffset.current = e.touches[0].clientX - startX.current;
+    applyTrackTransform();
   }
 
   function handleTouchEnd() {
@@ -80,12 +92,12 @@ export function FloatingCartFAB() {
 
   function commitDrag() {
     isDragging.current = false;
-    if (dragOffset < -SNAP_THRESHOLD && activeIdx < FLAVORS.length - 1) {
+    if (dragOffset.current < -SNAP_THRESHOLD && activeIdx < FLAVORS.length - 1) {
       setActiveIdx(i => i + 1);
-    } else if (dragOffset > SNAP_THRESHOLD && activeIdx > 0) {
+    } else if (dragOffset.current > SNAP_THRESHOLD && activeIdx > 0) {
       setActiveIdx(i => i - 1);
     }
-    setDragOffset(0);
+    dragOffset.current = 0;
     setQty(1);
   }
 
@@ -100,11 +112,6 @@ export function FloatingCartFAB() {
     setPopOpen(false);
     setIsOpen(true);
   }
-
-  const trackStyle = {
-    transform: `translateX(calc(${-activeIdx * SLIDE_W}px + ${dragOffset}px))`,
-    transition: isDragging.current ? 'none' : 'transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-  };
 
   return (
     <>
@@ -134,7 +141,7 @@ export function FloatingCartFAB() {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-              <div className={styles.carouselTrack} style={trackStyle}>
+              <div className={styles.carouselTrack} ref={trackRef} style={{ transform: `translateX(${-activeIdx * SLIDE_W}px)` }}>
                 {FLAVORS.map((f, idx) => {
                   const fInCart = items.find(i => i.id === f.id);
                   return (
