@@ -52,7 +52,8 @@ export function CartDrawer() {
   const total = items.reduce((sum, i) => sum + PRICE * i.qty, 0);
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : '';
+    if (!isOpen) return;
+    document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
