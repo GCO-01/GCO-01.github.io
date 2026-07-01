@@ -1,7 +1,7 @@
 import styles from './ProductSection.module.css';
 import { Button } from '../../ui/Button';
 import { FLAVORS } from '../../../data/flavors';
-import { formatMoney, PRICE } from '../../../data/config';
+import { formatMoney, PRICE, OLD_PRICE } from '../../../data/config';
 
 export function StickyBar({ visible, flavor, qty, added, onAdd }) {
   const cur = FLAVORS.find(f => f.id === flavor) ?? FLAVORS[0];
@@ -14,7 +14,7 @@ export function StickyBar({ visible, flavor, qty, added, onAdd }) {
           <span>{cur.label} · 6 Pack</span>
           <div>
             <span className={styles.priceCurrent}>{formatMoney(PRICE * qty)}</span>
-            <span className={styles.priceOld}>{formatMoney(4179.99)}</span>
+            <span className={styles.priceOld}>{formatMoney(OLD_PRICE)}</span>
           </div>
         </div>
       </div>
