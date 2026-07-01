@@ -11,7 +11,6 @@ import { Button } from '../../ui/Button';
 import { StarRating } from '../../ui/StarRating';
 import { ProductGallery } from './ProductGallery';
 import { FlavorSelector } from './FlavorSelector';
-import { ProteinSelector } from './ProteinSelector';
 import { QtySelector } from './QtySelector';
 import { StickyBar } from './StickyBar';
 import { BottomBar } from './BottomBar';
@@ -27,7 +26,6 @@ export function ProductSection() {
   const isMobile = useIsMobile(900);
   const { addItem, isOpen } = useCart();
   const [flavor, setFlavor] = useState('combinado');
-  const [protein, setProtein] = useState('30g');
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [ctaRef, ctaVisible] = useIntersection({ threshold: 0.5 });
@@ -63,7 +61,7 @@ export function ProductSection() {
         <div className={styles.panel}>
           <div className={styles.badges}>
             <Badge variant="brand">Early Access</Badge>
-            <Badge variant="neutral">6 Pack · {protein.toUpperCase()}</Badge>
+            <Badge variant="neutral">6 Pack · 30G</Badge>
           </div>
 
           <h1 className={styles.productTitle}>{cur.label}</h1>
@@ -96,7 +94,6 @@ export function ProductSection() {
           </div>
 
           <FlavorSelector selected={flavor} onSelect={setFlavor} />
-          <ProteinSelector selected={protein} onSelect={setProtein} />
 
           <div ref={ctaRef} className={styles.ctaSection}>
             <span className={styles.label}>Cantidad</span>
@@ -124,6 +121,23 @@ export function ProductSection() {
                 <span>{b}</span>
               </div>
             ))}
+          </div>
+
+          {/* <div className={styles.proofStrip}>
+            {[['🥛', 'Sin lactosa'], ['🌿', 'Natural'], ['✓', 'Sin azúcar']].map(([icon, label]) => (
+              <div key={label} className={styles.proofItem}>
+                <span>{icon}</span>
+                <span>{label}</span>
+              </div>
+            ))}
+          </div> */}
+
+          <div className={styles.huevito}>
+            <img src="/assets/huevito.png" alt="" loading="lazy" />
+            <div>
+              <strong>Proteína de clara de huevo</strong>
+              <p>Limpia, sin lactosa y con perfil completo de aminoácidos.</p>
+            </div>
           </div>
 
           <FAQ />

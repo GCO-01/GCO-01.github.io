@@ -1,0 +1,18 @@
+.bar {
+  width: 100%;
+  padding: 9px 0;
+  background: var(--gradient-announcement);
+  background-size: 200% 100%;
+  animation: barScroll 8s linear infinite;
+  text-align: center;
+  font-family: var(--font-opensans);
+  font-weight: 700;
+  font-size: 11px;
+  color: #fff;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .bar { font-size: 10px; }
+}

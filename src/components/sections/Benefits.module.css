@@ -1,0 +1,80 @@
+.section {
+  width: min(100%, 100rem);
+  margin-inline: auto;
+  padding: 1.5rem clamp(1.25rem, 3vw, 3.5rem);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  font-size: clamp(0.875rem, 1.1vw, 1.1rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  padding: 0 1rem;
+  border-right: 1px solid var(--color-border);
+  opacity: 0.9;
+}
+.item:first-child { padding-left: 0; }
+.item:last-child { border-right: none; padding-right: 0; }
+
+.icon {
+  display: inline-grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--color-accent-red), var(--color-accent-blue));
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+@media (max-width: 68.75rem) {
+  .list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem 0; padding-block: 1.25rem; }
+  .item { border-right: none; padding: 0.375rem 0; justify-content: flex-start; }
+  .item:nth-child(odd) { border-right: 1px solid var(--color-border); padding-right: 1rem; }
+}
+
+@media (max-width: 48rem) {
+  .list {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0;
+    padding-inline: 0;
+  }
+  .list::-webkit-scrollbar { display: none; }
+  .item {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    white-space: nowrap;
+    border-right: 1px solid var(--color-border);
+    border-bottom: none;
+    padding: 0 1.25rem;
+    font-size: 0.875rem;
+    justify-content: flex-start;
+  }
+  .item:last-child { border-right: none; }
+  .item:nth-child(odd) { padding-right: 1.25rem; }
+}

@@ -1,0 +1,14 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-opensans);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.brand   { background: var(--gradient-badge-brand); color: #fff; }
+.neutral { background: var(--color-light-bg); border: 1px solid #e0e0e6; color: #666; }
+.danger  { background: var(--color-accent-red); color: #fff; }

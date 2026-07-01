@@ -1,0 +1,66 @@
+:root {
+  /* Colors — dark surfaces */
+  --color-bg: #05070d;
+  --color-surface: #111111;
+  --color-text: #f4f4f6;
+  --color-text-muted: rgba(255, 255, 255, 0.84);
+  --color-text-subtle: rgba(255, 255, 255, 0.4);
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-light: rgba(255, 255, 255, 0.14);
+
+  /* Colors — light surfaces */
+  --color-light-bg: #f4f4f6;
+  --color-light-surface: #ffffff;
+  --color-light-text: #111111;
+  --color-light-text-muted: #555555;
+  --color-light-border: #e8e8ec;
+  --color-light-border-subtle: #f0f0f4;
+
+  /* Brand colors */
+  --color-accent-red: #db5242;
+  --color-accent-red-light: #e3796c;
+  --color-accent-blue: #302f9b;
+  --color-accent-purple: #6b3fa0;
+  --color-accent-red-dark: #c0392b;
+
+  /* Gradients */
+  --gradient-cta: linear-gradient(180deg, #e3796c 0%, #db5242 38%, #302f9b 100%);
+  --gradient-cta-alt: linear-gradient(135deg, #e3796c, #db5242 55%, #302f9b);
+  --gradient-announcement: linear-gradient(90deg, #302f9b 0%, #6b3fa0 30%, #db5242 65%, #302f9b 100%);
+  --gradient-badge-brand: linear-gradient(135deg, #302f9b, #db5242);
+  --gradient-hero-cta: linear-gradient(-90deg, #e3796c 10%, #db5242 43%, #302f9b 100%);
+
+  /* Shadows */
+  --shadow-cta: 0 8px 28px rgba(219, 82, 66, 0.38);
+  --shadow-cta-hover: 0 14px 36px rgba(219, 82, 66, 0.48);
+  --shadow-cta-blue: 0 6px 20px rgba(48, 47, 155, 0.35);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06), 0 16px 48px rgba(0, 0, 0, 0.10);
+  --shadow-card-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  /* Typography */
+  --font-poppins: 'Poppins', 'Open Sans', sans-serif;
+  --font-opensans: 'Open Sans', sans-serif;
+  --font-arimo: 'Arimo', 'Open Sans', sans-serif;
+  --font-inter: 'Inter', 'Open Sans', sans-serif;
+  --font-lato: 'Lato', 'Open Sans', sans-serif;
+
+  /* Radii */
+  --radius-btn: 20px;
+  --radius-btn-sm: 14px;
+  --radius-btn-lg: 28px;
+  --radius-card: 16px;
+  --radius-card-lg: 20px;
+  --radius-pill: 999px;
+
+  /* Layout */
+  --container-max: 1200px;
+  --header-height-desktop: 72px;
+  --header-height-mobile: 54px;
+  --section-px-desktop: 48px;
+  --section-px-mobile: 20px;
+
+  /* Transitions */
+  --transition-base: 200ms ease;
+  --transition-smooth: 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-spring: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}

@@ -1,0 +1,27 @@
+.strip {
+  display: flex;
+  background: #fafafa;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-light-border-subtle);
+  margin-bottom: 22px;
+}
+
+.item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 0;
+  border-right: 1px solid #ebebf0;
+  font-family: var(--font-opensans);
+  font-weight: 700;
+  font-size: 12px;
+  color: #555;
+}
+
+.item:last-child { border-right: none; }
+
+@media (max-width: 768px) {
+  .item { flex-direction: column; gap: 4px; font-size: 11px; padding: 10px 0; }
+}
