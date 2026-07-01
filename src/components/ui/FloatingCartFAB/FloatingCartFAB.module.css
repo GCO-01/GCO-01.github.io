@@ -1,0 +1,363 @@
+/* FAB wrapper — posición fija bottom-right */
+.wrap {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  z-index: 291;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+  pointer-events: none;
+}
+
+/* Botón circular FAB */
+.fab {
+  pointer-events: auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #e3796c 0%, #db5242 38%, #302f9b 100%);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(48, 47, 155, 0.35);
+  transition: transform 0.18s var(--transition-smooth, ease), background 0.18s;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.fab:hover {
+  transform: scale(1.07);
+}
+
+.fab:active {
+  transform: scale(0.96);
+}
+
+.fabOpen {
+  background: #111;
+}
+
+/* Badge contador */
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: #db5242;
+  border: 2px solid #fff;
+  color: #fff;
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* Popover de compra rápida */
+.popover {
+  pointer-events: auto;
+  width: 320px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 40px rgba(5, 7, 13, 0.18);
+  overflow: hidden;
+  animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.92) translateY(8px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+/* Header del popover */
+.popHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid #f0f0f4;
+}
+
+.popTitle {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+  margin: 0;
+}
+
+.popClose {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: #f4f4f6;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  transition: background 0.15s;
+}
+
+.popClose:hover { background: #e8e8ec; }
+
+/* Carrusel */
+.carouselViewport {
+  width: 320px;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+
+.carouselViewport:active {
+  cursor: grabbing;
+}
+
+.carouselTrack {
+  display: flex;
+  will-change: transform;
+}
+
+/* Slide individual */
+.slide {
+  width: 320px;
+  flex-shrink: 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.slideTop {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.slideImgWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.slideImg {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #f4f4f6;
+}
+
+.slideCartBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-accent-red, #db5242);
+  border: 2px solid #fff;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-poppins), sans-serif;
+}
+
+.slideInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.slideName {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slidePriceRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.slideOldPrice {
+  font-size: 11px;
+  color: #999;
+  text-decoration: line-through;
+  font-family: var(--font-poppins), sans-serif;
+}
+
+.slidePrice {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
+}
+
+.slideCartStatus {
+  font-size: 11px;
+  color: #888;
+  font-family: var(--font-poppins), sans-serif;
+}
+
+.slideCartStatus.inCart {
+  color: #2d9645;
+  font-weight: 500;
+}
+
+/* Qty stepper */
+.stepper {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #dcdce4;
+  border-radius: 17px;
+  overflow: hidden;
+  height: 44px;
+  align-self: flex-start;
+}
+
+.stepperBtn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s;
+  flex-shrink: 0;
+}
+
+.stepperBtn:hover { background: #f4f4f6; }
+.stepperBtn:disabled { opacity: 0.35; cursor: default; }
+
+.stepperVal {
+  width: 30px;
+  text-align: center;
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+  flex-shrink: 0;
+}
+
+/* Botón Agregar */
+.addBtn {
+  width: 100%;
+  height: 44px;
+  border-radius: var(--radius-btn, 20px);
+  background: linear-gradient(180deg, #e3796c 0%, #db5242 38%, #302f9b 100%);
+  border: none;
+  color: #fff;
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.12s;
+}
+
+.addBtn:hover { opacity: 0.9; }
+.addBtn:active { transform: scale(0.98); }
+
+/* Dots indicadores */
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 0 4px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #dcdce4;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.dotActive {
+  background: var(--color-accent-red, #db5242);
+  transform: scale(1.3);
+}
+
+/* Link "Ver carrito" */
+.viewCartBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: #f4f4f6;
+  border-top: 1px solid #f0f0f4;
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.viewCartBtn:hover { background: #e8e8ec; }
+
+/* Backdrop del popover */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 289;
+  background: rgba(5, 7, 13, 0.4);
+  backdrop-filter: blur(2px);
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .wrap {
+    right: 16px;
+    bottom: 90px; /* sobre la BottomBar */
+  }
+
+  .fab {
+    width: 52px;
+    height: 52px;
+  }
+
+  .popover {
+    width: calc(100vw - 32px);
+    max-width: 320px;
+  }
+
+  .carouselViewport {
+    width: calc(100vw - 32px);
+    max-width: 320px;
+  }
+
+  .slide {
+    width: calc(100vw - 32px);
+    max-width: 320px;
+  }
+}
