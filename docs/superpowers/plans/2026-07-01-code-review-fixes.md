@@ -507,6 +507,8 @@ const trackStyle = {
 
 In JSX, replace the carousel track `<div>`:
 
+{% raw %}
+
 ```jsx
 // Before
 <div className={styles.carouselTrack} style={trackStyle}>
@@ -514,6 +516,8 @@ In JSX, replace the carousel track `<div>`:
 // After
 <div className={styles.carouselTrack} ref={trackRef} style={{ transform: `translateX(${-activeIdx * SLIDE_W}px)` }}>
 ```
+
+{% endraw %}
 
 The inline `style` here handles the static position (by `activeIdx`) at render time. The `dragOffset` during live drag is handled by `applyTrackTransform` writing to the DOM directly.
 
