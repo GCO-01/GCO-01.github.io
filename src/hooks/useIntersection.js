@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 
 export function useIntersection(options = { threshold: 0 }) {
   const ref = useRef(null);
-  const [isIntersecting, setIsIntersecting] = useState(true);
+  const [isIntersecting, setIsIntersecting] = useState(false);
   useEffect(() => {
     if (!ref.current) return;
     const obs = new IntersectionObserver(([e]) => setIsIntersecting(e.isIntersecting), options);
