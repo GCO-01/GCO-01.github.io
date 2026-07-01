@@ -11,6 +11,7 @@ import { Button } from '../../ui/Button';
 import { StarRating } from '../../ui/StarRating';
 import { ProductGallery } from './ProductGallery';
 import { FlavorSelector } from './FlavorSelector';
+import { ProteinSelector } from './ProteinSelector';
 import { QtySelector } from './QtySelector';
 import { StickyBar } from './StickyBar';
 import { BottomBar } from './BottomBar';
@@ -27,6 +28,7 @@ export function ProductSection() {
   const { addItem, isOpen } = useCart();
   const [flavor, setFlavor] = useState('combinado');
   const [qty, setQty] = useState(1);
+  const [protein, setProtein] = useState('30g');
   const [added, setAdded] = useState(false);
   const [ctaRef, ctaVisible] = useIntersection({ threshold: 0.5 });
   const timeLeft = useCountdown();
@@ -61,7 +63,7 @@ export function ProductSection() {
         <div className={styles.panel}>
           <div className={styles.badges}>
             <Badge variant="brand">Early Access</Badge>
-            <Badge variant="neutral">6 Pack · 30G</Badge>
+            <Badge variant="neutral">6 Pack · {protein.toUpperCase()}</Badge>
           </div>
 
           <h1 className={styles.productTitle}>{cur.label}</h1>
@@ -94,6 +96,8 @@ export function ProductSection() {
           </div>
 
           <FlavorSelector selected={flavor} onSelect={setFlavor} />
+
+          <ProteinSelector selected={protein} onSelect={setProtein} />
 
           <div ref={ctaRef} className={styles.ctaSection}>
             <span className={styles.label}>Cantidad</span>
