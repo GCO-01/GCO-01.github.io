@@ -4,6 +4,7 @@ import { useCart } from '../../../hooks/useCart';
 import { FLAVORS } from '../../../data/flavors';
 import { formatMoney, PRICE } from '../../../data/config';
 import { Button } from '../../ui/Button';
+import { QtySelector } from './QtySelector';
 
 const CloseIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
@@ -34,11 +35,10 @@ function CartItem({ item }) {
         <span className={styles.itemPrice}>{formatMoney(PRICE * item.qty)}</span>
       </div>
       <div className={styles.itemActions}>
-        <div className={styles.itemQty}>
-          <button onClick={() => updateQty(item.id, item.qty - 1)} disabled={item.qty <= 1} aria-label="Menos">−</button>
-          <span>{item.qty}</span>
-          <button onClick={() => updateQty(item.id, item.qty + 1)} aria-label="Más">+</button>
-        </div>
+        <QtySelector
+          value={item.qty}
+          onChange={v => updateQty(item.id, v)}
+        />
         <button onClick={() => removeItem(item.id)} className={styles.removeBtn} aria-label="Eliminar">
           <TrashIcon />
         </button>
