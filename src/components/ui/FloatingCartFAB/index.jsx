@@ -98,6 +98,7 @@ export function FloatingCartFAB() {
       setActiveIdx(i => i - 1);
     }
     dragOffset.current = 0;
+    applyTrackTransform();
     setQty(1);
   }
 
