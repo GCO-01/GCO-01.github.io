@@ -8,8 +8,8 @@
 
 .inner {
   display: grid;
-  grid-template-columns: auto auto;
-  column-gap: 4.6875rem;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 4rem;
   row-gap: 1.5rem;
   align-items: center;
   width: 100%;
@@ -18,10 +18,11 @@
 }
 
 .media {
+  grid-column: 2;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: min(95%, 80rem);
+  width: 100%;
 }
 
 .eggFrame {
@@ -53,13 +54,13 @@
 }
 
 .content {
+  grid-column: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  max-width: 40rem;
-  text-align: center;
-  margin-inline: auto;
+  max-width: 32rem;
+  text-align: left;
 }
 
 .proof {
@@ -172,7 +173,8 @@
 
 @media (max-width: 68.75rem) {
   .inner { grid-template-columns: 1fr; text-align: center; row-gap: 2.5rem; }
-  .content { align-items: center; }
+  .media, .content { grid-column: 1; }
+  .content { align-items: center; text-align: center; max-width: 40rem; margin-inline: auto; }
 }
 
 @media (max-width: 48rem) {
