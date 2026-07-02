@@ -19,13 +19,13 @@ export function ProductPresentation() {
           <div className={styles.bottles} aria-hidden="true">
             <img
               className={styles.bottleChoc}
-              src="/assets/sp-bottle-chocolate.png"
+              src="/assets/sp-bottle-chocolate.webp"
               alt="Shake de proteína sabor Chocolate Criollo"
               loading="lazy"
             />
             <img
               className={styles.bottleMango}
-              src="/assets/sp-bottle-mango.png"
+              src="/assets/sp-bottle-mango.webp"
               alt="Shake de proteína sabor Mango"
               loading="lazy"
             />
@@ -34,10 +34,10 @@ export function ProductPresentation() {
           <div className={`${styles.badge} ${styles.badgeIngr}`} aria-label="Hecho con ingredientes naturales">
             <div className={styles.badgeIcons}>
               <div className={`${styles.iconWrap} ${styles.iconAlmond}`}>
-                <img src="/assets/sp-icon-almond.png" alt="" loading="lazy" />
+                <img src="/assets/sp-icon-almond.webp" alt="" loading="lazy" />
               </div>
               <div className={`${styles.iconWrap} ${styles.iconMango}`}>
-                <img src="/assets/sp-icon-mango.png" alt="" loading="lazy" />
+                <img src="/assets/sp-icon-mango.webp" alt="" loading="lazy" />
               </div>
             </div>
             <p className={styles.badgeText}>
@@ -47,7 +47,7 @@ export function ProductPresentation() {
 
           <div className={`${styles.badge} ${styles.badgeProt}`} aria-label="Proteína de clara de huevo">
             <div className={`${styles.iconWrap} ${styles.iconEgg}`}>
-              <img src="/assets/sp-icon-egg.png" alt="" loading="lazy" />
+              <img src="/assets/sp-icon-egg.webp" alt="" loading="lazy" />
             </div>
             <p className={`${styles.badgeText} ${styles.badgeTextProt}`}>
               Proteína de<br /><strong>clara de huevo</strong>

@@ -28,7 +28,7 @@
 
 .copy { font-size: 11px; color: rgba(255, 255, 255, 0.2); }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .footer {
     flex-direction: column;
     align-items: flex-start;

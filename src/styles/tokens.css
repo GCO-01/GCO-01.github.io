@@ -52,6 +52,17 @@
   --radius-card-lg: 20px;
   --radius-pill: 999px;
 
+  /*
+   * Breakpoints (referencia — las media queries de CSS no pueden usar custom
+   * properties, así que este es el set canónico a seguir en todo el sitio):
+   *   mobile:  max-width 768px  (usar en useIsMobile() sin argumento, o pasar 768)
+   *   tablet:  max-width 1100px (68.75rem) — usado por Hero/Benefits
+   *   desktop: > 1100px
+   * ProductSection y Reviews usan 900px como su propio corte mobile/desktop
+   * (pasado explícitamente a useIsMobile(900)) porque su panel de compra
+   * necesita más ancho antes de colapsar a una columna.
+   */
+
   /* Layout */
   --container-max: 1200px;
   --header-height-desktop: 72px;

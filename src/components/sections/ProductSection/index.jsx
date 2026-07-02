@@ -137,7 +137,7 @@ export function ProductSection() {
           </div> */}
 
           <div className={styles.huevito}>
-            <img src="/assets/huevito.png" alt="" loading="lazy" />
+            <img src="/assets/huevito.webp" alt="" loading="lazy" />
             <div>
               <strong>Proteína de clara de huevo</strong>
               <p>Limpia, sin lactosa y con perfil completo de aminoácidos.</p>

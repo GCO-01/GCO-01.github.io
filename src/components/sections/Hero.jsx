@@ -10,7 +10,7 @@ export function Hero() {
           <figure className={styles.eggFrame}>
             <img
               className={styles.eggImage}
-              src="/assets/huevito-hero.png"
+              src="/assets/huevito-hero.webp"
               alt="Huevo entero marrón sobre fondo claro"
               loading="eager"
               decoding="async"
