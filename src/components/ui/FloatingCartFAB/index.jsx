@@ -4,6 +4,7 @@ import { FLAVORS } from '../../../data/flavors';
 import { PRICE, OLD_PRICE, formatMoney } from '../../../data/config';
 import styles from './FloatingCartFAB.module.css';
 import { CartIcon, CloseIcon, ArrowRightIcon } from '../icons';
+import { CountBadge } from '../CountBadge';
 
 const SNAP_THRESHOLD = 48;
 const SLIDE_W = 320;
@@ -127,7 +128,7 @@ export function FloatingCartFAB() {
                         <div className={styles.slideImgWrap}>
                           <img src={f.img} alt={f.label} className={styles.slideImg} draggable={false} />
                           {fInCart && (
-                            <span className={styles.slideCartBadge}>{fInCart.qty}</span>
+                            <CountBadge count={fInCart.qty} className={styles.slideCartBadge} />
                           )}
                         </div>
                         <div className={styles.slideInfo}>
@@ -205,7 +206,7 @@ export function FloatingCartFAB() {
             <CartIcon size={24} strokeWidth={2} stroke="#fff" />
           )}
           {count > 0 && !popOpen && (
-            <span className={styles.badge}>{count}</span>
+            <CountBadge count={count} />
           )}
         </button>
       </div>

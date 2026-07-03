@@ -5,6 +5,7 @@ import { MobileDrawer } from './MobileDrawer';
 import { useCart } from '../../hooks/useCart';
 import { BRAND, NAV_LINKS } from '../../data/site';
 import { CartIcon, MenuIcon } from '../ui/icons';
+import { CountBadge } from '../ui/CountBadge';
 
 export function Header() {
   const { count, setIsOpen } = useCart();
@@ -56,7 +57,7 @@ export function Header() {
             aria-label={`Carrito${count > 0 ? `, ${count} producto${count > 1 ? 's' : ''}` : ''}`}
           >
             <CartIcon />
-            {count > 0 && <span className={styles.cartBadge} aria-hidden="true">{count}</span>}
+            {count > 0 && <CountBadge count={count} className={styles.cartBadge} />}
           </button>
         </div>
       </header>

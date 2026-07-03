@@ -41,26 +41,7 @@
   background: #111;
 }
 
-/* Badge contador */
-.badge {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 5px;
-  border-radius: 10px;
-  background: #db5242;
-  border: 2px solid #fff;
-  color: #fff;
-  font-family: var(--font-poppins), sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
+/* El contador del FAB usa el componente compartido ui/CountBadge */
 
 /* Popover de compra rápida */
 .popover {
@@ -158,22 +139,11 @@
   background: #f4f4f6;
 }
 
+/* Override del CountBadge: offset y tipografía del carrusel */
 .slideCartBadge {
-  position: absolute;
   top: -6px;
   right: -6px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--color-accent-red, #db5242);
-  border: 2px solid #fff;
-  color: #fff;
   font-size: 10px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-poppins), sans-serif;
 }
 
 .slideInfo {
