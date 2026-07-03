@@ -3,9 +3,8 @@ import { Button } from '../ui/Button';
 import { MealPlan } from './MealPlan';
 import { useCart } from '../../hooks/useCart';
 import { PRICE, OLD_PRICE, STOCK, formatMoney } from '../../data/config';
+import { DISCOUNT_CODE } from '../../data/promo';
 import styles from './Calculadora.module.css';
-
-const DISCOUNT_CODE = 'SHAKE50';
 
 export function CalcUnlocked({ user, result, plan }) {
   const { addItem } = useCart();
@@ -24,8 +23,9 @@ export function CalcUnlocked({ user, result, plan }) {
         <p className={styles.confirmTitle}>
           PROTOCOLO ACTIVO — {result.grams} g/día
         </p>
+        {/* No afirmar envío por email: hoy no existe backend que lo envíe */}
         <p className={styles.confirmSub}>
-          {user.name} · Plan enviado a {user.email}
+          {user.name} · Tu plan y código están listos aquí abajo
         </p>
       </div>
 

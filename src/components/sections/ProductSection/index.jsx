@@ -17,10 +17,19 @@ import { StickyBar } from './StickyBar';
 import { FAQ } from './FAQ';
 import { FLAVORS } from '../../../data/flavors';
 import { PRODUCT_BENEFITS } from '../../../data/benefits';
-import { PRICE, OLD_PRICE, RATING, REVIEW_COUNT, formatMoney } from '../../../data/config';
-
-const ANNOUNCEMENT =
-  '⚡ Early Access — 50% de descuento en primera compra · Envío gratis a Lima Metropolitana · Solo 12 unidades';
+import {
+  PRICE,
+  OLD_PRICE,
+  STOCK,
+  RATING,
+  REVIEW_COUNT,
+  SAVINGS,
+  DISCOUNT_PCT,
+  formatMoney,
+  formatMoneyRound,
+} from '../../../data/config';
+import { ANNOUNCEMENT, URGENCY_NOTE, withStock } from '../../../data/promo';
+import { PRODUCT_COPY } from '../../../data/product';
 
 export function ProductSection() {
   const isMobile = useIsMobile(900);
@@ -77,15 +86,13 @@ export function ProductSection() {
             <div className={styles.priceRow}>
               <span className={styles.priceOld}>{formatMoney(OLD_PRICE)}</span>
               <span className={styles.priceCurrent}>{formatMoney(PRICE)}</span>
-              <Badge variant="danger">Ahorras S/ 1,880 · 45%</Badge>
+              <Badge variant="danger">Ahorras {formatMoneyRound(SAVINGS)} · {DISCOUNT_PCT}%</Badge>
             </div>
-            <p className={styles.priceDesc}>
-              Six pack de shakes con proteína de clara de huevo e ingredientes naturales.
-            </p>
+            <p className={styles.priceDesc}>{PRODUCT_COPY.priceDesc}</p>
           </div>
 
           <div className={styles.urgency}>
-            <span>⚡ Solo quedan <strong>12 unidades</strong></span>
+            <span>⚡ Solo quedan <strong>{STOCK} unidades</strong></span>
             <div className={styles.timer}>
               <span>Oferta termina en</span>
               <div className={styles.clock}>
@@ -106,9 +113,7 @@ export function ProductSection() {
                 {added ? '¡Agregado! ✓' : `Agregar — ${formatMoney(PRICE * qty)}`}
               </Button>
             </div>
-            <p className={styles.ctaNote}>
-              ⚡ Solo quedan 12 unidades · Early Access · Envío gratis a Lima
-            </p>
+            <p className={styles.ctaNote}>{withStock(URGENCY_NOTE, STOCK)}</p>
           </div>
 
           <TrustStrip />
@@ -127,10 +132,10 @@ export function ProductSection() {
           </div>
 
           <div className={styles.huevito}>
-            <img src="/assets/huevito.webp" alt="" loading="lazy" />
+            <img src={PRODUCT_COPY.eggCard.img.src} alt={PRODUCT_COPY.eggCard.img.alt} loading="lazy" />
             <div>
-              <strong>Proteína de clara de huevo</strong>
-              <p>Limpia, sin lactosa y con perfil completo de aminoácidos.</p>
+              <strong>{PRODUCT_COPY.eggCard.title}</strong>
+              <p>{PRODUCT_COPY.eggCard.body}</p>
             </div>
           </div>
 

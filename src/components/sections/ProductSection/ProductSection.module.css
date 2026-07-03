@@ -563,7 +563,7 @@
   top: var(--header-height-desktop);
   left: 0;
   right: 0;
-  z-index: 190;
+  z-index: var(--z-sticky-bar);
   background: rgba(255,255,255,0.97);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid #e8e8ec;

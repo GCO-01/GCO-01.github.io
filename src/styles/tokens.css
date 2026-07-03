@@ -74,4 +74,18 @@
   --transition-base: 200ms ease;
   --transition-smooth: 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --transition-spring: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  /*
+   * Z-index — escala canónica de apilamiento (usar siempre var(), nunca números):
+   * sticky-bar < header < fab < cart-drawer < mobile-drawer < noise
+   */
+  --z-sticky-bar: 190;
+  --z-header: 200;
+  --z-fab-backdrop: 289;
+  --z-fab: 291;
+  --z-cart-drawer-backdrop: 300;
+  --z-cart-drawer: 301;
+  --z-mobile-drawer-backdrop: 499;
+  --z-mobile-drawer: 500;
+  --z-noise: 9998;
 }

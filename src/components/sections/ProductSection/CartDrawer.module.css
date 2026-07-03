@@ -1,7 +1,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  z-index: 300;
+  z-index: var(--z-cart-drawer-backdrop);
   background: rgba(5, 7, 13, 0.55);
   opacity: 0;
   pointer-events: none;
@@ -18,7 +18,7 @@
   top: 0;
   right: 0;
   bottom: 0;
-  z-index: 301;
+  z-index: var(--z-cart-drawer);
   width: min(400px, 95vw);
   background: #fff;
   color: #111;

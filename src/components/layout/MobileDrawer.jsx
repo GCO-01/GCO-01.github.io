@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './MobileDrawer.module.css';
-import { NAV_LINKS } from '../../data/config';
+import { NAV_LINKS } from '../../data/site';
 
 export function MobileDrawer({ isOpen, onClose }) {
   useEffect(() => {

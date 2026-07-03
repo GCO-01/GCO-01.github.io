@@ -3,7 +3,7 @@
   inset: 0;
   left: auto;
   width: min(18rem, 80vw);
-  z-index: 500;
+  z-index: var(--z-mobile-drawer);
   background: #0d1018;
   border-left: 1px solid rgba(255, 255, 255, 0.10);
   display: flex;
@@ -34,7 +34,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  z-index: 499;
+  z-index: var(--z-mobile-drawer-backdrop);
   background: rgba(5, 7, 13, 0.6);
   opacity: 0;
   transition: opacity var(--transition-spring);

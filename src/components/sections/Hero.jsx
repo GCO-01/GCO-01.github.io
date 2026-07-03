@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import styles from './Hero.module.css';
 import { RATING, REVIEW_COUNT } from '../../data/config';
+import { HERO } from '../../data/hero';
+import { HERO_TRUST } from '../../data/site';
 
 export function Hero() {
   return (
@@ -10,8 +12,10 @@ export function Hero() {
           <figure className={styles.eggFrame}>
             <img
               className={styles.eggImage}
-              src="/assets/huevito-hero.webp"
-              alt="Huevo entero marrón sobre fondo claro"
+              src={HERO.image.src}
+              alt={HERO.image.alt}
+              width={HERO.image.width}
+              height={HERO.image.height}
               loading="eager"
               decoding="async"
             />
@@ -23,17 +27,19 @@ export function Hero() {
             <span className={styles.proofStars} aria-hidden="true">★★★★★</span>
             <span>{RATING} de {REVIEW_COUNT} reseñas</span>
             <span className={styles.proofDivider} aria-hidden="true" />
-            <span>Lima, Perú</span>
+            <span>{HERO.proofLocation}</span>
           </span>
-          <h1 id="hero-title" className={styles.title}>El huevo fue<br />primero</h1>
-          <p className={styles.subtitle}>Deja la leche para las gallinas.</p>
-          <Link className={styles.cta} to="#product-section">Pruébalo hoy →</Link>
+          <h1 id="hero-title" className={styles.title}>
+            {HERO.titleLines[0]}<br />{HERO.titleLines[1]}
+          </h1>
+          <p className={styles.subtitle}>{HERO.subtitle}</p>
+          <Link className={styles.cta} to="#product-section">{HERO.cta}</Link>
           <p className={styles.trust} aria-label="Garantías de compra">
-            Envío gratis a Lima
+            {HERO_TRUST[0]}
             <span className={styles.trustDot} aria-hidden="true">·</span>
-            Garantía 30 días
+            {HERO_TRUST[1]}
             <span className={styles.trustDot} aria-hidden="true">·</span>
-            Pago seguro
+            {HERO_TRUST[2]}
           </p>
         </div>
       </div>

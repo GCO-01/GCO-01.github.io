@@ -3,7 +3,7 @@
   position: fixed;
   right: 28px;
   bottom: 28px;
-  z-index: 291;
+  z-index: var(--z-fab);
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -329,7 +329,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  z-index: 289;
+  z-index: var(--z-fab-backdrop);
   background: rgba(5, 7, 13, 0.4);
   backdrop-filter: blur(2px);
 }

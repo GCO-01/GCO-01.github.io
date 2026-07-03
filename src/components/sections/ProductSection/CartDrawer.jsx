@@ -3,6 +3,7 @@ import styles from './CartDrawer.module.css';
 import { useCart } from '../../../hooks/useCart';
 import { FLAVORS } from '../../../data/flavors';
 import { formatMoney, PRICE } from '../../../data/config';
+import { SHIPPING_FULL } from '../../../data/site';
 import { Button } from '../../ui/Button';
 import { QtySelector } from './QtySelector';
 
@@ -94,7 +95,7 @@ export function CartDrawer() {
                 <span>Total</span>
                 <span className={styles.totalPrice}>{formatMoney(total)}</span>
               </div>
-              <p className={styles.shipping}>✓ Envío gratis a Lima Metropolitana</p>
+              <p className={styles.shipping}>✓ {SHIPPING_FULL}</p>
               <Button fullWidth size="lg">
                 Ir a pagar
               </Button>

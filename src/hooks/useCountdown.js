@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { TIMER_DURATION_S } from '../data/config';
+import { TIMER_DURATION_S } from '../data/promo';
 
 function msDiff(end) {
   const s = Math.max(0, Math.floor((end - Date.now()) / 1000));

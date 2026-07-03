@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styles from './Header.module.css';
 import { MobileDrawer } from './MobileDrawer';
 import { useCart } from '../../hooks/useCart';
-import { NAV_LINKS } from '../../data/config';
+import { BRAND, NAV_LINKS } from '../../data/site';
 
 const CartIcon = () => (
   <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -58,7 +58,7 @@ export function Header() {
         </div>
 
         <Link to="/" className={styles.brand} aria-label="Perfect Pal, inicio">
-          perfect pal
+          {BRAND}
         </Link>
 
         <div className={styles.actions} aria-label="Acciones rápidas">
