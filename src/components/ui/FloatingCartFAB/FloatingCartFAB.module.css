@@ -194,42 +194,30 @@
 }
 
 /* Qty stepper */
-.stepper {
-  display: flex;
-  align-items: center;
-  border: 1.5px solid #dcdce4;
+/* Overrides del QtySelector compartido para el popover (doble clase
+   para ganar en especificidad al CSS base del componente). */
+.fabStepper.fabStepper {
+  border-color: #dcdce4;
   border-radius: 17px;
-  overflow: hidden;
   height: 44px;
+  min-width: 0;
   align-self: flex-start;
 }
 
-.stepperBtn {
+.fabStepper.fabStepper button {
   width: 44px;
-  height: 44px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
   font-size: 18px;
-  color: #333;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: background 0.12s;
-  flex-shrink: 0;
 }
 
-.stepperBtn:hover { background: #f4f4f6; }
-.stepperBtn:disabled { opacity: 0.35; cursor: default; }
+.fabStepper.fabStepper button:hover { background: #f4f4f6; }
+.fabStepper.fabStepper button:disabled { opacity: 0.35; cursor: default; }
 
-.stepperVal {
+.fabStepper.fabStepper span {
+  flex: none;
   width: 30px;
-  text-align: center;
-  font-family: var(--font-poppins), sans-serif;
   font-size: 14px;
   font-weight: 600;
-  color: #111;
-  flex-shrink: 0;
 }
 
 /* Botón Agregar */

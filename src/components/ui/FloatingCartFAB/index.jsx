@@ -5,6 +5,7 @@ import { PRICE, OLD_PRICE, formatMoney } from '../../../data/config';
 import styles from './FloatingCartFAB.module.css';
 import { CartIcon, CloseIcon, ArrowRightIcon } from '../icons';
 import { CountBadge } from '../CountBadge';
+import { QtySelector } from '../QtySelector';
 
 const SNAP_THRESHOLD = 48;
 const SLIDE_W = 320;
@@ -144,24 +145,7 @@ export function FloatingCartFAB() {
                       </div>
 
                       {idx === activeIdx && (
-                        <div className={styles.stepper}>
-                          <button
-                            className={styles.stepperBtn}
-                            onClick={() => setQty(q => Math.max(1, q - 1))}
-                            disabled={qty <= 1}
-                            aria-label="Menos"
-                          >
-                            −
-                          </button>
-                          <span className={styles.stepperVal}>{qty}</span>
-                          <button
-                            className={styles.stepperBtn}
-                            onClick={() => setQty(q => q + 1)}
-                            aria-label="Más"
-                          >
-                            +
-                          </button>
-                        </div>
+                        <QtySelector value={qty} onChange={setQty} className={styles.fabStepper} />
                       )}
 
                       {idx === activeIdx && (

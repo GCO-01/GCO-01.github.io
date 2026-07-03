@@ -10,7 +10,7 @@ import { Button } from '../../ui/Button';
 import { StarRating } from '../../ui/StarRating';
 import { ProductGallery } from './ProductGallery';
 import { FlavorSelector } from './FlavorSelector';
-import { QtySelector } from './QtySelector';
+import { QtySelector } from '../../ui/QtySelector';
 import { StickyBar } from './StickyBar';
 import { CountdownClock } from './CountdownClock';
 import { FAQ } from './FAQ';

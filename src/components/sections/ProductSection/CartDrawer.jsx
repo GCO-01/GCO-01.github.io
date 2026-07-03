@@ -6,7 +6,7 @@ import { FLAVORS } from '../../../data/flavors';
 import { formatMoney, PRICE } from '../../../data/config';
 import { SHIPPING_FULL } from '../../../data/site';
 import { Button } from '../../ui/Button';
-import { QtySelector } from './QtySelector';
+import { QtySelector } from '../../ui/QtySelector';
 import { CloseIcon, TrashIcon } from '../../ui/icons';
 
 function CartItem({ item }) {

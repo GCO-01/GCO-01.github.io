@@ -1,8 +1,8 @@
-import styles from './ProductSection.module.css';
+import styles from './QtySelector.module.css';
 
-export function QtySelector({ value, onChange }) {
+export function QtySelector({ value, onChange, className = '' }) {
   return (
-    <div className={styles.qtyStepper}>
+    <div className={`${styles.qtyStepper} ${className}`}>
       <button
         onClick={() => onChange(Math.max(1, value - 1))}
         aria-label="Reducir cantidad"
