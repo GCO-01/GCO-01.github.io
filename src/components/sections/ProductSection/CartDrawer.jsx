@@ -7,21 +7,7 @@ import { formatMoney, PRICE } from '../../../data/config';
 import { SHIPPING_FULL } from '../../../data/site';
 import { Button } from '../../ui/Button';
 import { QtySelector } from './QtySelector';
-
-const CloseIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-    <path d="M18 6L6 18M6 6l12 12" />
-  </svg>
-);
-
-const TrashIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <polyline points="3 6 5 6 21 6" />
-    <path d="M19 6l-1 14H6L5 6" />
-    <path d="M10 11v6M14 11v6" />
-    <path d="M9 6V4h6v2" />
-  </svg>
-);
+import { CloseIcon, TrashIcon } from '../../ui/icons';
 
 function CartItem({ item }) {
   const { updateQty, removeItem } = useCart();

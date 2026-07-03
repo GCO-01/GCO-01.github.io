@@ -3,34 +3,10 @@ import { useCart } from '../../../hooks/useCart';
 import { FLAVORS } from '../../../data/flavors';
 import { PRICE, OLD_PRICE, formatMoney } from '../../../data/config';
 import styles from './FloatingCartFAB.module.css';
+import { CartIcon, CloseIcon, ArrowRightIcon } from '../icons';
 
 const SNAP_THRESHOLD = 48;
 const SLIDE_W = 320;
-
-const CartIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
-    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-  </svg>
-);
-
-const CloseSmIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-    <path d="M18 6L6 18M6 6l12 12" />
-  </svg>
-);
-
-const CloseLgIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
-    <path d="M18 6L6 18M6 6l12 12" />
-  </svg>
-);
-
-const ArrowIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-    <path d="M5 12h14M12 5l7 7-7 7" />
-  </svg>
-);
 
 export function FloatingCartFAB() {
   const { items, count, isOpen: drawerOpen, setIsOpen, addItem } = useCart();
@@ -127,7 +103,7 @@ export function FloatingCartFAB() {
             <div className={styles.popHeader}>
               <p className={styles.popTitle}>Compra rápida</p>
               <button className={styles.popClose} onClick={() => setPopOpen(false)} aria-label="Cerrar">
-                <CloseSmIcon />
+                <CloseIcon size={14} strokeWidth={2.5} />
               </button>
             </div>
 
@@ -212,7 +188,7 @@ export function FloatingCartFAB() {
 
             {/* Ver carrito */}
             <button className={styles.viewCartBtn} onClick={handleViewCart}>
-              Ver carrito {count > 0 && `(${count})`} <ArrowIcon />
+              Ver carrito {count > 0 && `(${count})`} <ArrowRightIcon />
             </button>
           </div>
         )}
@@ -223,7 +199,11 @@ export function FloatingCartFAB() {
           onClick={() => setPopOpen(p => !p)}
           aria-label={popOpen ? 'Cerrar compra rápida' : 'Abrir compra rápida'}
         >
-          {popOpen ? <CloseLgIcon /> : <CartIcon />}
+          {popOpen ? (
+            <CloseIcon size={20} strokeWidth={2.5} stroke="#fff" />
+          ) : (
+            <CartIcon size={24} strokeWidth={2} stroke="#fff" />
+          )}
           {count > 0 && !popOpen && (
             <span className={styles.badge}>{count}</span>
           )}
