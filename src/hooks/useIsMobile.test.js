@@ -11,7 +11,11 @@ function mockMatchMedia(matches) {
       const i = listeners.indexOf(fn);
       if (i >= 0) listeners.splice(i, 1);
     },
-    _fire: m => listeners.forEach(fn => fn({ matches: m })),
+    // Un MediaQueryList real actualiza .matches antes de disparar 'change'
+    _fire: m => {
+      mql.matches = m;
+      listeners.forEach(fn => fn({ matches: m }));
+    },
   };
   window.matchMedia = vi.fn(() => mql);
   return mql;

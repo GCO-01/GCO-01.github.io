@@ -10,9 +10,15 @@ function getOrCreateEnd() {
   try {
     const saved = JSON.parse(localStorage.getItem('pp_timer_end'));
     if (saved && saved > Date.now()) return saved;
-  } catch (_) {}
+  } catch {
+    /* localStorage no disponible */
+  }
   const end = Date.now() + TIMER_DURATION_S * 1000;
-  try { localStorage.setItem('pp_timer_end', JSON.stringify(end)); } catch (_) {}
+  try {
+    localStorage.setItem('pp_timer_end', JSON.stringify(end));
+  } catch {
+    /* localStorage no disponible */
+  }
   return end;
 }
 

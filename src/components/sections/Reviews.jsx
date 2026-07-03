@@ -10,7 +10,7 @@ function ReviewCard({ review }) {
   return (
     <article className={styles.card}>
       <StarRating rating={review.rating} size={14} filled="#db5242" empty="rgba(255,255,255,0.15)" />
-      <p className={styles.cardText}>"{review.text}"</p>
+      <p className={styles.cardText}>&quot;{review.text}&quot;</p>
       <div className={styles.cardFooter}>
         <div>
           <div className={styles.cardName}>{review.name}</div>

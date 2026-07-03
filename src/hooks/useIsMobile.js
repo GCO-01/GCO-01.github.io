@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo, useCallback, useSyncExternalStore } from 'react';
 
 export function useIsMobile(breakpoint = 768) {
   const mq = useMemo(
@@ -6,15 +6,14 @@ export function useIsMobile(breakpoint = 768) {
     [breakpoint]
   );
 
-  const [isMobile, setIsMobile] = useState(() => mq?.matches ?? false);
+  const subscribe = useCallback(
+    (onChange) => {
+      if (!mq) return () => {};
+      mq.addEventListener('change', onChange);
+      return () => mq.removeEventListener('change', onChange);
+    },
+    [mq]
+  );
 
-  useEffect(() => {
-    if (!mq) return;
-    setIsMobile(mq.matches);
-    const handler = e => setIsMobile(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, [mq]);
-
-  return isMobile;
+  return useSyncExternalStore(subscribe, () => mq?.matches ?? false, () => false);
 }
