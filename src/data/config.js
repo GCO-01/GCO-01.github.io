@@ -10,8 +10,6 @@ export function formatMoney(n) {
 }
 
 export const NAV_LINKS = [
-  { label: 'Tienda',       href: '#' },
-  { label: 'Proteína 101', href: '#' },
-  { label: 'Calculadora',  href: '/calculadora' },
-  { label: 'Contacto',     href: '#' },
+  { label: 'Tienda',      href: '/#product-section' },
+  { label: 'Calculadora', href: '/calculadora' },
 ];

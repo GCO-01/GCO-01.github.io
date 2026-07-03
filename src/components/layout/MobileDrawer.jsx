@@ -1,8 +1,15 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './MobileDrawer.module.css';
 import { NAV_LINKS } from '../../data/config';
 
 export function MobileDrawer({ isOpen, onClose }) {
+  useEffect(() => {
+    if (!isOpen) return;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
   return (
     <>
       <div
@@ -14,6 +21,7 @@ export function MobileDrawer({ isOpen, onClose }) {
         className={`${styles.drawer} ${isOpen ? styles.open : ''}`}
         aria-label="Menú de navegación"
         aria-hidden={!isOpen}
+        inert={!isOpen ? '' : undefined}
       >
         <div className={styles.nav}>
           {NAV_LINKS.map(({ label, href }) => (

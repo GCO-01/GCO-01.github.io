@@ -15,6 +15,8 @@
   gap: 1.5rem;
 }
 
+.navSlot { display: flex; align-items: center; }
+
 .nav { display: flex; align-items: center; gap: 28px; }
 
 .navLink {
@@ -59,16 +61,18 @@
 
 .cartBadge {
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
+  top: -4px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
   background: var(--color-accent-red);
+  border: 2px solid #0d1018;
   color: #fff;
   font-family: var(--font-poppins);
   font-weight: 700;
-  font-size: 9px;
+  font-size: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -88,7 +92,7 @@
 @media (max-width: 768px) {
   .header {
     height: var(--header-height-mobile);
-    padding: 0 8px;
+    padding: 0;
   }
   .nav { display: none; }
   .hamburger { display: flex; }
