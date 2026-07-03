@@ -1,14 +1,10 @@
-import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './MobileDrawer.module.css';
 import { NAV_LINKS } from '../../data/site';
+import { useScrollLock } from '../../hooks/useScrollLock';
 
 export function MobileDrawer({ isOpen, onClose }) {
-  useEffect(() => {
-    if (!isOpen) return;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = ''; };
-  }, [isOpen]);
+  useScrollLock(isOpen);
 
   return (
     <>

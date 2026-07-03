@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import styles from './CartDrawer.module.css';
 import { useCart } from '../../../hooks/useCart';
+import { useScrollLock } from '../../../hooks/useScrollLock';
 import { FLAVORS } from '../../../data/flavors';
 import { formatMoney, PRICE } from '../../../data/config';
 import { SHIPPING_FULL } from '../../../data/site';
@@ -50,12 +51,20 @@ function CartItem({ item }) {
 
 export function CartDrawer() {
   const { items, isOpen, setIsOpen, count, total } = useCart();
+  const closeBtnRef = useRef(null);
+
+  useScrollLock(isOpen);
 
   useEffect(() => {
     if (!isOpen) return;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = ''; };
-  }, [isOpen]);
+    // Foco al botón de cierre al abrir; Escape cierra.
+    closeBtnRef.current?.focus();
+    function onKeyDown(e) {
+      if (e.key === 'Escape') setIsOpen(false);
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, setIsOpen]);
 
   return (
     <>
@@ -68,10 +77,11 @@ export function CartDrawer() {
         className={`${styles.drawer} ${isOpen ? styles.drawerOpen : ''}`}
         aria-label="Carrito de compras"
         aria-hidden={!isOpen}
+        inert={!isOpen ? '' : undefined}
       >
         <div className={styles.header}>
           <h2 className={styles.title}>Tu carrito ({count})</h2>
-          <button className={styles.closeBtn} onClick={() => setIsOpen(false)} aria-label="Cerrar carrito">
+          <button ref={closeBtnRef} className={styles.closeBtn} onClick={() => setIsOpen(false)} aria-label="Cerrar carrito">
             <CloseIcon />
           </button>
         </div>
