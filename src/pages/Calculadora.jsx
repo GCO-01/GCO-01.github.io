@@ -5,6 +5,7 @@ import { CalcForm } from '../components/calculadora/CalcForm';
 import { CalcResult } from '../components/calculadora/CalcResult';
 import { CalcUnlocked } from '../components/calculadora/CalcUnlocked';
 import styles from '../components/calculadora/Calculadora.module.css';
+import { scrollToTop } from '../lib/scroll';
 
 const DEFAULT_STATE = {
   goal: '',
@@ -16,10 +17,6 @@ const DEFAULT_STATE = {
   currentIntake: 0,
 };
 
-function scrollTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
 export function Calculadora() {
   const [phase, setPhase] = useState('intro');
   const [step, setStep]   = useState(0);
@@ -29,12 +26,12 @@ export function Calculadora() {
   const result = phase !== 'intro' ? computeProtein(formData) : null;
   const plan   = result ? buildMealPlan({ grams: result.grams }) : null;
 
-  const goPhase = p => { setPhase(p); scrollTop(); };
+  const goPhase = p => { setPhase(p); scrollToTop(); };
 
   const handleNext = () => {
     if (step < 2) {
       setStep(s => s + 1);
-      scrollTop();
+      scrollToTop();
     } else {
       goPhase('result');
     }
@@ -43,7 +40,7 @@ export function Calculadora() {
   const handleBack = () => {
     if (step > 0) {
       setStep(s => s - 1);
-      scrollTop();
+      scrollToTop();
     } else {
       goPhase('intro');
     }

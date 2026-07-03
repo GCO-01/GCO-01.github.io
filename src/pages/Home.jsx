@@ -3,9 +3,10 @@ import { Benefits } from '../components/sections/Benefits';
 import { ProductPresentation } from '../components/sections/ProductPresentation';
 import { ProductSection } from '../components/sections/ProductSection';
 import { Reviews } from '../components/sections/Reviews';
+import { scrollToId } from '../lib/scroll';
 
 function scrollToProduct() {
-  document.getElementById('product-section')?.scrollIntoView({ behavior: 'smooth' });
+  scrollToId('product-section');
 }
 
 export function Home() {

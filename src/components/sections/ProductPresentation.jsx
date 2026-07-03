@@ -4,10 +4,11 @@ import { PRESENTATION } from '../../data/presentation';
 import { GUARANTEE_NOTE } from '../../data/site';
 import { URGENCY_NOTE_MOBILE, withStock } from '../../data/promo';
 import { Button } from '../ui/Button';
+import { scrollToId } from '../../lib/scroll';
 
 export function ProductPresentation() {
   function scrollToProduct() {
-    document.getElementById('product-section')?.scrollIntoView({ behavior: 'smooth' });
+    scrollToId('product-section');
   }
 
   const { images, badgeIngredients, badgeProtein, headline } = PRESENTATION;
