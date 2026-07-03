@@ -564,8 +564,9 @@
   left: 0;
   right: 0;
   z-index: var(--z-sticky-bar);
+  /* Sin backdrop-filter: con 97% de opacidad el blur era imperceptible
+     y costaba un pase de GPU por frame de scroll. */
   background: rgba(255,255,255,0.97);
-  backdrop-filter: blur(8px);
   border-bottom: 1px solid #e8e8ec;
   padding: 10px 48px;
   display: flex;
