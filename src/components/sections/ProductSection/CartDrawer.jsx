@@ -49,8 +49,7 @@ function CartItem({ item }) {
 }
 
 export function CartDrawer() {
-  const { items, isOpen, setIsOpen, count } = useCart();
-  const total = items.reduce((sum, i) => sum + PRICE * i.qty, 0);
+  const { items, isOpen, setIsOpen, count, total } = useCart();
 
   useEffect(() => {
     if (!isOpen) return;

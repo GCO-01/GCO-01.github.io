@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useMemo, useCallback } from 'react';
+import { PRICE } from '../data/config';
+import { FLAVORS } from '../data/flavors';
 
 // Contexts separados: los consumidores que solo AGREGAN (ProductSection, FAB)
 // usan useCartActions() y no se re-renderizan cuando cambia el contenido
@@ -30,7 +32,24 @@ export function CartProvider({ children }) {
 
   const state = useMemo(() => {
     const count = items.reduce((s, i) => s + i.qty, 0);
-    return { items, count, isOpen };
+    // Única fuente de verdad del total (céntimos); ningún componente
+    // debe recomputarlo por su cuenta.
+    const total = items.reduce((s, i) => s + PRICE * i.qty, 0);
+    // Resumen serializable del pedido: listo para WhatsApp o checkout.
+    const getCartSummary = () => ({
+      lines: items.map(i => {
+        const flavor = FLAVORS.find(f => f.id === i.id);
+        return {
+          id: i.id,
+          label: flavor?.label ?? i.id,
+          qty: i.qty,
+          lineTotalCents: PRICE * i.qty,
+        };
+      }),
+      count,
+      totalCents: total,
+    });
+    return { items, count, total, isOpen, getCartSummary };
   }, [items, isOpen]);
 
   const actions = useMemo(
