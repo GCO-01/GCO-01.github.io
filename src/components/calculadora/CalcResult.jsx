@@ -24,7 +24,7 @@ function useCountUp(target, duration = 800) {
 }
 
 function ProfileHero({ result }) {
-  const { grams, rda, currentIntake, gap, status } = result;
+  const { grams, currentIntake, gap, status } = result;
   const displayGrams = useCountUp(grams);
 
   if (currentIntake > 0) {

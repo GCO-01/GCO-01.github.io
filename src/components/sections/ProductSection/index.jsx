@@ -14,7 +14,6 @@ import { FlavorSelector } from './FlavorSelector';
 import { ProteinSelector } from './ProteinSelector';
 import { QtySelector } from './QtySelector';
 import { StickyBar } from './StickyBar';
-import { BottomBar } from './BottomBar';
 import { FAQ } from './FAQ';
 import { FLAVORS } from '../../../data/flavors';
 import { PRODUCT_BENEFITS } from '../../../data/benefits';
@@ -25,7 +24,7 @@ const ANNOUNCEMENT =
 
 export function ProductSection() {
   const isMobile = useIsMobile(900);
-  const { addItem, isOpen } = useCart();
+  const { addItem } = useCart();
   const [flavor, setFlavor] = useState('combinado');
   const [qty, setQty] = useState(1);
   const [protein, setProtein] = useState('30g');
@@ -127,15 +126,6 @@ export function ProductSection() {
             ))}
           </div>
 
-          {/* <div className={styles.proofStrip}>
-            {[['🥛', 'Sin lactosa'], ['🌿', 'Natural'], ['✓', 'Sin azúcar']].map(([icon, label]) => (
-              <div key={label} className={styles.proofItem}>
-                <span>{icon}</span>
-                <span>{label}</span>
-              </div>
-            ))}
-          </div> */}
-
           <div className={styles.huevito}>
             <img src="/assets/huevito.webp" alt="" loading="lazy" />
             <div>
@@ -147,15 +137,6 @@ export function ProductSection() {
           <FAQ />
         </div>
       </div>
-
-      {/* {isMobile && (
-        <BottomBar
-          flavor={flavor}
-          qty={qty}
-          visible={!ctaVisible && !isOpen}
-          onAdd={handleAdd}
-        />
-      )} */}
 
     </section>
   );

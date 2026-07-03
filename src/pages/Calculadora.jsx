@@ -10,7 +10,6 @@ const DEFAULT_STATE = {
   goal: '',
   weight: 75,
   target: 78,
-  diet: 'omnivore',
   training: '',
   activity: '',
   intakePattern: '',
@@ -28,7 +27,7 @@ export function Calculadora() {
   const [user, setUser]   = useState({ name: '', email: '' });
 
   const result = phase !== 'intro' ? computeProtein(formData) : null;
-  const plan   = result ? buildMealPlan({ grams: result.grams, diet: formData.diet }) : null;
+  const plan   = result ? buildMealPlan({ grams: result.grams }) : null;
 
   const goPhase = p => { setPhase(p); scrollTop(); };
 

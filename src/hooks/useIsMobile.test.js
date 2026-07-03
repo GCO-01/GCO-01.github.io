@@ -41,7 +41,7 @@ test('updates when MQL fires', () => {
 });
 
 test('re-attaches listener when breakpoint changes', () => {
-  const mql = mockMatchMedia(false);
+  mockMatchMedia(false);
   const { rerender } = renderHook(({ bp }) => useIsMobile(bp), {
     initialProps: { bp: 768 },
   });
