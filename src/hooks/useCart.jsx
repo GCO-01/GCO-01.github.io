@@ -1,6 +1,30 @@
-import { createContext, useContext, useState, useMemo, useCallback } from 'react';
+import { createContext, useContext, useState, useMemo, useCallback, useEffect } from 'react';
 import { PRICE } from '../data/config';
 import { FLAVORS } from '../data/flavors';
+
+// Clave versionada: si el modelo de línea de carrito cambia, subir a _v2
+// y los datos viejos se descartan solos en la validación.
+const STORAGE_KEY = 'pp_cart_v1';
+
+function isValidItem(i) {
+  return (
+    i !== null &&
+    typeof i === 'object' &&
+    FLAVORS.some(f => f.id === i.id) &&
+    Number.isInteger(i.qty) &&
+    i.qty >= 1
+  );
+}
+
+function loadCart() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (Array.isArray(saved)) return saved.filter(isValidItem);
+  } catch {
+    /* localStorage no disponible o datos corruptos */
+  }
+  return [];
+}
 
 // Contexts separados: los consumidores que solo AGREGAN (ProductSection, FAB)
 // usan useCartActions() y no se re-renderizan cuando cambia el contenido
@@ -9,8 +33,16 @@ const CartStateContext = createContext(null);
 const CartActionsContext = createContext(null);
 
 export function CartProvider({ children }) {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(loadCart);
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      /* localStorage no disponible */
+    }
+  }, [items]);
 
   const addItem = useCallback((flavorId, qty) => {
     setItems(prev => {
