@@ -26,7 +26,12 @@ export function useCountdown() {
   const [end] = useState(getOrCreateEnd);
   const [timeLeft, setTimeLeft] = useState(() => msDiff(end));
   useEffect(() => {
-    const id = setInterval(() => setTimeLeft(msDiff(end)), 1000);
+    const id = setInterval(() => {
+      const next = msDiff(end);
+      setTimeLeft(next);
+      // Al llegar a 0 no hay nada más que actualizar
+      if (next.h === 0 && next.m === 0 && next.s === 0) clearInterval(id);
+    }, 1000);
     return () => clearInterval(id);
   }, [end]);
   return timeLeft;

@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Button } from '../ui/Button';
 import { MealPlan } from './MealPlan';
-import { useCart } from '../../hooks/useCart';
+import { useCartActions } from '../../hooks/useCart';
 import { PRICE, OLD_PRICE, STOCK, formatMoney } from '../../data/config';
 import { DISCOUNT_CODE } from '../../data/promo';
 import styles from './Calculadora.module.css';
 
 export function CalcUnlocked({ user, result, plan }) {
-  const { addItem } = useCart();
+  const { addItem } = useCartActions();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {

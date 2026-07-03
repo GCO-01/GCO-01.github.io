@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import styles from './ProductSection.module.css';
 import { useIntersection } from '../../../hooks/useIntersection';
-import { useCountdown, padTime } from '../../../hooks/useCountdown';
-import { useCart } from '../../../hooks/useCart';
+import { useCartActions } from '../../../hooks/useCart';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import { AnnouncementBar } from '../../ui/AnnouncementBar';
 import { TrustStrip } from '../../ui/TrustStrip';
@@ -14,6 +13,7 @@ import { FlavorSelector } from './FlavorSelector';
 import { ProteinSelector } from './ProteinSelector';
 import { QtySelector } from './QtySelector';
 import { StickyBar } from './StickyBar';
+import { CountdownClock } from './CountdownClock';
 import { FAQ } from './FAQ';
 import { FLAVORS } from '../../../data/flavors';
 import { PRODUCT_BENEFITS } from '../../../data/benefits';
@@ -33,13 +33,12 @@ import { PRODUCT_COPY } from '../../../data/product';
 
 export function ProductSection() {
   const isMobile = useIsMobile(900);
-  const { addItem } = useCart();
+  const { addItem } = useCartActions();
   const [flavor, setFlavor] = useState('combinado');
   const [qty, setQty] = useState(1);
   const [protein, setProtein] = useState('30g');
   const [added, setAdded] = useState(false);
   const [ctaRef, ctaVisible] = useIntersection({ threshold: 0.5 });
-  const timeLeft = useCountdown();
 
   const cur = FLAVORS.find(f => f.id === flavor) ?? FLAVORS[0];
 
@@ -95,9 +94,7 @@ export function ProductSection() {
             <span>⚡ Solo quedan <strong>{STOCK} unidades</strong></span>
             <div className={styles.timer}>
               <span>Oferta termina en</span>
-              <div className={styles.clock}>
-                {padTime(timeLeft.h)}:{padTime(timeLeft.m)}:{padTime(timeLeft.s)}
-              </div>
+              <CountdownClock className={styles.clock} />
             </div>
           </div>
 
