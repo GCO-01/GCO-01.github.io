@@ -7,22 +7,21 @@
 }
 
 .inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 4rem;
-  row-gap: 1.5rem;
+  display: flex;
   align-items: center;
+  gap: 4rem;
   width: 100%;
   max-width: var(--container-max);
   margin-inline: auto;
 }
 
 .media {
-  grid-column: 2;
+  order: 2;
+  flex: 1 1 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  min-width: 0;
 }
 
 .eggFrame {
@@ -54,7 +53,8 @@
 }
 
 .content {
-  grid-column: 1;
+  order: 1;
+  flex: 1 1 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -172,9 +172,9 @@
 .trustDot { margin: 0 0.4rem; opacity: 0.6; }
 
 @media (max-width: 68.75rem) {
-  .inner { grid-template-columns: 1fr; text-align: center; row-gap: 2.5rem; }
-  .media, .content { grid-column: 1; }
-  .content { align-items: center; text-align: center; max-width: 40rem; margin-inline: auto; }
+  .inner { flex-direction: column; align-items: center; text-align: center; gap: 2.5rem; }
+  .media { order: 1; }
+  .content { order: 2; align-items: center; text-align: center; max-width: 40rem; margin-inline: auto; }
 }
 
 @media (max-width: 48rem) {

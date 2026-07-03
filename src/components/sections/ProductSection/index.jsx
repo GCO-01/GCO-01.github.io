@@ -148,14 +148,14 @@ export function ProductSection() {
         </div>
       </div>
 
-      {isMobile && (
+      {/* {isMobile && (
         <BottomBar
           flavor={flavor}
           qty={qty}
           visible={!ctaVisible && !isOpen}
           onAdd={handleAdd}
         />
-      )}
+      )} */}
 
     </section>
   );
