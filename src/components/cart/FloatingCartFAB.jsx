@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react';
-import { useCart } from '../../../hooks/useCart';
-import { FLAVORS } from '../../../data/flavors';
-import { PRICE, OLD_PRICE, formatMoney } from '../../../data/config';
+import { useCart } from '../../hooks/useCart';
+import { FLAVORS } from '../../data/flavors';
+import { PRICE, OLD_PRICE, formatMoney } from '../../data/config';
 import styles from './FloatingCartFAB.module.css';
-import { CartIcon, CloseIcon, ArrowRightIcon } from '../icons';
-import { CountBadge } from '../CountBadge';
-import { QtySelector } from '../QtySelector';
+import { CartIcon, CloseIcon, ArrowRightIcon } from '../ui/icons';
+import { CountBadge } from '../ui/CountBadge';
+import { QtySelector } from '../ui/QtySelector';
 
 const SNAP_THRESHOLD = 48;
 const SLIDE_W = 320;

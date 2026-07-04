@@ -1,7 +1,7 @@
 import { Hero } from '../components/sections/Hero';
 import { Benefits } from '../components/sections/Benefits';
 import { ProductPresentation } from '../components/sections/ProductPresentation';
-import { ProductSection } from '../components/sections/ProductSection';
+import { ProductSection } from '../components/sections/ProductSection/ProductSection';
 import { Reviews } from '../components/sections/Reviews';
 import { scrollToId } from '../lib/scroll';
 

@@ -1,13 +1,13 @@
 import { useEffect, useRef } from 'react';
 import styles from './CartDrawer.module.css';
-import { useCart } from '../../../hooks/useCart';
-import { useScrollLock } from '../../../hooks/useScrollLock';
-import { FLAVORS } from '../../../data/flavors';
-import { formatMoney, PRICE } from '../../../data/config';
-import { SHIPPING_FULL } from '../../../data/site';
-import { Button } from '../../ui/Button';
-import { QtySelector } from '../../ui/QtySelector';
-import { CloseIcon, TrashIcon } from '../../ui/icons';
+import { useCart } from '../../hooks/useCart';
+import { useScrollLock } from '../../hooks/useScrollLock';
+import { FLAVORS } from '../../data/flavors';
+import { formatMoney, PRICE } from '../../data/config';
+import { SHIPPING_FULL } from '../../data/site';
+import { Button } from '../ui/Button';
+import { QtySelector } from '../ui/QtySelector';
+import { CloseIcon, TrashIcon } from '../ui/icons';
 
 function CartItem({ item }) {
   const { updateQty, removeItem } = useCart();
