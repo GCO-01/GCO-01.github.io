@@ -119,7 +119,10 @@ function SwipeCard({ result }) {
   const { grams, rda, currentIntake } = result;
   const maxVal = Math.max(grams, currentIntake > 0 ? currentIntake : 0, rda);
   const userCoef = result.coef;
-  const cite = userCoef >= 1.6 ? CITATIONS.morton : userCoef >= 1.2 ? CITATIONS.patrick : CITATIONS.phillips;
+  let cite;
+  if (userCoef >= 1.6) cite = CITATIONS.morton;
+  else if (userCoef >= 1.2) cite = CITATIONS.patrick;
+  else cite = CITATIONS.phillips;
 
   const handleTouchStart = e => { startX.current = e.touches[0].clientX; };
   const handleTouchEnd = e => {

@@ -1,5 +1,12 @@
 import styles from './ProductSection.module.css';
 import { FLAVORS } from '../../../data/flavors';
+import { PRODUCT } from '../../../data/product';
+
+// Mismos datos para los chips desktop (.stats) y el footer mobile (.statsBar)
+const STATS = [
+  { num: `${PRODUCT.proteinG}G`, label: 'Proteína' },
+  { num: String(PRODUCT.kcal), label: 'Calorías' },
+];
 
 export function ProductGallery({ selectedFlavor, onFlavorSelect }) {
   const cur = FLAVORS.find(f => f.id === selectedFlavor) ?? FLAVORS[0];
@@ -16,24 +23,22 @@ export function ProductGallery({ selectedFlavor, onFlavorSelect }) {
           loading="eager"
         />
         <div className={styles.stats}>
-          <div className={styles.statItem}>
-            <span className={styles.statNum}>30G</span>
-            <span className={styles.statLabel}>Proteína</span>
-          </div>
-          <div className={`${styles.statItem} ${styles.statDark}`}>
-            <span className={styles.statNum}>189</span>
-            <span className={styles.statLabel}>Calorías</span>
-          </div>
+          {STATS.map((s, i) => (
+            <div key={s.label} className={`${styles.statItem} ${i === 1 ? styles.statDark : ''}`}>
+              <span className={styles.statNum}>{s.num}</span>
+              <span className={styles.statLabel}>{s.label}</span>
+            </div>
+          ))}
         </div>
 
         <div className={styles.statsBar}>
           <div className={styles.statsBarLeft}>
-            <span className={styles.statsBarNum}>30G</span>
-            <span className={styles.statsBarLabel}>Proteína</span>
+            <span className={styles.statsBarNum}>{STATS[0].num}</span>
+            <span className={styles.statsBarLabel}>{STATS[0].label}</span>
           </div>
           <div className={styles.statsBarRight}>
-            <span className={styles.statsBarNum}>189</span>
-            <span className={styles.statsBarLabel}>Calorías</span>
+            <span className={styles.statsBarNum}>{STATS[1].num}</span>
+            <span className={styles.statsBarLabel}>{STATS[1].label}</span>
           </div>
         </div>
       </div>

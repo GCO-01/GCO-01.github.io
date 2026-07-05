@@ -641,19 +641,14 @@
   }
 
   /* Divisores entre bloques del panel */
-  .urgency {
-    border-bottom: 1px solid #e8e8ec;
-    padding-bottom: 18px;
-    margin-bottom: 0;
-  }
-
-  .section {
-    border-bottom: 1px solid #e8e8ec;
-    padding-bottom: 18px;
-  }
-
+  .urgency,
+  .section,
   .ctaSection {
     border-bottom: 1px solid #e8e8ec;
     padding-bottom: 18px;
+  }
+
+  .urgency {
+    margin-bottom: 0;
   }
 }

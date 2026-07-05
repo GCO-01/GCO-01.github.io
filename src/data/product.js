@@ -11,6 +11,7 @@ export const PRODUCT = {
   name: 'Six Pack Perfect Pal',
   packSize: 6,
   proteinG: 30,
+  kcal: 189,
   priceCents: 229900,
   oldPriceCents: 417999,
   stock: 12,

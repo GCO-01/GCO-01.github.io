@@ -1,6 +1,7 @@
 import { Button } from '../ui/Button';
 import { GoalTile } from './GoalTile';
 import { INTAKE_PATTERNS } from '../../data/calculadora';
+import { padTime } from '../../hooks/useCountdown';
 import styles from './Calculadora.module.css';
 
 const TRAINING_OPTS = [
@@ -27,7 +28,7 @@ function PhaseBar({ step }) {
             i === step ? styles.phaseLabelActive : '',
             i < step  ? styles.phaseLabelDone  : '',
           ].join(' ')}>
-            {String(i + 1).padStart(2, '0')} · {name}
+            {padTime(i + 1)} · {name}
           </span>
           <div className={styles.phaseTrack}>
             <div className={[

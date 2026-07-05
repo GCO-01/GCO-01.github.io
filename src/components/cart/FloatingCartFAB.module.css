@@ -99,6 +99,9 @@
   user-select: none;
   -webkit-user-select: none;
   cursor: grab;
+  /* Con Pointer Events el navegador cancelaría el drag horizontal para
+     scrollear; pan-y permite scroll vertical y nos deja el gesto horizontal. */
+  touch-action: pan-y;
 }
 
 .carouselViewport:active {

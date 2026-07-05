@@ -6,10 +6,12 @@ import { StarRating } from '../ui/StarRating';
 import { Button } from '../ui/Button';
 import { useIsMobile } from '../../hooks/useIsMobile';
 
+const CTA_QUOTE = 'La proteína NO se negocia. El sabor y los ingredientes tampoco.';
+
 function ReviewCard({ review }) {
   return (
     <article className={styles.card}>
-      <StarRating rating={review.rating} size={14} filled="#db5242" empty="rgba(255,255,255,0.15)" />
+      <StarRating rating={review.rating} size={14} />
       <p className={styles.cardText}>&quot;{review.text}&quot;</p>
       <div className={styles.cardFooter}>
         <div>
@@ -22,6 +24,18 @@ function ReviewCard({ review }) {
   );
 }
 
+function ReviewAggregate({ starSize }) {
+  return (
+    <div className={styles.aggregate}>
+      <div className={styles.aggregateNum}>{RATING}</div>
+      <div>
+        <StarRating rating={5} size={starSize} />
+        <div className={styles.aggregateSub}>de {REVIEW_COUNT} reseñas</div>
+      </div>
+    </div>
+  );
+}
+
 function DesktopReviews({ onScrollToProduct }) {
   return (
     <section id="reviews" className={styles.section} aria-labelledby="reviews-title">
@@ -31,13 +45,7 @@ function DesktopReviews({ onScrollToProduct }) {
             <span className={styles.eyebrow}>Reseñas verificadas</span>
             <h2 id="reviews-title" className={styles.title}>Lo que dicen los clientes</h2>
           </div>
-          <div className={styles.aggregate}>
-            <div className={styles.aggregateNum}>{RATING}</div>
-            <div>
-              <StarRating rating={5} size={18} filled="#db5242" empty="rgba(255,255,255,0.15)" />
-              <div className={styles.aggregateSub}>de {REVIEW_COUNT} reseñas</div>
-            </div>
-          </div>
+          <ReviewAggregate starSize={18} />
         </div>
 
         <div className={styles.grid}>
@@ -45,9 +53,7 @@ function DesktopReviews({ onScrollToProduct }) {
         </div>
 
         <div className={styles.cta}>
-          <p className={styles.ctaQuote}>
-            La proteína NO se negocia. El sabor y los ingredientes tampoco.
-          </p>
+          <p className={styles.ctaQuote}>{CTA_QUOTE}</p>
           <Button onClick={onScrollToProduct} size="lg">
             Quiero mi 6-pack ahora
           </Button>
@@ -107,13 +113,7 @@ function MobileReviews({ onScrollToProduct }) {
     <section id="reviews" className={`${styles.section} ${styles.sectionMobile}`} aria-labelledby="reviews-title-mobile">
       <div className={styles.mobileHeader}>
         <h2 id="reviews-title-mobile" className={styles.title}>Lo que dicen<br />los clientes</h2>
-        <div className={styles.aggregate}>
-          <div className={styles.aggregateNum}>{RATING}</div>
-          <div>
-            <StarRating rating={5} size={12} filled="#db5242" empty="rgba(255,255,255,0.15)" />
-            <div className={styles.aggregateSub}>de {REVIEW_COUNT} reseñas</div>
-          </div>
-        </div>
+        <ReviewAggregate starSize={12} />
       </div>
 
       <div
@@ -145,7 +145,7 @@ function MobileReviews({ onScrollToProduct }) {
       </div>
 
       <p className={styles.ctaQuote} style={{ textAlign: 'center', marginTop: 28 }}>
-        La proteína NO se negocia. El sabor y los ingredientes tampoco.
+        {CTA_QUOTE}
       </p>
       <Button fullWidth onClick={onScrollToProduct}>
         Quiero mi 6-pack ahora

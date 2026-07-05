@@ -32,38 +32,20 @@ export function FloatingCartFAB() {
       `translateX(calc(${-activeIdx * SLIDE_W}px + ${dragOffset.current}px))`;
   }
 
-  // --- Drag handlers (mouse) ---
-  function handleMouseDown(e) {
+  // --- Drag handlers (Pointer Events unifica mouse y touch) ---
+  function handlePointerDown(e) {
     isDragging.current = true;
     startX.current = e.clientX;
     dragOffset.current = 0;
   }
 
-  function handleMouseMove(e) {
+  function handlePointerMove(e) {
     if (!isDragging.current) return;
     dragOffset.current = e.clientX - startX.current;
     applyTrackTransform();
   }
 
-  function handleMouseUp() {
-    if (!isDragging.current) return;
-    commitDrag();
-  }
-
-  // --- Drag handlers (touch) ---
-  function handleTouchStart(e) {
-    isDragging.current = true;
-    startX.current = e.touches[0].clientX;
-    dragOffset.current = 0;
-  }
-
-  function handleTouchMove(e) {
-    if (!isDragging.current) return;
-    dragOffset.current = e.touches[0].clientX - startX.current;
-    applyTrackTransform();
-  }
-
-  function handleTouchEnd() {
+  function handlePointerUp() {
     if (!isDragging.current) return;
     commitDrag();
   }
@@ -112,13 +94,11 @@ export function FloatingCartFAB() {
             {/* Carrusel */}
             <div
               className={styles.carouselViewport}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerLeave={handlePointerUp}
+              onPointerCancel={handlePointerUp}
             >
               <div className={styles.carouselTrack} ref={trackRef} style={{ transform: `translateX(${-activeIdx * SLIDE_W}px)` }}>
                 {FLAVORS.map((f, idx) => {
