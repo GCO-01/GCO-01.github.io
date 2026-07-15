@@ -1,0 +1,179 @@
+import { useState, useRef } from 'react';
+import { useCart } from '../../hooks/useCart';
+import { FLAVORS } from '../../data/flavors';
+import { PRICE, OLD_PRICE, formatMoney } from '../../data/config';
+import styles from './FloatingCartFAB.module.css';
+import { CartIcon, CloseIcon, ArrowRightIcon } from '../ui/icons';
+import { CountBadge } from '../ui/CountBadge';
+import { QtySelector } from '../ui/QtySelector';
+
+const SNAP_THRESHOLD = 48;
+const SLIDE_W = 320;
+
+export function FloatingCartFAB() {
+  const { items, count, isOpen: drawerOpen, setIsOpen, addItem } = useCart();
+  const [popOpen, setPopOpen] = useState(false);
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [qty, setQty] = useState(1);
+  const dragOffset = useRef(0);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const trackRef = useRef(null);
+
+  // Ocultar FAB cuando el CartDrawer está abierto
+  if (drawerOpen) return null;
+
+  function applyTrackTransform() {
+    if (!trackRef.current) return;
+    trackRef.current.style.transition = isDragging.current
+      ? 'none'
+      : 'transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    trackRef.current.style.transform =
+      `translateX(calc(${-activeIdx * SLIDE_W}px + ${dragOffset.current}px))`;
+  }
+
+  // --- Drag handlers (Pointer Events unifica mouse y touch) ---
+  function handlePointerDown(e) {
+    isDragging.current = true;
+    startX.current = e.clientX;
+    dragOffset.current = 0;
+  }
+
+  function handlePointerMove(e) {
+    if (!isDragging.current) return;
+    dragOffset.current = e.clientX - startX.current;
+    applyTrackTransform();
+  }
+
+  function handlePointerUp() {
+    if (!isDragging.current) return;
+    commitDrag();
+  }
+
+  function commitDrag() {
+    isDragging.current = false;
+    if (dragOffset.current < -SNAP_THRESHOLD && activeIdx < FLAVORS.length - 1) {
+      setActiveIdx(i => i + 1);
+    } else if (dragOffset.current > SNAP_THRESHOLD && activeIdx > 0) {
+      setActiveIdx(i => i - 1);
+    }
+    dragOffset.current = 0;
+    applyTrackTransform();
+    setQty(1);
+  }
+
+  function handleAdd() {
+    addItem(FLAVORS[activeIdx].id, qty);
+    setPopOpen(false);
+    setQty(1);
+    // addItem abre el CartDrawer internamente (useCart.jsx línea 15)
+  }
+
+  function handleViewCart() {
+    setPopOpen(false);
+    setIsOpen(true);
+  }
+
+  return (
+    <>
+      {popOpen && (
+        <div className={styles.backdrop} onClick={() => setPopOpen(false)} />
+      )}
+
+      <div className={styles.wrap}>
+        {popOpen && (
+          <div className={styles.popover}>
+            {/* Header */}
+            <div className={styles.popHeader}>
+              <p className={styles.popTitle}>Compra rápida</p>
+              <button className={styles.popClose} onClick={() => setPopOpen(false)} aria-label="Cerrar">
+                <CloseIcon size={14} strokeWidth={2.5} />
+              </button>
+            </div>
+
+            {/* Carrusel */}
+            <div
+              className={styles.carouselViewport}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerLeave={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+            >
+              <div className={styles.carouselTrack} ref={trackRef} style={{ transform: `translateX(${-activeIdx * SLIDE_W}px)` }}>
+                {FLAVORS.map((f, idx) => {
+                  const fInCart = items.find(i => i.id === f.id);
+                  return (
+                    <div key={f.id} className={styles.slide}>
+                      <div className={styles.slideTop}>
+                        <div className={styles.slideImgWrap}>
+                          <img src={f.img} alt={f.label} className={styles.slideImg} draggable={false} />
+                          {fInCart && (
+                            <CountBadge count={fInCart.qty} className={styles.slideCartBadge} />
+                          )}
+                        </div>
+                        <div className={styles.slideInfo}>
+                          <p className={styles.slideName}>{f.label}</p>
+                          <div className={styles.slidePriceRow}>
+                            <span className={styles.slideOldPrice}>{formatMoney(OLD_PRICE)}</span>
+                            <span className={styles.slidePrice}>{formatMoney(PRICE)}</span>
+                          </div>
+                          <span className={`${styles.slideCartStatus}${fInCart ? ' ' + styles.inCart : ''}`}>
+                            {fInCart ? `${fInCart.qty} en tu carrito` : 'Aún no agregado'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {idx === activeIdx && (
+                        <QtySelector value={qty} onChange={setQty} className={styles.fabStepper} />
+                      )}
+
+                      {idx === activeIdx && (
+                        <button className={styles.addBtn} onClick={handleAdd}>
+                          Agregar — {formatMoney(PRICE * qty)}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Dots indicadores */}
+            <div className={styles.dots}>
+              {FLAVORS.map((f, idx) => (
+                <button
+                  key={f.id}
+                  className={`${styles.dot}${idx === activeIdx ? ' ' + styles.dotActive : ''}`}
+                  onClick={() => { setActiveIdx(idx); setQty(1); }}
+                  aria-label={`Sabor ${f.label}`}
+                />
+              ))}
+            </div>
+
+            {/* Ver carrito */}
+            <button className={styles.viewCartBtn} onClick={handleViewCart}>
+              Ver carrito {count > 0 && `(${count})`} <ArrowRightIcon />
+            </button>
+          </div>
+        )}
+
+        {/* Botón FAB */}
+        <button
+          className={`${styles.fab}${popOpen ? ' ' + styles.fabOpen : ''}`}
+          onClick={() => setPopOpen(p => !p)}
+          aria-label={popOpen ? 'Cerrar compra rápida' : 'Abrir compra rápida'}
+        >
+          {popOpen ? (
+            <CloseIcon size={20} strokeWidth={2.5} stroke="#fff" />
+          ) : (
+            <CartIcon size={24} strokeWidth={2} stroke="#fff" />
+          )}
+          {count > 0 && !popOpen && (
+            <CountBadge count={count} />
+          )}
+        </button>
+      </div>
+    </>
+  );
+}

@@ -1,0 +1,20 @@
+# Orquestación local: frontend estático (nginx) + API.
+# Ejecutar desde la raíz del repo:
+#   docker compose -f backend/deploy/docker-compose.yml up --build
+services:
+  frontend:
+    build:
+      context: ../..
+      dockerfile: backend/deploy/Dockerfile.frontend
+    ports:
+      - "8080:80"
+
+  # Descomentar cuando la API tenga lógica implementada.
+  # api:
+  #   build:
+  #     context: ..
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8000:8000"
+  #   env_file:
+  #     - ../.env

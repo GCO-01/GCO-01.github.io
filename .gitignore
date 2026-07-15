@@ -1,3 +1,16 @@
-node_modules
-dist
+# Dependencias
+**/node_modules
+
+# Builds
+frontend/dist
+
+# Backend (Python)
+backend/.venv
+**/__pycache__
+**/*.pyc
+
+# Tooling local de agentes
 .superpowers
+
+# OS
+**/.DS_Store

@@ -1,0 +1,34 @@
+.bar {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  width: 100%;
+  padding: 9px 0;
+  text-align: center;
+  font-family: var(--font-opensans);
+  font-weight: 700;
+  font-size: 11px;
+  color: #fff;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* El degradado se anima con transform (compositor) en vez de
+   background-position (repintado por frame). El gradiente empieza y
+   termina en el mismo color, así el loop no tiene costura. */
+.bar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 400%;
+  z-index: -1;
+  background: var(--gradient-announcement);
+  background-size: 50% 100%;
+  animation: barSlide 8s linear infinite;
+}
+
+@media (max-width: 768px) {
+  .bar { font-size: 10px; }
+}

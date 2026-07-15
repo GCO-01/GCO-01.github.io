@@ -1,0 +1,8 @@
+**/node_modules
+frontend/dist
+.git
+backend/.venv
+**/__pycache__
+**/*.pyc
+**/.DS_Store
+docs
