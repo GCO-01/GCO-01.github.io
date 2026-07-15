@@ -1,0 +1,20 @@
+### Stage 1: Build — compila la SPA con Vite
+# Contexto de build = raíz del repo (vaggo-web/). Ejecutar:
+#   docker build -f backend/deploy/Dockerfile.frontend .
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+COPY frontend/ .
+RUN npm run build
+
+### Stage 2: Serve — nginx sirve el dist/ generado
+FROM nginx:alpine
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Config con SPA fallback + headers de seguridad (versionada en backend/deploy/nginx.conf)
+COPY backend/deploy/nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
