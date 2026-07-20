@@ -6,11 +6,13 @@ import { CalcResult } from '../components/calculadora/CalcResult';
 import { CalcUnlocked } from '../components/calculadora/CalcUnlocked';
 import styles from '../components/calculadora/Calculadora.module.css';
 import { scrollToTop } from '../lib/scroll';
+import { captureLead } from '../lib/leads';
 
 const DEFAULT_STATE = {
   goal: '',
   weight: 75,
   target: 78,
+  age: 'under65',
   training: '',
   activity: '',
   intakePattern: '',
@@ -48,6 +50,20 @@ export function Calculadora() {
 
   const handleUnlock = ({ name, email }) => {
     setUser({ name, email });
+    // T1.8 — captura no bloqueante; no esperamos respuesta para avanzar de fase.
+    if (result) {
+      captureLead({
+        name,
+        email,
+        grams: result.grams,
+        gap: result.gap,
+        goal: formData.goal,
+        age: formData.age,
+        training: formData.training,
+        activity: formData.activity,
+        client_ts: new Date().toISOString(),
+      });
+    }
     goPhase('unlocked');
   };
 
@@ -66,7 +82,7 @@ export function Calculadora() {
         />
       )}
       {phase === 'result' && result && (
-        <CalcResult result={result} onUnlock={handleUnlock} />
+        <CalcResult result={result} formData={formData} onUnlock={handleUnlock} />
       )}
       {phase === 'unlocked' && result && plan && (
         <CalcUnlocked user={user} result={result} plan={plan} />

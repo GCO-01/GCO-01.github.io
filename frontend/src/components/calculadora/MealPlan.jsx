@@ -16,12 +16,13 @@ export function MealPlan({ meals }) {
                 <span className={`${styles.mealItemLabel} ${item.isShake ? styles.mealItemShake : ''}`}>
                   {item.emoji} {item.label}
                 </span>
-                <span className={styles.mealItemMacros}>{item.grams}g · {item.kcal} kcal</span>
+                <span className={styles.mealItemMacros}>{item.grams}g · ~{item.kcal} kcal</span>
               </div>
             ))}
           </div>
         </div>
       ))}
+      <p className={styles.mealPlanNote}>Calorías aproximadas, varían según preparación.</p>
     </div>
   );
 }

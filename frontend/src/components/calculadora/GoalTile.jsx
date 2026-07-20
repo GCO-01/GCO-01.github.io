@@ -42,10 +42,11 @@ const SVG_PATHS = {
   ),
 };
 
+// Multiplicadores alineados con BASE_COEF (T1.3): recomp/lose = 1.3 (Wycherley 2012).
 const TILE_META = {
   muscle:   { title: 'Ganar músculo',   desc: 'Máx. síntesis proteica', multiplier: '×1.6' },
-  recomp:   { title: 'Recomposición',   desc: 'Músculo ↑ · Grasa ↓',   multiplier: '×1.6' },
-  lose:     { title: 'Perder peso',     desc: 'Saciedad + retención',   multiplier: '×1.6' },
+  recomp:   { title: 'Recomposición',   desc: 'Músculo ↑ · Grasa ↓',   multiplier: '×1.3' },
+  lose:     { title: 'Perder peso',     desc: 'Saciedad + retención',   multiplier: '×1.3' },
   maintain: { title: 'Mantenerme',      desc: 'Optimizar lo actual',    multiplier: '×1.4' },
 };
 

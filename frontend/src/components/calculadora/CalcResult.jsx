@@ -1,242 +1,332 @@
-import { useState, useRef, useEffect } from 'react';
-import { Button } from '../ui/Button';
-import { RANGE_ROWS, CITATIONS } from '../../data/calculadora';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { selectCitation } from '../../data/calculadora';
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
 import styles from './Calculadora.module.css';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const RADIUS = 58;
-const CIRC = 2 * Math.PI * RADIUS;
 
-function useCountUp(target, duration = 800) {
-  const [value, setValue] = useState(0);
+// ── count-up ease-out cúbico (M2). Con reduced-motion salta al final ──
+function useCountUp(target, { duration = 900, reduce = false } = {}) {
+  const [value, setValue] = useState(reduce ? target : 0);
   useEffect(() => {
+    if (reduce) return undefined;
+    let raf = 0;
     let start = null;
     const step = ts => {
-      if (!start) start = ts;
-      const progress = Math.min((ts - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-      setValue(Math.round(eased * target));
-      if (progress < 1) requestAnimationFrame(step);
+      if (start === null) start = ts;
+      const p = Math.min((ts - start) / duration, 1);
+      setValue(Math.round((1 - Math.pow(1 - p, 3)) * target));
+      if (p < 1) raf = requestAnimationFrame(step);
     };
-    requestAnimationFrame(step);
-  }, [target, duration]);
-  return value;
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration, reduce]);
+  return reduce ? target : value;
 }
 
-function ProfileHero({ result }) {
-  const { grams, currentIntake, gap, status } = result;
-  const displayGrams = useCountUp(grams);
+// ── Número hero: SVG que escala al ancho por viewBox del bbox real ──
+function DoseHero({ grams, reduce }) {
+  const svgRef = useRef(null);
+  const textRef = useRef(null);
+  const numRef = useRef(null);
+  const display = useCountUp(grams, { reduce });
 
-  if (currentIntake > 0) {
-    const pct = Math.min(100, Math.round((currentIntake / grams) * 100));
-    const targetOffset = CIRC - (pct / 100) * CIRC;
-    const eggs = Math.round(gap / 6);
+  // Mide con el valor final (el más ancho → a prueba de 2/3 dígitos) y fija el
+  // viewBox al bbox real, con recorte superior intencional del 10%.
+  useLayoutEffect(() => {
+    const svg = svgRef.current;
+    const textEl = textRef.current;
+    const numEl = numRef.current;
+    if (!svg || !textEl || !numEl) return undefined;
 
-    return (
-      <div className={styles.profileHero}>
-        <p className={styles.missionTag}>TU DOSIS DIARIA</p>
+    const fit = () => {
+      const prev = numEl.textContent;
+      numEl.textContent = String(grams);
+      let bb;
+      try {
+        bb = textEl.getBBox();
+      } catch {
+        numEl.textContent = prev;
+        return;
+      }
+      numEl.textContent = prev;
+      if (!bb.width || !bb.height) return;
+      const clip = 0.1;
+      const padX = bb.width * 0.01;
+      svg.setAttribute(
+        'viewBox',
+        `${bb.x - padX} ${bb.y + bb.height * clip} ${bb.width + padX * 2} ${bb.height * (1 - clip)}`
+      );
+    };
 
-        <div className={styles.heroLayout}>
-          <div className={styles.donut} style={{ width: 140, height: 140 }}>
-            <svg width="140" height="140" viewBox="0 0 140 140">
-              <circle cx="70" cy="70" r={RADIUS} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="12" />
-              <circle
-                cx="70" cy="70" r={RADIUS} fill="none"
-                stroke="url(#dGrad)" strokeWidth="12"
-                strokeDasharray={CIRC}
-                strokeDashoffset={targetOffset}
-                strokeLinecap="round"
-                transform="rotate(-90 70 70)"
-                style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(0.22,1,0.36,1)' }}
-              />
-              <defs>
-                <linearGradient id="dGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#e3796c" />
-                  <stop offset="100%" stopColor="#302f9b" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div className={styles.donutLabel}>
-              <span className={styles.donutPct}>{pct}%</span>
-              <span className={styles.donutSub}>cubierto</span>
-            </div>
-          </div>
+    fit();
+    window.addEventListener('resize', fit);
+    // Refit tras cargar fuentes (por si el branding define otra display luego).
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit).catch(() => {});
+    return () => window.removeEventListener('resize', fit);
+  }, [grams]);
 
-          <div className={styles.heroNumbers}>
-            <p className={styles.heroLabel}>Necesitas</p>
-            <p className={styles.heroNumber}>
-              {displayGrams}<span className={styles.heroUnit}> g</span>
-            </p>
-            <p className={styles.heroSecondary}>Hoy comes: {currentIntake} g</p>
-          </div>
+  return (
+    <div className={styles.calcHeroClip}>
+      <svg
+        ref={svgRef}
+        className={styles.calcDoseSvg}
+        role="img"
+        aria-label={`Tu dosis diaria: ${grams} gramos por día`}
+        viewBox="0 0 300 120"
+        preserveAspectRatio="xMinYMax meet"
+      >
+        <text ref={textRef} x="0" y="100">
+          <tspan ref={numRef}>{display}</tspan>
+          <tspan className={styles.calcUnit} dx="4"> g</tspan>
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+// ── Segmented control liquid glass + línea técnica comparativa ──────
+function CompareSegment({ result, formData, reduce }) {
+  const [tab, setTab] = useState(0);
+  const axisRef = useRef(null);
+
+  // Datos DERIVADOS del result real (nunca hardcodeados).
+  const you = result.grams;
+  const promedioPeru = Math.round(formData.weight * 1.17);          // ingesta típica peruana (ELANS)
+  const optMin = Math.round(result.baseWeight * 1.2);
+  const optMax = Math.round(result.baseWeight * 1.6);
+  const atleta = Math.round(result.baseWeight * 2.2);               // techo Morton
+
+  // Escala fija: 0 → valor Atleta (el más alto) → no cambia entre pestañas.
+  const MIN = 0;
+  const MAX = Math.max(atleta, you, promedioPeru, optMax, 1);
+  const pos = g => Math.max(2, Math.min(98, ((g - MIN) / (MAX - MIN)) * 100));
+
+  const TABS = [
+    {
+      key: 'prom',
+      label: 'Promedio Perú',
+      value: promedioPeru,
+      short: 'Promedio',
+      band: null,
+      caption: (
+        <><b>Menos del 35% de peruanos</b> llega a un número como el tuyo (ELANS 2023).</>
+      ),
+    },
+    {
+      key: 'opt',
+      label: 'Rango óptimo',
+      value: null,
+      short: 'Óptimo',
+      band: [optMin, optMax],
+      caption: (
+        <>Estás dentro del <b>rango óptimo de salud</b> (1.2–1.6 g/kg).</>
+      ),
+    },
+    {
+      key: 'atl',
+      label: 'Atleta',
+      value: atleta,
+      short: 'Atleta',
+      band: null,
+      caption: (
+        <>El <b>techo de rendimiento</b> (2.2 g/kg, Morton) — referencia, no tu meta.</>
+      ),
+    },
+  ];
+
+  const active = TABS[tab];
+
+  // Eje dibujado con trazo al montar (M1).
+  useEffect(() => {
+    const axis = axisRef.current;
+    if (!axis) return;
+    if (reduce) { axis.style.transform = 'scaleX(1)'; return; }
+    axis.style.transition = 'none';
+    axis.style.transform = 'scaleX(0)';
+    const t = setTimeout(() => {
+      axis.style.transition = 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
+      axis.style.transform = 'scaleX(1)';
+    }, 260);
+    return () => clearTimeout(t);
+  }, [reduce]);
+
+  return (
+    <>
+      <div className={styles.calcSeg} role="tablist" aria-label="Comparar tu dosis">
+        <span
+          className={styles.calcSegThumb}
+          aria-hidden="true"
+          style={{ transform: `translateX(${tab * 100}%)` }}
+        />
+        {TABS.map((t, i) => (
+          <button
+            key={t.key}
+            type="button"
+            role="tab"
+            aria-selected={tab === i}
+            onClick={() => setTab(i)}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <div className={styles.calcSpecline}>
+        <div ref={axisRef} className={styles.calcAxis} />
+        <div className={styles.calcScaleEnd} style={{ left: 0 }}>0</div>
+        <div className={styles.calcScaleEnd} style={{ right: 0 }}>{MAX} g</div>
+
+        <div
+          className={styles.calcBand}
+          style={
+            active.band
+              ? { opacity: 1, left: `${pos(active.band[0])}%`, width: `${pos(active.band[1]) - pos(active.band[0])}%` }
+              : { opacity: 0 }
+          }
+        />
+
+        {/* Marcador "Tú" — valor arriba del eje */}
+        <div className={`${styles.calcMk} ${styles.calcMkYou}`} style={{ left: `${pos(you)}%` }}>
+          <span className={styles.calcV}>{you}</span>
+          <span className={styles.calcDot} />
+          <span className={styles.calcKk}>Tú</span>
         </div>
 
-        {gap > 0 && (
-          <div className={styles.gapStats}>
-            <div className={styles.gapStat}>
-              <span className={styles.gapStatVal}>{gap} g</span>
-              <span className={styles.gapStatLabel}>DÉFICIT ACTUAL</span>
-            </div>
-            <div className={styles.gapStat}>
-              <span className={styles.gapStatVal}>{100 - pct}%</span>
-              <span className={styles.gapStatLabel}>BRECHA</span>
-            </div>
-            {eggs > 0 && (
-              <div className={styles.gapStat}>
-                <span className={styles.gapStatVal}>≈ {eggs}</span>
-                <span className={styles.gapStatLabel}>EQUIVALENCIA</span>
-              </div>
-            )}
-          </div>
-        )}
-
-        {status === 'above' && (
-          <p className={styles.statusBadge}>
-            ✓ Objetivo cubierto — optimiza timing y calidad
-          </p>
-        )}
+        {/* Marcador comparativo — valor abajo del eje (nunca colisionan) */}
+        <div
+          className={`${styles.calcMk} ${styles.calcMkCmp}`}
+          style={{ left: `${pos(active.value ?? 0)}%`, opacity: active.value == null ? 0 : 1 }}
+        >
+          <span className={styles.calcV}>{active.value ?? ''}</span>
+          <span className={styles.calcDot} />
+          <span className={styles.calcKk}>{active.short}</span>
+        </div>
       </div>
-    );
-  }
 
-  return (
-    <div className={styles.profileHero}>
-      <p className={styles.missionTag}>TU DOSIS DIARIA</p>
-      <p className={styles.heroNumber}>
-        {displayGrams}<span className={styles.heroUnit}> g</span>
-      </p>
-      <p className={styles.heroSecondary}>
-        {result.coef.toFixed(1)} g/kg · {result.baseWeight} kg base
-      </p>
-    </div>
+      <p className={styles.calcCaption}>{active.caption}</p>
+    </>
   );
 }
 
-function SwipeCard({ result }) {
-  const [tab, setTab] = useState(0);
-  const startX = useRef(null);
+const VALUE_STACK = [
+  { no: '01', title: 'Plan de comidas', sub: grams => `Desayuno, almuerzo y cena para tus ${grams} g.` },
+  { no: '02', title: 'Código 50% OFF', sub: () => 'En tu primer shake, al instante.' },
+  { no: '03', title: 'Prompt de seguimiento IA', sub: () => 'Copia y pega para tu rutina diaria.' },
+];
 
-  const { grams, rda, currentIntake } = result;
-  const maxVal = Math.max(grams, currentIntake > 0 ? currentIntake : 0, rda);
-  const userCoef = result.coef;
-  let cite;
-  if (userCoef >= 1.6) cite = CITATIONS.morton;
-  else if (userCoef >= 1.2) cite = CITATIONS.patrick;
-  else cite = CITATIONS.phillips;
+export function CalcResult({ result, formData, onUnlock }) {
+  const reduce = usePrefersReducedMotion();
+  const sheetRef = useRef(null);
+  const [inRows, setInRows] = useState(() => (reduce ? [true, true, true] : [false, false, false]));
 
-  const handleTouchStart = e => { startX.current = e.touches[0].clientX; };
-  const handleTouchEnd = e => {
-    if (startX.current === null) return;
-    const delta = e.changedTouches[0].clientX - startX.current;
-    if (Math.abs(delta) > 50) setTab(delta < 0 ? 1 : 0);
-    startX.current = null;
-  };
-
-  return (
-    <div className={styles.swipeCard} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-      <div className={styles.swipeTabs}>
-        <button className={`${styles.swipeTab} ${tab === 0 ? styles.swipeTabActive : ''}`} onClick={() => setTab(0)}>
-          ANÁLISIS
-        </button>
-        <button className={`${styles.swipeTab} ${tab === 1 ? styles.swipeTabActive : ''}`} onClick={() => setTab(1)}>
-          CIENCIA
-        </button>
-      </div>
-
-      <div className={styles.swipeBody}>
-        {tab === 0 && (
-          <div className={styles.tanksRow}>
-            {currentIntake > 0 && (
-              <div className={styles.tankWrap}>
-                <div className={styles.tankVal}>{currentIntake} g</div>
-                <div className={styles.tankBar} style={{
-                  height: `${Math.round((currentIntake / maxVal) * 108)}px`,
-                  background: 'rgba(255,255,255,0.1)',
-                }} />
-                <div className={styles.tankLbl}>Tu ingesta</div>
-              </div>
-            )}
-            <div className={styles.tankWrap}>
-              <div className={styles.tankVal}>{rda} g</div>
-              <div className={styles.tankBar} style={{
-                height: `${Math.round((rda / maxVal) * 108)}px`,
-                background: '#302f9b',
-              }} />
-              <div className={styles.tankLbl}>RDA</div>
-            </div>
-            <div className={styles.tankWrap}>
-              <div className={styles.tankVal}>{grams} g</div>
-              <div className={styles.tankBar} style={{
-                height: `${Math.round((grams / maxVal) * 108)}px`,
-                background: 'linear-gradient(to top, #302f9b, #db5242)',
-              }} />
-              <div className={styles.tankLbl}>Tu meta</div>
-            </div>
-          </div>
-        )}
-
-        {tab === 1 && (
-          <div className={styles.rangeTable}>
-            {RANGE_ROWS.map(r => {
-              const isUser = userCoef >= r.min && userCoef <= r.max;
-              return (
-                <div key={r.range} className={`${styles.rangeRow} ${isUser ? styles.rangeHighlight : ''}`}>
-                  <span className={styles.rangeLabel}>{r.label}</span>
-                  <span className={styles.rangeVal}>{r.range}</span>
-                </div>
-              );
-            })}
-            <div className={styles.citation}>
-              <p className={styles.citationText}>
-                <strong>{cite.author}</strong> ({cite.year}) — {cite.note}{' '}
-                <em style={{ opacity: 0.6 }}>{cite.journal}</em>
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function GateForm({ onUnlock }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const valid = name.trim().length > 1 && EMAIL_RE.test(email);
 
-  return (
-    <div className={styles.gateCard}>
-      <h3 className={styles.gateTitle}>DESBLOQUEAR PROTOCOLO</h3>
-      <p className={styles.gateSub}>Recibe tu plan personalizado + Early Access 50% off en tu primer Shake.</p>
-      <div className={styles.gateInputs}>
-        <input
-          className={styles.gateInput}
-          type="text"
-          placeholder="Tu nombre"
-          value={name}
-          onChange={e => setName(e.target.value)}
-        />
-        <input
-          className={styles.gateInput}
-          type="email"
-          placeholder="tu@email.com"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-        />
-      </div>
-      <Button variant="primary" size="md" fullWidth disabled={!valid} onClick={() => onUnlock({ name: name.trim(), email })}>
-        VER MI PROTOCOLO
-      </Button>
-    </div>
-  );
-}
+  const { grams, gap, status } = result;
+  const cite = selectCitation(result); // fuente de la dosis
+  const gapValue = useCountUp(gap, { reduce });
+  const shakes = Math.max(1, Math.round(gap / 30));
 
-export function CalcResult({ result, onUnlock }) {
+  // Montaje "vivo": sheen + stagger del value stack (M3/M6).
+  useEffect(() => {
+    const sheet = sheetRef.current;
+    if (sheet) sheet.classList.add(styles.calcPlay);
+    if (reduce) return undefined;
+    const timers = VALUE_STACK.map((_, i) =>
+      setTimeout(() => setInRows(prev => {
+        const next = [...prev];
+        next[i] = true;
+        return next;
+      }), 130 * i + 420)
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [reduce]);
+
   return (
-    <div className={styles.resultWrap}>
-      <ProfileHero result={result} />
-      <SwipeCard result={result} />
-      <GateForm onUnlock={onUnlock} />
+    <div className={styles.calcStage}>
+      <div ref={sheetRef} className={styles.calcSheet}>
+        <DoseHero grams={grams} reduce={reduce} />
+
+        <div className={styles.calcRule}>
+          <span>Tu dosis diaria</span>
+          <span className={styles.calcRuleSrc}>{cite.author} {cite.year}</span>
+        </div>
+
+        {gap > 0 ? (
+          <p className={styles.calcPull}>
+            Te faltan <b>{gapValue} g</b> de proteína al día.
+            <span className={styles.calcPullId}>
+              Tu brecha no se cierra sola — son ≈ {shakes} shakes VAGGO.
+            </span>
+          </p>
+        ) : (
+          <p className={styles.calcPull}>
+            Ya llegas a tus <b>{grams} g</b> diarios.
+            <span className={styles.calcPullId}>
+              {status === 'above'
+                ? 'Objetivo cubierto — ahora optimiza timing y calidad con VAGGO.'
+                : 'Objetivo cubierto — mantené el ritmo con VAGGO.'}
+            </span>
+          </p>
+        )}
+
+        <CompareSegment result={result} formData={formData} reduce={reduce} />
+
+        <div className={styles.calcStack}>
+          {VALUE_STACK.map((row, i) => (
+            <div
+              key={row.no}
+              className={`${styles.calcRow} ${inRows[i] ? styles.calcIn : ''}`}
+            >
+              <span className={styles.calcNo}>{row.no}</span>
+              <span className={styles.calcTx}>
+                <b>{row.title}</b>
+                <small>{row.sub(grams)}</small>
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div className={styles.calcField}>
+          <label htmlFor="calc-name">Nombre</label>
+          <input
+            id="calc-name"
+            type="text"
+            placeholder="Tu nombre"
+            autoComplete="name"
+            value={name}
+            onChange={e => setName(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.calcField}>
+          <label htmlFor="calc-email">Email</label>
+          <input
+            id="calc-email"
+            type="email"
+            placeholder="tu@email.com"
+            autoComplete="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+          />
+        </div>
+
+        <button
+          type="button"
+          className={styles.calcCta}
+          disabled={!valid}
+          onClick={() => onUnlock({ name: name.trim(), email })}
+        >
+          Desbloquear mi plan <span aria-hidden="true">→</span>
+        </button>
+
+        <p className={styles.calcConsent}>
+          Se desbloquea al instante en tu pantalla. Guardamos tu email para novedades;
+          sin spam, baja cuando quieras.
+        </p>
+      </div>
     </div>
   );
 }

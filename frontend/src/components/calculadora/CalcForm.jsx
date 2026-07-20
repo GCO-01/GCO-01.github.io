@@ -1,6 +1,6 @@
 import { Button } from '../ui/Button';
 import { GoalTile } from './GoalTile';
-import { INTAKE_PATTERNS } from '../../data/calculadora';
+import { INTAKE_PATTERNS, intakeForPattern } from '../../data/calculadora';
 import { padTime } from '../../hooks/useCountdown';
 import styles from './Calculadora.module.css';
 
@@ -14,6 +14,11 @@ const ACTIVITY_OPTS = [
   { id: 'sedentary',   label: 'Sedentario' },
   { id: 'moderate',    label: 'Moderado' },
   { id: 'very_active', label: 'Muy activo' },
+];
+
+const AGE_OPTS = [
+  { id: 'under65', label: 'Menos de 65' },
+  { id: 'over65',  label: '65 o más' },
 ];
 
 const PHASE_NAMES = ['OBJETIVO', 'PERFIL', 'BASE'];
@@ -119,6 +124,19 @@ export function CalcForm({ step, formData, onChange, onNext, onBack }) {
           </div>
 
           <div className={styles.fieldGroup}>
+            <p className={styles.fieldLabel}>Edad</p>
+            <div className={styles.segmented}>
+              {AGE_OPTS.map(o => (
+                <button
+                  key={o.id} type="button"
+                  className={`${styles.segBtn} ${formData.age === o.id ? styles.segBtnActive : ''}`}
+                  onClick={() => set('age', o.id)}
+                >{o.label}</button>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.fieldGroup}>
             <p className={styles.fieldLabel}>Actividad general</p>
             <div className={styles.segmented}>
               {ACTIVITY_OPTS.map(o => (
@@ -129,6 +147,7 @@ export function CalcForm({ step, formData, onChange, onNext, onBack }) {
                 >{o.label}</button>
               ))}
             </div>
+            <p className={styles.fieldHint}>Esto nos ayuda a conocerte, no cambia tu dosis.</p>
           </div>
         </>
       )}
@@ -137,24 +156,27 @@ export function CalcForm({ step, formData, onChange, onNext, onBack }) {
       {step === 2 && (
         <>
           <div className={styles.patternGrid}>
-            {INTAKE_PATTERNS.map(p => (
-              <button
-                key={p.id} type="button"
-                className={`${styles.patternCard} ${formData.intakePattern === p.id ? styles.patternCardActive : ''}`}
-                onClick={() => {
-                  const next = { ...formData, intakePattern: p.id };
-                  next.currentIntake = p.grams !== null ? p.grams : 0;
-                  onChange(next);
-                }}
-              >
-                <span className={styles.patternEmoji}>{p.emoji}</span>
-                <p className={styles.patternTitle}>{p.title}</p>
-                <p className={styles.patternSub}>{p.sub}</p>
-                {p.grams !== null && (
-                  <p className={styles.patternGrams}>~{p.grams} g/día</p>
-                )}
-              </button>
-            ))}
+            {INTAKE_PATTERNS.map(p => {
+              const patternGrams = intakeForPattern(p, formData.weight);
+              return (
+                <button
+                  key={p.id} type="button"
+                  className={`${styles.patternCard} ${formData.intakePattern === p.id ? styles.patternCardActive : ''}`}
+                  onClick={() => {
+                    const next = { ...formData, intakePattern: p.id };
+                    next.currentIntake = patternGrams ?? 0;
+                    onChange(next);
+                  }}
+                >
+                  <span className={styles.patternEmoji}>{p.emoji}</span>
+                  <p className={styles.patternTitle}>{p.title}</p>
+                  <p className={styles.patternSub}>{p.sub}</p>
+                  {patternGrams !== null && (
+                    <p className={styles.patternGrams}>~{patternGrams} g/día</p>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           {formData.intakePattern === 'custom' && (
@@ -182,7 +204,7 @@ export function CalcForm({ step, formData, onChange, onNext, onBack }) {
           disabled={!valid}
           onClick={onNext}
         >
-          {step < 2 ? 'CONFIRMAR' : 'EJECUTAR PROTOCOLO'}
+          {step < 2 ? 'CONFIRMAR →' : 'EJECUTAR PROTOCOLO →'}
         </Button>
       </div>
     </div>

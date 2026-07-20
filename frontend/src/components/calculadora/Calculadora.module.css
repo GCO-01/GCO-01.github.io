@@ -114,6 +114,37 @@
   position: relative;
 }
 
+/* T0.4 — hook de apertura con dato ELANS */
+.introHook {
+  position: relative;
+  max-width: 340px;
+  border-left: 2px solid var(--color-accent-red);
+  padding: 8px 0 8px 14px;
+  text-align: left;
+}
+
+.introHookText {
+  font-family: var(--font-opensans);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.introHookText strong {
+  color: var(--color-accent-red);
+  font-weight: 800;
+}
+
+.introHookCite {
+  font-family: var(--font-opensans);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--color-text-subtle);
+  margin: 6px 0 0;
+  opacity: 0.75;
+}
+
 /* Intro CTA — copia el tratamiento del hero */
 .introCta {
   position: relative;
@@ -357,6 +388,14 @@
   text-transform: uppercase;
   color: var(--color-text-subtle);
   margin: 0;
+}
+
+.fieldHint {
+  font-family: var(--font-opensans);
+  font-size: 10px;
+  color: var(--color-text-subtle);
+  opacity: 0.7;
+  margin: 8px 0 0;
 }
 
 .sliderVal {
@@ -666,6 +705,50 @@
   margin: 4px 0 0;
 }
 
+/* T0.1 — consumo actual (visible de inmediato) y reveal del objetivo */
+.currentIntakeBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.currentIntakeNum {
+  font-family: var(--font-poppins);
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--color-text-subtle);
+  line-height: 1;
+  margin: 0;
+}
+
+.targetReveal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  animation: targetReveal 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes targetReveal {
+  0%   { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Highlight con el gradiente de marca (#e8453c → #7b5ea7) al aparecer el objetivo */
+.heroNumberGlow {
+  animation: targetGlow 1.3s ease 0.1s both;
+}
+
+@keyframes targetGlow {
+  0%   { filter: drop-shadow(0 0 0 rgba(232, 69, 60, 0)); }
+  35%  { filter: drop-shadow(0 0 16px rgba(232, 69, 60, 0.55)); }
+  70%  { filter: drop-shadow(0 0 12px rgba(123, 94, 167, 0.45)); }
+  100% { filter: drop-shadow(0 0 0 rgba(123, 94, 167, 0)); }
+}
+
 /* Gap stats row */
 .gapStats {
   width: 100%;
@@ -903,6 +986,16 @@
   line-height: 1.5;
 }
 
+.gateConsent {
+  font-family: var(--font-opensans);
+  font-size: 10px;
+  color: var(--color-text-subtle);
+  opacity: 0.7;
+  line-height: 1.45;
+  margin: 12px 0 0;
+  text-align: center;
+}
+
 .gateInputs {
   display: flex;
   flex-direction: column;
@@ -1087,6 +1180,16 @@
   padding-top: 4px;
 }
 
+.mealPlanNote {
+  font-family: var(--font-opensans);
+  font-size: 10px;
+  color: var(--color-text-subtle);
+  opacity: 0.7;
+  font-style: italic;
+  margin: 4px 0 0;
+  text-align: center;
+}
+
 .mealCard {
   background: #0d0f14;
   border-radius: var(--radius-card);
@@ -1145,4 +1248,454 @@
   font-weight: 700;
   color: var(--color-text-subtle);
   white-space: nowrap;
+}
+
+/* ═════════════════════════════════════════════════════════
+   RESULTADO + GATE — "ficha editorial + liquid glass" (rediseño)
+   Porte 1:1 del prototipo aceptado. Todo el color/tipografía vive
+   en tokens --calc-* → re-skin sin tocar layout.
+   ═════════════════════════════════════════════════════════ */
+
+/* ---- stage: base profunda + glows ambientales (profundidad M4) ---- */
+.calcStage {
+  position: relative;
+  margin: -32px calc(-1 * var(--section-px-mobile)) -96px;
+  padding: 40px 16px 64px;
+  background: var(--calc-base);
+  color: var(--calc-ink);
+  font-family: var(--calc-body);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.calcStage::before,
+.calcStage::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.calcStage::before {
+  width: 520px;
+  height: 520px;
+  top: -160px;
+  left: -120px;
+  background: radial-gradient(closest-side, rgba(var(--calc-glow-warm), 0.28), transparent 70%);
+}
+
+.calcStage::after {
+  width: 560px;
+  height: 560px;
+  bottom: -200px;
+  right: -160px;
+  background: radial-gradient(closest-side, rgba(var(--calc-glow-cool), 0.26), transparent 70%);
+}
+
+/* ---- hoja de vidrio ---- */
+.calcSheet {
+  position: relative;
+  z-index: 1;
+  width: min(384px, 94vw);
+  background: var(--calc-glass-bg);
+  -webkit-backdrop-filter: blur(var(--calc-glass-blur));
+  backdrop-filter: blur(var(--calc-glass-blur));
+  border: 1px solid var(--calc-glass-border);
+  border-radius: var(--calc-r-lg);
+  box-shadow: var(--calc-glass-shadow), inset 0 1px 0 var(--calc-glass-hi);
+  padding: 18px 24px 26px;
+  overflow: hidden;
+}
+
+/* sheen sutil que barre el glass una vez al montar (M6) */
+.calcSheet::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 55%;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  transform: skewX(-16deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .calcSheet.calcPlay::after {
+    animation: calcSheen 4.2s ease-in-out 0.6s;
+  }
+}
+
+@keyframes calcSheen {
+  0%        { left: -60%; }
+  60%, 100% { left: 130%; }
+}
+
+/* ---- número hero (SVG, escala al ancho por viewBox del bbox real) ---- */
+.calcHeroClip {
+  overflow: hidden;
+  margin: 2px -2px 0;
+}
+
+.calcDoseSvg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.calcDoseSvg text {
+  font-family: var(--calc-display);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  fill: var(--calc-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.calcDoseSvg .calcUnit { fill: var(--calc-ink-dim); }
+
+.calcRule {
+  border-top: 1px solid var(--calc-line);
+  padding-top: 9px;
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--calc-ink-label);
+  font-weight: 700;
+}
+
+.calcRuleSrc {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- brecha como pull-quote asimétrico ---- */
+.calcPull {
+  font-family: var(--calc-display);
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+  margin: var(--calc-sp) 0 0 auto;
+  width: 84%;
+  text-wrap: balance;
+}
+
+.calcPull b {
+  color: var(--calc-accent);
+  font-weight: 800;
+}
+
+.calcPullId {
+  display: block;
+  font-family: var(--calc-body);
+  font-weight: 400;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--calc-ink-dim);
+  margin-top: 9px;
+}
+
+/* ---- segmented control liquid glass ---- */
+.calcSeg {
+  position: relative;
+  display: flex;
+  margin-top: calc(var(--calc-sp) + 4px);
+  background: var(--calc-glass-bg);
+  border: 1px solid var(--calc-glass-border);
+  border-radius: var(--calc-r);
+  box-shadow: inset 0 1px 0 var(--calc-glass-hi);
+  padding: 4px;
+  overflow: hidden;
+}
+
+.calcSegThumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 3);
+  border-radius: calc(var(--calc-r) - 4px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--calc-glass-hi);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  transition: transform 0.42s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calcSegThumb { transition: none; }
+}
+
+.calcSeg button {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 44px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--calc-body);
+  font-weight: 700;
+  font-size: 10.5px;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--calc-ink-label);
+  padding: 11px 4px;
+  transition: color 0.25s;
+}
+
+.calcSeg button[aria-selected='true'] { color: var(--calc-accent); }
+
+.calcSeg button:focus-visible {
+  outline: 2px solid var(--calc-accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ---- línea técnica comparativa ---- */
+.calcSpecline {
+  position: relative;
+  height: 72px;
+  margin-top: 28px;
+}
+
+.calcAxis {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 36px;
+  height: 1px;
+  background: var(--calc-line);
+  transform-origin: left;
+}
+
+.calcScaleEnd {
+  position: absolute;
+  top: 44px;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--calc-ink-label);
+  font-variant-numeric: tabular-nums;
+}
+
+.calcBand {
+  position: absolute;
+  top: 35px;
+  height: 2px;
+  background: var(--calc-accent);
+  opacity: 0;
+  transition: opacity 0.3s, left 0.5s, width 0.5s;
+}
+
+.calcMk {
+  position: absolute;
+  top: 36px;
+  transform: translate(-50%, -50%);
+  transition: left 0.5s cubic-bezier(0.34, 1.4, 0.5, 1), opacity 0.3s;
+}
+
+.calcMk .calcDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--calc-ink);
+}
+
+.calcMkYou .calcDot {
+  background: transparent;
+  border: 2px solid var(--calc-accent);
+  width: 11px;
+  height: 11px;
+}
+
+.calcMk .calcV {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--calc-display);
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.calcMk .calcKk {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--calc-ink-label);
+  white-space: nowrap;
+}
+
+.calcMkYou .calcV { bottom: 17px; color: var(--calc-accent); }
+.calcMkYou .calcKk { top: 15px; }
+.calcMkCmp .calcV { top: 15px; }
+.calcMkCmp .calcKk { bottom: 17px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .calcBand,
+  .calcMk { transition: opacity 0.3s; }
+}
+
+.calcCaption {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--calc-ink-dim);
+  margin-top: 10px;
+  min-height: 36px;
+}
+
+.calcCaption b { color: var(--calc-ink); }
+
+/* ---- value stack 01/02/03 ---- */
+.calcStack { margin-top: calc(var(--calc-sp) + 2px); }
+
+.calcRow {
+  display: flex;
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid var(--calc-line);
+  opacity: 0;
+  transform: translateY(9px);
+}
+
+.calcRow:last-child { border-bottom: 1px solid var(--calc-line); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .calcSheet.calcPlay .calcRow.calcIn {
+    animation: calcRowIn 0.5s cubic-bezier(0.34, 1.5, 0.6, 1) forwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calcRow { opacity: 1; transform: none; }
+}
+
+@keyframes calcRowIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.calcRow .calcNo {
+  font-family: var(--calc-display);
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--calc-accent);
+  min-width: 22px;
+  font-variant-numeric: tabular-nums;
+}
+
+.calcRow .calcTx b {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.calcRow .calcTx small {
+  display: block;
+  font-size: 11.5px;
+  color: var(--calc-ink-dim);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+/* ---- inputs de línea editoriales + foco glass ---- */
+.calcField { margin-top: var(--calc-sp); }
+
+.calcField label {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--calc-ink-label);
+  font-weight: 700;
+}
+
+.calcField input {
+  width: 100%;
+  min-height: 44px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--calc-line);
+  color: var(--calc-ink);
+  font-family: var(--calc-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.25;
+  padding: 12px 0;
+  margin-top: 2px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.calcField input::placeholder { color: var(--calc-ink-label); }
+
+.calcField input:focus {
+  outline: none;
+  border-bottom-color: var(--calc-accent);
+  box-shadow: 0 6px 16px -10px rgba(var(--calc-glow-warm), 0.8);
+}
+
+/* ---- CTA (único relleno de acento) ---- */
+.calcCta {
+  margin-top: calc(var(--calc-sp) + 6px);
+  width: 100%;
+  min-height: 44px;
+  background: var(--calc-accent);
+  color: var(--calc-accent-ink);
+  border: none;
+  font-family: var(--calc-display);
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  padding: 17px 18px;
+  border-radius: var(--calc-r);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.1s, box-shadow 0.2s, opacity 0.2s;
+  box-shadow: 0 12px 30px -8px rgba(var(--calc-glow-warm), 0.6);
+}
+
+.calcCta:hover:not(:disabled) {
+  box-shadow: 0 16px 36px -8px rgba(var(--calc-glow-warm), 0.75);
+}
+
+.calcCta:active:not(:disabled) { transform: scale(0.98); }
+
+.calcCta:focus-visible {
+  outline: 2px solid var(--calc-ink);
+  outline-offset: 3px;
+}
+
+.calcCta:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calcCta { transition: box-shadow 0.2s, opacity 0.2s; }
+}
+
+.calcConsent {
+  font-size: 9px;
+  line-height: 1.5;
+  color: var(--calc-ink-label);
+  margin: 13px 0 0;
 }

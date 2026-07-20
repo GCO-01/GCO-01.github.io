@@ -88,4 +88,31 @@
   --z-mobile-drawer-backdrop: 499;
   --z-mobile-drawer: 500;
   --z-noise: 9998;
+
+  /*
+   * Calculadora · Resultado + Gate — "ficha editorial + liquid glass"
+   * Set aislado y re-skinneable (placeholders hasta el doc de marca).
+   * NO pisan los tokens de marca del sitio; solo se usan en CalcResult.
+   * Labels documentados WCAG AA sobre --calc-base:
+   *   ink-label .58 ≈ 6:1 · ink-dim .72 ≈ 7:1.
+   */
+  --calc-base: #0d0a12;              /* base profunda con sesgo violáceo */
+  --calc-glow-warm: 255, 106, 61;    /* coral (rgb triplet para rgba()) */
+  --calc-glow-cool: 120, 96, 214;    /* violeta */
+  --calc-ink: #f6f5f8;
+  --calc-ink-dim: rgba(246, 245, 248, 0.72);
+  --calc-ink-label: rgba(246, 245, 248, 0.58);
+  --calc-line: rgba(255, 255, 255, 0.14);
+  --calc-accent: #ff6a3d;            /* coral — relleno sólido SOLO en el CTA */
+  --calc-accent-ink: #180a04;
+  --calc-glass-bg: rgba(255, 255, 255, 0.055);
+  --calc-glass-hi: rgba(255, 255, 255, 0.16);
+  --calc-glass-border: rgba(255, 255, 255, 0.12);
+  --calc-glass-blur: 22px;
+  --calc-glass-shadow: 0 14px 44px rgba(0, 0, 0, 0.5);
+  --calc-r: 16px;
+  --calc-r-lg: 24px;
+  --calc-sp: 22px;
+  --calc-display: var(--font-poppins); /* display placeholder (peso alto, tracking negativo) */
+  --calc-body: var(--font-opensans);
 }
