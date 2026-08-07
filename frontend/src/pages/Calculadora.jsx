@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { computeProtein, buildMealPlan } from '../data/calculadora';
 import { CalcIntro } from '../components/calculadora/CalcIntro';
-import { CalcForm } from '../components/calculadora/CalcForm';
+import { CalcForm, STEP_COUNT } from '../components/calculadora/CalcForm';
 import { CalcResult } from '../components/calculadora/CalcResult';
 import { CalcUnlocked } from '../components/calculadora/CalcUnlocked';
 import styles from '../components/calculadora/Calculadora.module.css';
@@ -12,12 +12,16 @@ const DEFAULT_STATE = {
   goal: '',
   weight: 75,
   target: 78,
-  age: 'under65',
+  age: 'under65',       // derivado de age_range → preserva el cálculo (computeProtein lee age)
+  age_range: '',        // rango granular seleccionado por el usuario (segmentación)
+  gender: '',           // segmentación demográfica; no afecta la dosis
   training: '',
   activity: '',
   intakePattern: '',
   currentIntake: 0,
 };
+
+const LAST_STEP = STEP_COUNT - 1; // se deriva del conteo real de pasos del form
 
 export function Calculadora() {
   const [phase, setPhase] = useState('intro');
@@ -31,7 +35,7 @@ export function Calculadora() {
   const goPhase = p => { setPhase(p); scrollToTop(); };
 
   const handleNext = () => {
-    if (step < 2) {
+    if (step < LAST_STEP) {
       setStep(s => s + 1);
       scrollToTop();
     } else {
@@ -59,6 +63,8 @@ export function Calculadora() {
         gap: result.gap,
         goal: formData.goal,
         age: formData.age,
+        age_range: formData.age_range,
+        gender: formData.gender,
         training: formData.training,
         activity: formData.activity,
         client_ts: new Date().toISOString(),

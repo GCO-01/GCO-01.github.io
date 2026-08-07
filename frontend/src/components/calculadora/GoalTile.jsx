@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import styles from './Calculadora.module.css';
 
 const SVG_PATHS = {
@@ -51,25 +50,24 @@ const TILE_META = {
 };
 
 export function GoalTile({ id, active, onSelect }) {
-  const [hovered, setHovered] = useState(false);
   const meta = TILE_META[id];
 
   return (
     <button
       type="button"
+      role="radio"
+      aria-checked={active}
+      aria-pressed={active}
       className={[
-        styles.tile,
-        active ? styles.tileActive : '',
-        hovered ? styles.tileHovered : '',
+        styles.calcGoalTile,
+        active ? styles.calcGoalTileActive : '',
       ].join(' ')}
       onClick={() => onSelect(id)}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
-      <span className={styles.tileStat}>{meta.multiplier}</span>
+      <span className={styles.calcGoalStat}>{meta.multiplier}</span>
       {SVG_PATHS[id]}
-      <p className={styles.tileLabel}>{meta.title}</p>
-      <p className={styles.tileDesc}>{meta.desc}</p>
+      <p className={styles.calcGoalLabel}>{meta.title}</p>
+      <p className={styles.calcGoalDesc}>{meta.desc}</p>
     </button>
   );
 }

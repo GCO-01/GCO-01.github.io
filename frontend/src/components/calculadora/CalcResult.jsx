@@ -100,7 +100,9 @@ function CompareSegment({ result, formData, reduce }) {
   // Escala fija: 0 → valor Atleta (el más alto) → no cambia entre pestañas.
   const MIN = 0;
   const MAX = Math.max(atleta, you, promedioPeru, optMax, 1);
-  const pos = g => Math.max(2, Math.min(98, ((g - MIN) / (MAX - MIN)) * 100));
+  // Clamp a [6, 94] % para que el valor/etiqueta del marcador no se recorte en
+  // los extremos en móvil chico (≤360px).
+  const pos = g => Math.max(6, Math.min(94, ((g - MIN) / (MAX - MIN)) * 100));
 
   const TABS = [
     {
@@ -165,9 +167,10 @@ function CompareSegment({ result, formData, reduce }) {
             type="button"
             role="tab"
             aria-selected={tab === i}
+            aria-label={t.label}
             onClick={() => setTab(i)}
           >
-            {t.label}
+            {t.short}
           </button>
         ))}
       </div>
@@ -204,7 +207,7 @@ function CompareSegment({ result, formData, reduce }) {
         </div>
       </div>
 
-      <p className={styles.calcCaption}>{active.caption}</p>
+      <p className={styles.calcCaption} aria-live="polite">{active.caption}</p>
     </>
   );
 }
@@ -217,8 +220,8 @@ const VALUE_STACK = [
 
 export function CalcResult({ result, formData, onUnlock }) {
   const reduce = usePrefersReducedMotion();
-  const sheetRef = useRef(null);
-  const [inRows, setInRows] = useState(() => (reduce ? [true, true, true] : [false, false, false]));
+  const scrollRef = useRef(null);
+  const heroRef = useRef(null);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -229,103 +232,126 @@ export function CalcResult({ result, formData, onUnlock }) {
   const gapValue = useCountUp(gap, { reduce });
   const shakes = Math.max(1, Math.round(gap / 30));
 
-  // Montaje "vivo": sheen + stagger del value stack (M3/M6).
-  useEffect(() => {
-    const sheet = sheetRef.current;
-    if (sheet) sheet.classList.add(styles.calcPlay);
-    if (reduce) return undefined;
-    const timers = VALUE_STACK.map((_, i) =>
-      setTimeout(() => setInRows(prev => {
-        const next = [...prev];
-        next[i] = true;
-        return next;
-      }), 130 * i + 420)
-    );
+  // Montaje "vivo" (M3/M6): sheen del hero + entrada escalonada de tarjetas y
+  // filas. La animación es ADITIVA — sin JS o con reduced-motion las tarjetas se
+  // ven completas (la clase .calcAnim, que las oculta, solo la añade el JS).
+  // useLayoutEffect: aplica el estado oculto antes de pintar → sin parpadeo.
+  useLayoutEffect(() => {
+    const hero = heroRef.current;
+    if (hero) hero.classList.add(styles.calcPlay); // sheen (el @media lo ignora bajo reduced-motion)
+
+    const scroll = scrollRef.current;
+    if (!scroll || reduce) return undefined;
+
+    scroll.classList.add(styles.calcAnim);
+    const cards = scroll.querySelectorAll('[data-card]');
+    const rows = scroll.querySelectorAll('[data-row]');
+    void scroll.offsetWidth; // fuerza reflow para comprometer el estado oculto
+
+    const timers = [];
+    cards.forEach((c, i) => timers.push(window.setTimeout(() => c.classList.add(styles.calcIn), 90 * i)));
+    rows.forEach((r, i) => timers.push(window.setTimeout(() => r.classList.add(styles.calcIn), 560 + i * 120)));
     return () => timers.forEach(clearTimeout);
   }, [reduce]);
 
   return (
     <div className={styles.calcStage}>
-      <div ref={sheetRef} className={styles.calcSheet}>
-        <DoseHero grams={grams} reduce={reduce} />
-
-        <div className={styles.calcRule}>
-          <span>Tu dosis diaria</span>
-          <span className={styles.calcRuleSrc}>{cite.author} {cite.year}</span>
+      <div ref={scrollRef} className={`${styles.calcScroll} ${styles.calcResultScroll}`}>
+        <div className={styles.calcHead}>
+          <span className={styles.calcHeadKicker}>Tu resultado</span>
+          <h2 className={styles.calcHeadTitle}>Tu dosis diaria</h2>
         </div>
 
-        {gap > 0 ? (
-          <p className={styles.calcPull}>
-            Te faltan <b>{gapValue} g</b> de proteína al día.
-            <span className={styles.calcPullId}>
-              Tu brecha no se cierra sola — son ≈ {shakes} shakes VAGGO.
-            </span>
-          </p>
-        ) : (
-          <p className={styles.calcPull}>
-            Ya llegas a tus <b>{grams} g</b> diarios.
-            <span className={styles.calcPullId}>
-              {status === 'above'
-                ? 'Objetivo cubierto — ahora optimiza timing y calidad con VAGGO.'
-                : 'Objetivo cubierto — mantené el ritmo con VAGGO.'}
-            </span>
-          </p>
-        )}
+        {/* Tarjeta 1 — dosis hero (en desktop: columna izquierda sticky) */}
+        <div ref={heroRef} data-card className={`${styles.calcCard} ${styles.calcHeroCard}`}>
+          <DoseHero grams={grams} reduce={reduce} />
+          <p className={styles.calcHeroLbl}>Necesitas al día · {cite.author} {cite.year}</p>
 
-        <CompareSegment result={result} formData={formData} reduce={reduce} />
-
-        <div className={styles.calcStack}>
-          {VALUE_STACK.map((row, i) => (
-            <div
-              key={row.no}
-              className={`${styles.calcRow} ${inRows[i] ? styles.calcIn : ''}`}
-            >
-              <span className={styles.calcNo}>{row.no}</span>
-              <span className={styles.calcTx}>
-                <b>{row.title}</b>
-                <small>{row.sub(grams)}</small>
+          {gap > 0 ? (
+            <p className={styles.calcPull}>
+              Te faltan <b>{gapValue} g</b> de proteína al día.
+              <span className={styles.calcPullId}>
+                Tu brecha no se cierra sola — son ≈ {shakes} shakes VAGGO.
               </span>
-            </div>
-          ))}
+            </p>
+          ) : (
+            <p className={styles.calcPull}>
+              Ya llegas a tus <b>{grams} g</b> diarios.
+              <span className={styles.calcPullId}>
+                {status === 'above'
+                  ? 'Objetivo cubierto — ahora optimiza timing y calidad con VAGGO.'
+                  : 'Objetivo cubierto — mantené el ritmo con VAGGO.'}
+              </span>
+            </p>
+          )}
         </div>
 
-        <div className={styles.calcField}>
-          <label htmlFor="calc-name">Nombre</label>
-          <input
-            id="calc-name"
-            type="text"
-            placeholder="Tu nombre"
-            autoComplete="name"
-            value={name}
-            onChange={e => setName(e.target.value)}
-          />
+        {/* En desktop, las 3 tarjetas secundarias forman la columna derecha.
+            En mobile el wrapper es display:contents → stack idéntico al actual. */}
+        <div className={styles.calcResultAside}>
+        {/* Tarjeta 2 — comparador */}
+        <div data-card className={styles.calcCard}>
+          <p className={styles.calcCardLbl}>Cómo te comparás</p>
+          <CompareSegment result={result} formData={formData} reduce={reduce} />
         </div>
 
-        <div className={styles.calcField}>
-          <label htmlFor="calc-email">Email</label>
-          <input
-            id="calc-email"
-            type="email"
-            placeholder="tu@email.com"
-            autoComplete="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-          />
+        {/* Tarjeta 3 — lo que desbloqueas */}
+        <div data-card className={styles.calcCard}>
+          <p className={styles.calcCardLbl}>Lo que desbloqueas</p>
+          <div className={styles.calcStack}>
+            {VALUE_STACK.map(row => (
+              <div key={row.no} data-row className={styles.calcRow}>
+                <span className={styles.calcNo}>{row.no}</span>
+                <span className={styles.calcTx}>
+                  <b>{row.title}</b>
+                  <small>{row.sub(grams)}</small>
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <button
-          type="button"
-          className={styles.calcCta}
-          disabled={!valid}
-          onClick={() => onUnlock({ name: name.trim(), email })}
-        >
-          Desbloquear mi plan <span aria-hidden="true">→</span>
-        </button>
+        {/* Tarjeta 4 — gate (CTA DENTRO de la card) */}
+        <div data-card className={styles.calcCard}>
+          <div className={styles.calcField}>
+            <label htmlFor="calc-name">Nombre</label>
+            <input
+              id="calc-name"
+              type="text"
+              placeholder="Tu nombre"
+              autoComplete="name"
+              value={name}
+              onChange={e => setName(e.target.value)}
+            />
+          </div>
 
-        <p className={styles.calcConsent}>
-          Se desbloquea al instante en tu pantalla. Guardamos tu email para novedades;
-          sin spam, baja cuando quieras.
-        </p>
+          <div className={styles.calcField}>
+            <label htmlFor="calc-email">Email</label>
+            <input
+              id="calc-email"
+              type="email"
+              placeholder="tu@email.com"
+              autoComplete="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+            />
+          </div>
+
+          <button
+            type="button"
+            className={styles.calcCta}
+            disabled={!valid}
+            onClick={() => onUnlock({ name: name.trim(), email })}
+          >
+            Desbloquear mi plan <span aria-hidden="true">→</span>
+          </button>
+
+          <p className={styles.calcConsent}>
+            Se desbloquea al instante en tu pantalla. Guardamos tu email para novedades;
+            sin spam, baja cuando quieras.
+          </p>
+        </div>
+        </div>{/* /calcResultAside */}
       </div>
     </div>
   );
