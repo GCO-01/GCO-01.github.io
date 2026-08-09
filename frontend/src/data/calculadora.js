@@ -103,22 +103,26 @@ export function buildMealPlan({ grams }) {
   return { meals, total: { grams: totalGrams, kcal: totalKcal } };
 }
 
-// T1.6 — patrones de ingesta como función del peso (g/kg × peso), no valores fijos.
-// low 0.85 (segmento con restricción económica, Ipsos/Perú21 2024);
-// average 1.17 (consumo real peruano ~1.1–1.2 g/kg, ELANS/Herrera-Cuenca 2023);
-// conscious 1.35 (estimación editorial: por encima del promedio real).
+// Patrones de ingesta como GRAMOS ABSOLUTOS por día (cifra poblacional), no
+// escalados por peso. El ancla es el dato duro de ELANS:
+//   average 79 g/día → consumo real promedio en Perú 78.6–79.8 g/día
+//   (Herrera-Cuenca et al., Nutrients 2023). Es una cifra absoluta poblacional
+//   (peso promedio ~65–70 kg ≈ 1.1–1.2 g/kg); NO se re-escala por el peso del
+//   usuario, porque entonces dejaría de ser "el promedio peruano".
+//   low 60 g/día — segmento con menor proteína animal (Ipsos/Perú21 2024, cualitativo);
+//   conscious 100 g/día — por encima del promedio (estimación editorial).
 export const INTAKE_PATTERNS = [
-  { id: 'low',       mult: 0.85, emoji: '🍞', title: 'Carbs y poco más',     sub: 'Pan, arroz, fideos. Casi nada de proteína animal (Ipsos/Perú21 2024).' },
-  { id: 'average',   mult: 1.17, emoji: '🍗', title: 'Día promedio peruano',  sub: 'Algún huevo o pollo en una comida, cena ligera (ELANS 2023).' },
-  { id: 'conscious', mult: 1.35, emoji: '🥩', title: 'Como consciente',       sub: 'Proteína decente en 2–3 comidas, sin contar macros (estimación).' },
-  { id: 'custom',    mult: null, emoji: '📊', title: 'Cuento mis macros',     sub: 'Quiero ingresar mi número exacto.' },
+  { id: 'low',       grams: 60,   emoji: '🍞', title: 'Carbs y poco más',     sub: 'Pan, arroz, fideos. Casi nada de proteína animal (Ipsos 2024).' },
+  { id: 'average',   grams: 79,   emoji: '🍗', title: 'Día promedio peruano',  sub: 'El consumo real promedio en Perú: 78.6–79.8 g/día (ELANS 2023).' },
+  { id: 'conscious', grams: 100,  emoji: '🥩', title: 'Como consciente',       sub: 'Proteína decente en 2–3 comidas, sin contar macros (estimación).' },
+  { id: 'custom',    grams: null, emoji: '📊', title: 'Cuento mis macros',     sub: 'Quiero ingresar mi número exacto.' },
 ];
 
-// Gramos absolutos de un patrón para un peso dado. `custom` (mult null) → null.
-export function intakeForPattern(pattern, weight) {
+// Gramos absolutos de un patrón. `custom` (grams null) → null.
+export function intakeForPattern(pattern) {
   const p = typeof pattern === 'string' ? INTAKE_PATTERNS.find(x => x.id === pattern) : pattern;
-  if (!p || p.mult === null) return null;
-  return Math.round(weight * p.mult);
+  if (!p || p.grams == null) return null;
+  return p.grams;
 }
 
 export const CITATIONS = {

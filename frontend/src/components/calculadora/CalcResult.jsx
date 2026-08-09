@@ -86,13 +86,15 @@ function DoseHero({ grams, reduce }) {
 }
 
 // ── Segmented control liquid glass + línea técnica comparativa ──────
-function CompareSegment({ result, formData, reduce }) {
+function CompareSegment({ result, reduce }) {
   const [tab, setTab] = useState(0);
   const axisRef = useRef(null);
 
-  // Datos DERIVADOS del result real (nunca hardcodeados).
+  // Datos DERIVADOS del result real (nunca hardcodeados), salvo el promedio
+  // peruano, que es una cifra poblacional ABSOLUTA de ELANS (78.6–79.8 g/día,
+  // no una tasa g/kg escalada por el peso del usuario).
   const you = result.grams;
-  const promedioPeru = Math.round(formData.weight * 1.17);          // ingesta típica peruana (ELANS)
+  const promedioPeru = 79;                                          // ELANS: consumo promedio real en Perú (Herrera-Cuenca 2023)
   const optMin = Math.round(result.baseWeight * 1.2);
   const optMax = Math.round(result.baseWeight * 1.6);
   const atleta = Math.round(result.baseWeight * 2.2);               // techo Morton
@@ -112,7 +114,7 @@ function CompareSegment({ result, formData, reduce }) {
       short: 'Promedio',
       band: null,
       caption: (
-        <><b>Menos del 35% de peruanos</b> llega a un número como el tuyo (ELANS 2023).</>
+        <><b>El promedio peruano ronda 79 g/día</b> — el borde inferior del rango óptimo (ELANS 2023).</>
       ),
     },
     {
@@ -122,7 +124,7 @@ function CompareSegment({ result, formData, reduce }) {
       short: 'Óptimo',
       band: [optMin, optMax],
       caption: (
-        <>Estás dentro del <b>rango óptimo de salud</b> (1.2–1.6 g/kg).</>
+        <>La franja marca el <b>rango óptimo de salud</b>: 1.2–1.6 g/kg (Phillips 2016).</>
       ),
     },
     {
@@ -218,7 +220,7 @@ const VALUE_STACK = [
   { no: '03', title: 'Prompt de seguimiento IA', sub: () => 'Copia y pega para tu rutina diaria.' },
 ];
 
-export function CalcResult({ result, formData, onUnlock }) {
+export function CalcResult({ result, onUnlock }) {
   const reduce = usePrefersReducedMotion();
   const scrollRef = useRef(null);
   const heroRef = useRef(null);
@@ -292,7 +294,7 @@ export function CalcResult({ result, formData, onUnlock }) {
         {/* Tarjeta 2 — comparador */}
         <div data-card className={styles.calcCard}>
           <p className={styles.calcCardLbl}>Cómo te comparás</p>
-          <CompareSegment result={result} formData={formData} reduce={reduce} />
+          <CompareSegment result={result} reduce={reduce} />
         </div>
 
         {/* Tarjeta 3 — lo que desbloqueas */}

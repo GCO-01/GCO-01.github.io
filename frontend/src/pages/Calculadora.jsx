@@ -88,7 +88,7 @@ export function Calculadora() {
         />
       )}
       {phase === 'result' && result && (
-        <CalcResult result={result} formData={formData} onUnlock={handleUnlock} />
+        <CalcResult result={result} onUnlock={handleUnlock} />
       )}
       {phase === 'unlocked' && result && plan && (
         <CalcUnlocked user={user} result={result} plan={plan} />

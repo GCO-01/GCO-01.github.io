@@ -248,7 +248,7 @@ export function CalcForm({ step, formData, onChange, onNext, onBack }) {
             <p className={styles.calcCardLbl}>¿Cómo comes hoy?</p>
             <div className={styles.calcPatternGrid} role="radiogroup" aria-label="Patrón de ingesta">
               {INTAKE_PATTERNS.map(p => {
-                const patternGrams = intakeForPattern(p, formData.weight);
+                const patternGrams = intakeForPattern(p);
                 const active = formData.intakePattern === p.id;
                 return (
                   <button

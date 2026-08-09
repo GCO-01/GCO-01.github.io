@@ -92,15 +92,16 @@ test('gap nunca es negativo', () => {
   expect(computeProtein({ ...base, currentIntake: 300 }).gap).toBe(0);
 });
 
-test('T1.6: intakeForPattern escala con el peso', () => {
-  expect(intakeForPattern('average', 70)).toBe(Math.round(70 * 1.17)); // 82
-  expect(intakeForPattern('average', 90)).toBe(Math.round(90 * 1.17)); // 105
-  expect(intakeForPattern('low', 70)).toBe(Math.round(70 * 0.85));
-  expect(intakeForPattern('conscious', 70)).toBe(Math.round(70 * 1.35));
-  // dos pesos distintos, mismo patrón → gramaje absoluto distinto
-  expect(intakeForPattern('average', 70)).not.toBe(intakeForPattern('average', 90));
+test('T1.6: intakeForPattern devuelve gramos absolutos anclados a ELANS', () => {
+  // El promedio peruano es una cifra poblacional absoluta (ELANS 78.6–79.8 g/día),
+  // no una tasa g/kg escalada por el peso del usuario.
+  expect(intakeForPattern('average')).toBe(79);
+  expect(intakeForPattern('low')).toBe(60);
+  expect(intakeForPattern('conscious')).toBe(100);
+  // no depende del peso: el mismo patrón siempre da el mismo número
+  expect(intakeForPattern('average')).toBe(intakeForPattern('average'));
   // custom no tiene valor derivado
-  expect(intakeForPattern('custom', 70)).toBeNull();
+  expect(intakeForPattern('custom')).toBeNull();
 });
 
 test('T1.4: cada rama de cita es alcanzable', () => {
