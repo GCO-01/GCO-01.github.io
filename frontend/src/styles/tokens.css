@@ -88,4 +88,69 @@
   --z-mobile-drawer-backdrop: 499;
   --z-mobile-drawer: 500;
   --z-noise: 9998;
+
+  /*
+   * Calculadora · Resultado + Gate — "tarjetas flotantes liquid glass (claro)"
+   * Set aislado y re-skinneable (placeholders hasta el doc de marca).
+   * NO pisan los tokens de marca del sitio; solo se usan en CalcResult.
+   * El foco del sistema es jerarquía, peso y espacio — el COLOR es placeholder.
+   * Contraste WCAG documentado sobre --calc-base (#eeecf4, L≈0.85), peor caso
+   * (el texto vive sobre tarjetas más claras aún → contraste real ≥ el citado):
+   *   ink #1a1626 ≈ 14:1 · ink-dim #4c4860 ≈ 6.8:1 (body/captions) ·
+   *   ink-label #5e5a72 ≈ 4.7:1 (labels versalitas) ·
+   *   accent-text #ce3f17 ≈ 4.6:1 (énfasis) · accent #ff6a3d = relleno SOLO en CTA.
+   */
+  --calc-base: #eeecf4;              /* fondo aireado, sesgo violáceo frío */
+  --calc-base-2: #f7f6fb;            /* wash superior del gradiente de fondo */
+  --calc-glow-warm: 255, 106, 61;    /* coral (rgb triplet para rgba()) */
+  --calc-glow-cool: 108, 92, 210;    /* violeta */
+
+  /* Tinta jerárquica sobre claro */
+  --calc-ink: #1a1626;               /* títulos y valores hero */
+  --calc-ink-dim: #4c4860;           /* body y captions */
+  --calc-ink-label: #5e5a72;         /* labels en versalitas */
+  --calc-line: rgba(26, 22, 38, 0.10); /* divisores suaves */
+
+  /* Acento único (coral) */
+  --calc-accent: #ff6a3d;            /* relleno SÓLIDO solo en el CTA */
+  --calc-accent-text: #ce3f17;       /* acento como texto/énfasis sobre claro (AA) */
+  --calc-accent-ink: #2a0f04;        /* texto sobre relleno de acento */
+  --calc-accent-tint: rgba(255, 106, 61, 0.14);
+
+  /* Card glass (frosted claro + elevación por sombra difusa) */
+  --calc-glass-bg: rgba(255, 255, 255, 0.62);     /* más sólido → labels AA sobre glass */
+  --calc-glass-strong: rgba(255, 255, 255, 0.74); /* barra persistente + focus */
+  --calc-glass-hi: rgba(255, 255, 255, 0.9);      /* highlight superior interno */
+  --calc-glass-border: rgba(255, 255, 255, 0.8);
+  --calc-glass-blur: 22px;
+
+  /* Chips / controles seleccionables sobre glass claro */
+  --calc-chip-bg: rgba(255, 255, 255, 0.6);
+  --calc-chip-border: rgba(26, 22, 38, 0.14);
+
+  /* Escala de elevación — sombras suaves difusas (sin bordes duros) */
+  --calc-elev-1: 0 1px 2px rgba(26, 22, 38, 0.04), 0 8px 24px -8px rgba(26, 22, 38, 0.16);
+  --calc-elev-2: 0 2px 6px rgba(26, 22, 38, 0.06), 0 22px 50px -12px rgba(26, 22, 38, 0.24);
+  --calc-elev-bar: 0 -1px 3px rgba(26, 22, 38, 0.05), 0 14px 34px -8px rgba(26, 22, 38, 0.30);
+  --calc-glass-shadow: var(--calc-elev-1); /* compat */
+
+  /* Escala de radios (grandes, suaves) */
+  --calc-r: 18px;                    /* inputs / superficies chicas */
+  --calc-r-md: 22px;
+  --calc-r-lg: 28px;                 /* tarjetas */
+  --calc-r-pill: 999px;
+
+  /* Escala de espaciado */
+  --calc-sp-2: 8px;
+  --calc-sp-3: 12px;
+  --calc-sp-4: 16px;
+  --calc-sp-5: 20px;
+  --calc-sp-6: 28px;
+  --calc-sp: 20px;                   /* compat */
+  --calc-gap: 16px;                  /* separación entre tarjetas */
+  --calc-card-pad: 24px;             /* padding interno generoso */
+
+  /* Tipografía (placeholder — peso alto, tracking negativo en display) */
+  --calc-display: var(--font-poppins);
+  --calc-body: var(--font-opensans);
 }

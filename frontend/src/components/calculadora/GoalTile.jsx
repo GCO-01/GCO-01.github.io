@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import styles from './Calculadora.module.css';
 
 const SVG_PATHS = {
@@ -42,33 +41,33 @@ const SVG_PATHS = {
   ),
 };
 
+// Multiplicadores alineados con BASE_COEF (T1.3): recomp/lose = 1.3 (Wycherley 2012).
 const TILE_META = {
   muscle:   { title: 'Ganar músculo',   desc: 'Máx. síntesis proteica', multiplier: '×1.6' },
-  recomp:   { title: 'Recomposición',   desc: 'Músculo ↑ · Grasa ↓',   multiplier: '×1.6' },
-  lose:     { title: 'Perder peso',     desc: 'Saciedad + retención',   multiplier: '×1.6' },
+  recomp:   { title: 'Recomposición',   desc: 'Músculo ↑ · Grasa ↓',   multiplier: '×1.3' },
+  lose:     { title: 'Perder peso',     desc: 'Saciedad + retención',   multiplier: '×1.3' },
   maintain: { title: 'Mantenerme',      desc: 'Optimizar lo actual',    multiplier: '×1.4' },
 };
 
 export function GoalTile({ id, active, onSelect }) {
-  const [hovered, setHovered] = useState(false);
   const meta = TILE_META[id];
 
   return (
     <button
       type="button"
+      role="radio"
+      aria-checked={active}
+      aria-pressed={active}
       className={[
-        styles.tile,
-        active ? styles.tileActive : '',
-        hovered ? styles.tileHovered : '',
+        styles.calcGoalTile,
+        active ? styles.calcGoalTileActive : '',
       ].join(' ')}
       onClick={() => onSelect(id)}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
-      <span className={styles.tileStat}>{meta.multiplier}</span>
+      <span className={styles.calcGoalStat}>{meta.multiplier}</span>
       {SVG_PATHS[id]}
-      <p className={styles.tileLabel}>{meta.title}</p>
-      <p className={styles.tileDesc}>{meta.desc}</p>
+      <p className={styles.calcGoalLabel}>{meta.title}</p>
+      <p className={styles.calcGoalDesc}>{meta.desc}</p>
     </button>
   );
 }

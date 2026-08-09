@@ -5,6 +5,7 @@ import { RATING, REVIEW_COUNT } from '../../data/config';
 import { StarRating } from '../ui/StarRating';
 import { Button } from '../ui/Button';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
 
 const CTA_QUOTE = 'La proteína NO se negocia. El sabor y los ingredientes tampoco.';
 
@@ -68,12 +69,10 @@ function MobileReviews({ onScrollToProduct }) {
   const pausedRef = useRef(false);
   const resumeTimerRef = useRef(null);
   const [activeIdx, setActiveIdx] = useState(0);
-  const prefersReducedMotion = useRef(
-    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  );
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
-    if (prefersReducedMotion.current) return;
+    if (prefersReducedMotion) return;
     let idx = 0;
     const id = setInterval(() => {
       if (pausedRef.current || !trackRef.current) return;
@@ -83,7 +82,7 @@ function MobileReviews({ onScrollToProduct }) {
       setActiveIdx(idx);
     }, 4500);
     return () => clearInterval(id);
-  }, []);
+  }, [prefersReducedMotion]);
 
   useEffect(() => {
     const track = trackRef.current;

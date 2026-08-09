@@ -4,13 +4,23 @@
 # Builds
 frontend/dist
 
+# Variables de entorno locales (nunca versionar)
+.env
+**/.env.local
+**/.env*.local
+
 # Backend (Python)
 backend/.venv
 **/__pycache__
 **/*.pyc
+**/*.egg-info
 
 # Tooling local de agentes
 .superpowers
 
 # OS
 **/.DS_Store
+
+# Supabase local state
+supabase/.temp
+supabase/.branches

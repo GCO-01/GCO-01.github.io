@@ -1,19 +1,28 @@
 # VAGGO — Backend
 
-Scaffold de la API en **FastAPI** siguiendo Clean Architecture. **Aún sin lógica
-de negocio**: los endpoints y repositorios son stubs listos para implementar.
+API en **FastAPI** (Clean Architecture) que captura los leads de la calculadora y
+los persiste en **Supabase Postgres**. Hosting: **Google Cloud Run**.
+
+> ⚠️ **Estado: archivado (no en uso).** La captura de leads corre hoy por una
+> **Supabase Edge Function** (Camino C, ver [`../supabase/README.md`](../supabase/README.md)) —
+> más simple, sin hosting. Este backend FastAPI es el **destino de migración** (Camino B)
+> si se necesita un backend propio: mismo esquema (`db/schema.sql`) y mismo contrato
+> `POST /api/v1/leads`. Migrar = desplegar (abajo) y cambiar `VITE_LEADS_ENDPOINT`.
+
+👉 **Puesta en marcha (si/cuando se migre a FastAPI): [SETUP.md](SETUP.md)**
 
 ## Estructura
 
 ```
 app/
-├── main.py            # FastAPI app + /health + router de leads
-├── api/v1/leads.py    # POST /api/v1/leads (stub 501) — futuro lead-capture de la calculadora
-├── services/          # casos de uso (LeadService)
-├── repositories/      # contrato Repository + stub de persistencia
-├── domain/models.py   # entidades (Lead)
-└── core/config.py     # settings (env vars)
-deploy/                # infra Docker/nginx que sirve el frontend (ver deploy/README no aplica)
+├── main.py                # FastAPI + CORS + lifespan del pool + /health
+├── api/v1/leads.py        # POST /api/v1/leads (honeypot + rate-limit)
+├── services/lead_service  # caso de uso: registrar lead
+├── repositories/          # Repository + LeadRepository (INSERT asyncpg)
+├── domain/models.py       # LeadCreate / Lead
+└── core/                  # config, db (pool asyncpg), ratelimit
+db/schema.sql              # tabla leads (correr en Supabase)
+deploy/                    # Docker/nginx que sirve el FRONTEND estático (no la API)
 ```
 
 > Nota: `backend/deploy/` contiene la infraestructura Docker/nginx que hoy sirve
@@ -31,6 +40,8 @@ uvicorn app.main:app --reload      # http://localhost:8000/health
 
 ## Contexto
 
-El frontend (`../frontend`) captura nombre + email en la calculadora de proteína
-pero hoy no los envía a ningún lado. El endpoint `POST /api/v1/leads` es el punto
-de integración previsto para persistir ese lead cuando se implemente.
+El frontend (`../frontend`) captura nombre + email + datos de la calculadora en el
+gate y los envía a `POST /api/v1/leads` (ver `frontend/src/lib/leads.js`). El backend
+valida (Pydantic), aplica anti-abuso básico (CORS + rate-limit + honeypot) y persiste
+en Supabase. `gender` y `age_range` quedan opcionales, listos para el rediseño del
+formulario. A futuro, este mismo servicio alojará la integración con Shopify.

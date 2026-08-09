@@ -1,7 +1,7 @@
 [project]
 name = "vaggo-backend"
 version = "0.1.0"
-description = "API backend de VAGGO (scaffold Clean Architecture, FastAPI)"
+description = "API backend de VAGGO (FastAPI + Supabase, Clean Architecture)"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.110",
@@ -9,6 +9,7 @@ dependencies = [
     "pydantic>=2.6",
     "pydantic-settings>=2.2",
     "email-validator>=2.1",
+    "asyncpg>=0.29",
 ]
 
 [project.optional-dependencies]

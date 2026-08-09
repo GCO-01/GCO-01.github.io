@@ -15,9 +15,13 @@
   to   { transform: scaleX(1); }
 }
 
+/* Solo opacity: una animación sobre transform deja una matriz computada (aunque
+   sea identidad) en estado fill, y eso convierte a .page en containing block de
+   los position:fixed descendientes (rompe la barra de navegación). El "rise" lo
+   dan las tarjetas (.calcIn), no el contenedor. */
 @keyframes calcReveal {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @keyframes introGlow {
@@ -46,10 +50,11 @@
 }
 
 /* ── Page shell ───────────────────────────────────────── */
+/* Wrapper transparente de ancho completo: el canvas claro (.calcStage) llena el
+   viewport en cualquier tamaño. Sin max-width ni padding → el fondo claro llega
+   de borde a borde (antes quedaba atrapado en una columna de 560px sobre el body
+   oscuro del sitio). Solo conserva la reveal de entrada (opacity). */
 .page {
-  max-width: 560px;
-  margin: 0 auto;
-  padding: 32px var(--section-px-mobile) 96px;
   animation: calcReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -112,6 +117,37 @@
   line-height: 1.65;
   margin: 0;
   position: relative;
+}
+
+/* T0.4 — hook de apertura con dato ELANS */
+.introHook {
+  position: relative;
+  max-width: 340px;
+  border-left: 2px solid var(--color-accent-red);
+  padding: 8px 0 8px 14px;
+  text-align: left;
+}
+
+.introHookText {
+  font-family: var(--font-opensans);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.introHookText strong {
+  color: var(--color-accent-red);
+  font-weight: 800;
+}
+
+.introHookCite {
+  font-family: var(--font-opensans);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--color-text-subtle);
+  margin: 6px 0 0;
+  opacity: 0.75;
 }
 
 /* Intro CTA — copia el tratamiento del hero */
@@ -357,6 +393,14 @@
   text-transform: uppercase;
   color: var(--color-text-subtle);
   margin: 0;
+}
+
+.fieldHint {
+  font-family: var(--font-opensans);
+  font-size: 10px;
+  color: var(--color-text-subtle);
+  opacity: 0.7;
+  margin: 8px 0 0;
 }
 
 .sliderVal {
@@ -666,6 +710,50 @@
   margin: 4px 0 0;
 }
 
+/* T0.1 — consumo actual (visible de inmediato) y reveal del objetivo */
+.currentIntakeBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.currentIntakeNum {
+  font-family: var(--font-poppins);
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--color-text-subtle);
+  line-height: 1;
+  margin: 0;
+}
+
+.targetReveal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  animation: targetReveal 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes targetReveal {
+  0%   { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Highlight con el gradiente de marca (#e8453c → #7b5ea7) al aparecer el objetivo */
+.heroNumberGlow {
+  animation: targetGlow 1.3s ease 0.1s both;
+}
+
+@keyframes targetGlow {
+  0%   { filter: drop-shadow(0 0 0 rgba(232, 69, 60, 0)); }
+  35%  { filter: drop-shadow(0 0 16px rgba(232, 69, 60, 0.55)); }
+  70%  { filter: drop-shadow(0 0 12px rgba(123, 94, 167, 0.45)); }
+  100% { filter: drop-shadow(0 0 0 rgba(123, 94, 167, 0)); }
+}
+
 /* Gap stats row */
 .gapStats {
   width: 100%;
@@ -903,6 +991,16 @@
   line-height: 1.5;
 }
 
+.gateConsent {
+  font-family: var(--font-opensans);
+  font-size: 10px;
+  color: var(--color-text-subtle);
+  opacity: 0.7;
+  line-height: 1.45;
+  margin: 12px 0 0;
+  text-align: center;
+}
+
 .gateInputs {
   display: flex;
   flex-direction: column;
@@ -1087,6 +1185,16 @@
   padding-top: 4px;
 }
 
+.mealPlanNote {
+  font-family: var(--font-opensans);
+  font-size: 10px;
+  color: var(--color-text-subtle);
+  opacity: 0.7;
+  font-style: italic;
+  margin: 4px 0 0;
+  text-align: center;
+}
+
 .mealCard {
   background: #0d0f14;
   border-radius: var(--radius-card);
@@ -1145,4 +1253,1241 @@
   font-weight: 700;
   color: var(--color-text-subtle);
   white-space: nowrap;
+}
+
+/* ═════════════════════════════════════════════════════════
+   RESULTADO + GATE — "tarjetas flotantes liquid glass (claro)"
+   Porte 1:1 del prototipo aceptado (vaggo-cards-preview). Todo el
+   color/tipografía vive en tokens --calc-* → re-skin sin tocar layout.
+   Entrada ADITIVA: las tarjetas se ven completas sin JS / con
+   prefers-reduced-motion; .calcAnim (que las oculta) solo la añade el JS.
+   ═════════════════════════════════════════════════════════ */
+
+/* ---- stage: base clara aireada + glows ambientales (profundidad M4) ---- */
+.calcStage {
+  position: relative;
+  /* Sin márgenes negativos: el padre (.page) ya es full-width, así que el stage
+     llena el viewport por sí solo. En mobile queda visualmente idéntico. */
+  padding: 40px 16px 64px;
+  background:
+    radial-gradient(120% 80% at 15% 0%, rgba(var(--calc-glow-warm), 0.20), transparent 55%),
+    radial-gradient(120% 90% at 100% 100%, rgba(var(--calc-glow-cool), 0.22), transparent 55%),
+    linear-gradient(160deg, var(--calc-base-2), var(--calc-base));
+  color: var(--calc-ink);
+  font-family: var(--calc-body);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- columna de tarjetas flotantes ---- */
+.calcScroll {
+  position: relative;
+  z-index: 1;
+  width: min(384px, 94vw);
+  display: flex;
+  flex-direction: column;
+  gap: var(--calc-gap);
+}
+
+/* ---- cabecera editorial ---- */
+.calcHead { padding: 2px 6px; }
+
+.calcHeadKicker {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--calc-ink-label);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.calcHeadTitle {
+  font-family: var(--calc-display);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--calc-ink);
+  margin: 0;
+}
+
+/* ---- tarjeta glass (frosted claro + elevación por sombra difusa) ---- */
+.calcCard {
+  position: relative;
+  background: var(--calc-glass-bg);
+  border: 1px solid var(--calc-glass-border);
+  border-radius: var(--calc-r-lg);
+  box-shadow: var(--calc-elev-2), inset 0 1px 0 var(--calc-glass-hi);
+  -webkit-backdrop-filter: blur(var(--calc-glass-blur)) saturate(1.4);
+  backdrop-filter: blur(var(--calc-glass-blur)) saturate(1.4);
+  padding: var(--calc-card-pad);
+  /* VISIBLE por defecto → nunca hay pantalla en blanco sin JS / reduced-motion */
+  opacity: 1;
+  transform: none;
+}
+
+/* entrada aditiva: solo cuando el JS agrega .calcAnim al contenedor */
+.calcAnim .calcCard { opacity: 0; transform: translateY(14px); }
+.calcAnim .calcCard.calcIn { animation: calcRise 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+@keyframes calcRise { to { opacity: 1; transform: translateY(0); } }
+
+/* ---- hero card (dosis) — wash claro + sheen al montar (M6) ---- */
+.calcHeroCard {
+  overflow: hidden;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.5));
+}
+
+.calcHeroCard::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 55%;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: skewX(-16deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .calcHeroCard.calcPlay::after { animation: calcSheen 4.2s ease-in-out 0.5s; }
+}
+
+@keyframes calcSheen {
+  0%        { left: -60%; }
+  60%, 100% { left: 130%; }
+}
+
+/* label de tarjeta (versalitas) */
+.calcCardLbl {
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--calc-ink-label);
+  font-weight: 700;
+  margin: 0 0 11px;
+}
+
+/* ---- número hero (SVG, escala al ancho por viewBox del bbox real) ---- */
+.calcHeroClip {
+  overflow: hidden;
+  margin: -2px -2px 0;
+}
+
+.calcDoseSvg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.calcDoseSvg text {
+  font-family: var(--calc-display);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  fill: var(--calc-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.calcDoseSvg .calcUnit { font-size: 0.42em; fill: var(--calc-ink-dim); }
+
+.calcHeroLbl {
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--calc-ink-label);
+  font-weight: 700;
+  margin: 6px 0 0;
+}
+
+/* ---- brecha (pull restringido, acento como texto AA) ---- */
+.calcPull {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--calc-ink);
+  margin: 10px 0 0;
+}
+
+.calcPull b {
+  color: var(--calc-accent-text);
+  font-weight: 800;
+}
+
+.calcPullId {
+  display: block;
+  font-weight: 500;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--calc-ink-dim);
+  margin-top: 5px;
+}
+
+/* ---- segmented control (track tenue sobre card clara + thumb blanco) ---- */
+.calcSeg {
+  position: relative;
+  display: flex;
+  margin-top: 4px;
+  background: rgba(26, 22, 38, 0.06);
+  border-radius: var(--calc-r);
+  padding: 4px;
+}
+
+.calcSegThumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 3);
+  border-radius: calc(var(--calc-r) - 5px);
+  background: #fff;
+  box-shadow: 0 3px 10px -3px rgba(40, 30, 60, 0.35);
+  transition: transform 0.42s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calcSegThumb { transition: none; }
+}
+
+.calcSeg button {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 44px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--calc-body);
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--calc-ink-dim);
+  padding: 11px 4px;
+  transition: color 0.25s;
+}
+
+.calcSeg button[aria-selected='true'] { color: var(--calc-ink); }
+
+.calcSeg button:focus-visible {
+  outline: 2px solid var(--calc-accent);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+/* ---- línea técnica comparativa ---- */
+.calcSpecline {
+  position: relative;
+  height: 56px;
+  margin-top: 14px;
+}
+
+.calcAxis {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 26px;
+  height: 2px;
+  background: rgba(26, 22, 38, 0.14);
+  border-radius: 2px;
+  transform-origin: left;
+}
+
+.calcScaleEnd {
+  position: absolute;
+  top: 34px;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--calc-ink-dim);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.calcBand {
+  position: absolute;
+  top: 24px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--calc-accent-tint);
+  border-left: 2px solid var(--calc-accent);
+  border-right: 2px solid var(--calc-accent);
+  opacity: 0;
+  transition: opacity 0.3s, left 0.5s, width 0.5s;
+}
+
+.calcMk {
+  position: absolute;
+  top: 26px;
+  transform: translate(-50%, -50%);
+  transition: left 0.5s cubic-bezier(0.34, 1.4, 0.5, 1), opacity 0.3s;
+}
+
+.calcMk .calcDot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.calcMkYou .calcDot {
+  background: var(--calc-accent);
+  box-shadow: 0 0 0 4px rgba(var(--calc-glow-warm), 0.18);
+}
+
+.calcMkCmp .calcDot { background: var(--calc-ink); }
+
+.calcMk .calcV {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--calc-display);
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.calcMk .calcKk {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--calc-ink-label);
+  white-space: nowrap;
+}
+
+.calcMkYou .calcV { bottom: 13px; color: var(--calc-accent-text); }
+.calcMkYou .calcKk { top: 15px; }
+.calcMkCmp .calcV { top: 13px; color: var(--calc-ink); }
+.calcMkCmp .calcKk { bottom: 15px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .calcBand,
+  .calcMk { transition: opacity 0.3s; }
+}
+
+.calcCaption {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--calc-ink-dim);
+  margin-top: 12px;
+  min-height: 34px;
+}
+
+.calcCaption b { color: var(--calc-ink); }
+
+/* ---- value stack 01/02/03 (entrada aditiva por fila) ---- */
+.calcStack { margin-top: 0; }
+
+.calcRow {
+  display: flex;
+  gap: 13px;
+  padding: 12px 0;
+  border-top: 1px solid var(--calc-line);
+  /* VISIBLE por defecto */
+  opacity: 1;
+  transform: none;
+}
+
+.calcRow:first-child { border-top: none; }
+
+.calcAnim .calcRow { opacity: 0; transform: translateY(8px); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .calcAnim .calcRow.calcIn {
+    animation: calcRowIn 0.5s cubic-bezier(0.34, 1.5, 0.6, 1) forwards;
+  }
+}
+
+@keyframes calcRowIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.calcNo {
+  font-family: var(--calc-display);
+  font-weight: 800;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--calc-accent-text);
+  min-width: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.calcTx b {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--calc-ink);
+}
+
+.calcTx small {
+  display: block;
+  font-size: 12px;
+  color: var(--calc-ink-dim);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* ---- gate: inputs boxed translúcidos ---- */
+.calcField { margin-top: 12px; }
+.calcField:first-child { margin-top: 0; }
+
+.calcField label {
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--calc-ink-label);
+  font-weight: 700;
+}
+
+.calcField input {
+  width: 100%;
+  min-height: 48px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--calc-glass-border);
+  border-radius: var(--calc-r);
+  color: var(--calc-ink);
+  font-family: var(--calc-body);
+  font-weight: 400;
+  font-size: 16px; /* ≥16px evita el zoom automático de iOS */
+  line-height: 1.25;
+  padding: 13px 14px;
+  margin-top: 6px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.calcField input::placeholder { color: var(--calc-ink-dim); }
+
+.calcField input:focus {
+  outline: none;
+  border-color: var(--calc-accent);
+  box-shadow: 0 0 0 4px rgba(var(--calc-glow-warm), 0.16);
+}
+
+/* ---- CTA (único relleno de acento) — DENTRO de la card del gate ---- */
+.calcCta {
+  margin-top: 16px;
+  width: 100%;
+  min-height: 52px;
+  background: var(--calc-accent);
+  color: var(--calc-accent-ink);
+  border: none;
+  font-family: var(--calc-display);
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  padding: 0 20px;
+  border-radius: var(--calc-r);
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s, box-shadow 0.2s, opacity 0.2s;
+  box-shadow: 0 12px 26px -8px rgba(var(--calc-glow-warm), 0.7);
+}
+
+.calcCta:hover:not(:disabled) {
+  box-shadow: 0 16px 34px -8px rgba(var(--calc-glow-warm), 0.8);
+}
+
+.calcCta:active:not(:disabled) { transform: scale(0.98); }
+
+.calcCta:focus-visible {
+  outline: 2px solid var(--calc-accent);
+  outline-offset: 3px;
+}
+
+.calcCta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calcCta { transition: box-shadow 0.2s, opacity 0.2s; }
+}
+
+.calcConsent {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--calc-ink-dim);
+  margin: 12px 0 0;
+}
+
+/* ---- reduced-motion: fuerza el estado final visible en todo ---- */
+@media (prefers-reduced-motion: reduce) {
+  .calcCard,
+  .calcRow {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════
+   FORMULARIO — mismo sistema de tarjetas flotantes liquid glass
+   (claro) que el resultado. Reusa .calcStage / .calcScroll /
+   .calcCard / .calcCardLbl / .calcField y los tokens --calc-*.
+   Añade: chips de selección única, sliders de peso, tiles de
+   objetivo en glass, tarjetas de patrón y la BARRA PERSISTENTE
+   de navegación (Atrás + dots de progreso + Continuar).
+   ═════════════════════════════════════════════════════════ */
+
+/* Reserva de espacio para que la barra fija no tape el contenido. */
+.calcHasBar { padding-bottom: 104px; }
+
+/* Título del paso: foco programático (a11y) sin caja visible. */
+.calcStepTitle:focus { outline: none; }
+
+.calcFieldHint {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--calc-ink-dim);
+  margin: 12px 0 0;
+}
+
+/* ---- chips de selección única (tap target ≥44px + focus-visible) ---- */
+.calcChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.calcChip {
+  border: 1px solid var(--calc-chip-border);
+  background: var(--calc-chip-bg);
+  border-radius: 14px;
+  padding: 0 14px;
+  min-height: 44px;
+  font-family: var(--calc-body);
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--calc-ink-dim);
+  cursor: pointer;
+  transition: transform 0.12s, background 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.calcChip:active { transform: scale(0.95); }
+
+.calcChip[aria-pressed='true'] {
+  background: var(--calc-ink);
+  color: #fff;
+  border-color: var(--calc-ink);
+  box-shadow: 0 8px 20px -8px rgba(26, 22, 38, 0.5);
+}
+
+.calcChip:focus-visible {
+  outline: 2px solid var(--calc-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calcChip { transition: background 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s; }
+  .calcChip:active { transform: none; }
+}
+
+/* ---- peso: label + valor grande + slider claro ---- */
+.calcWeightGroup + .calcWeightGroup { margin-top: 20px; }
+
+.calcWeightRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.calcWeightLbl {
+  font-size: 13px;
+  color: var(--calc-ink-dim);
+  font-weight: 600;
+}
+
+.calcWeightVal {
+  font-family: var(--calc-display);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--calc-ink);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.calcWeightVal span {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--calc-ink-dim);
+}
+
+.calcSlider {
+  width: 100%;
+  margin-top: 12px;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+  background: linear-gradient(
+    to right,
+    var(--calc-accent) 0%,
+    var(--calc-accent) var(--pct, 0%),
+    rgba(26, 22, 38, 0.1) var(--pct, 0%),
+    rgba(26, 22, 38, 0.1) 100%
+  );
+}
+
+.calcSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(40, 30, 60, 0.4);
+}
+
+.calcSlider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(40, 30, 60, 0.4);
+}
+
+.calcSlider:focus-visible {
+  outline: 2px solid var(--calc-accent);
+  outline-offset: 4px;
+}
+
+/* ---- objetivo: tiles en glass claro (grid) ---- */
+.calcGoalGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 399px) {
+  .calcGoalGrid { grid-template-columns: 1fr; }
+}
+
+.calcGoalTile {
+  position: relative;
+  text-align: left;
+  border: 1px solid var(--calc-chip-border);
+  background: var(--calc-chip-bg);
+  border-radius: var(--calc-r-md);
+  padding: 18px 16px 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 148px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.calcGoalTileActive {
+  border-color: var(--calc-accent);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 0 0 1px var(--calc-accent), var(--calc-elev-2);
+}
+
+.calcGoalTile:focus-visible {
+  outline: 2px solid var(--calc-accent);
+  outline-offset: 2px;
+}
+
+.calcGoalStat {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-family: var(--calc-display);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--calc-accent-text);
+}
+
+.calcGoalLabel {
+  font-family: var(--calc-display);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--calc-ink);
+  margin: 0;
+}
+
+.calcGoalDesc {
+  font-size: 11px;
+  color: var(--calc-ink-dim);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ---- patrón de ingesta: tarjetas seleccionables en glass ---- */
+.calcPatternGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 399px) {
+  .calcPatternGrid { grid-template-columns: 1fr; }
+}
+
+.calcPatternCard {
+  text-align: left;
+  border: 1px solid var(--calc-chip-border);
+  background: var(--calc-chip-bg);
+  border-radius: var(--calc-r-md);
+  padding: 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.calcPatternCard[aria-pressed='true'] {
+  border-color: var(--calc-accent);
+  background: var(--calc-accent-tint);
+  box-shadow: 0 0 0 1px var(--calc-accent);
+}
+
+.calcPatternCard:focus-visible {
+  outline: 2px solid var(--calc-accent);
+  outline-offset: 2px;
+}
+
+.calcPatternEmoji { font-size: 20px; line-height: 1; }
+
+.calcPatternTitle {
+  font-family: var(--calc-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--calc-ink);
+}
+
+.calcPatternSub {
+  font-size: 11px;
+  color: var(--calc-ink-dim);
+  line-height: 1.4;
+}
+
+.calcPatternGrams {
+  font-family: var(--calc-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--calc-accent-text);
+}
+
+/* ---- barra persistente de navegación (fija, glass reforzado) ---- */
+.calcNavbar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: var(--z-sticky-bar);
+  width: min(384px, 94vw);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  background: var(--calc-glass-strong);
+  border: 1px solid var(--calc-glass-border);
+  border-radius: var(--calc-r-lg);
+  box-shadow: var(--calc-elev-bar), inset 0 1px 0 var(--calc-glass-hi);
+  -webkit-backdrop-filter: blur(var(--calc-glass-blur)) saturate(1.5);
+  backdrop-filter: blur(var(--calc-glass-blur)) saturate(1.5);
+}
+
+.calcFab {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  border: 1px solid var(--calc-chip-border);
+  background: var(--calc-chip-bg);
+  color: var(--calc-ink);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.12s, background 0.2s;
+}
+
+.calcFab:active { transform: scale(0.95); }
+
+.calcFab:focus-visible {
+  outline: 2px solid var(--calc-accent);
+  outline-offset: 2px;
+}
+
+.calcNavDots {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+.calcNavDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(26, 22, 38, 0.2);
+  transition: width 0.25s, background 0.25s;
+}
+
+.calcNavDotDone { background: var(--calc-accent-tint); }
+
+.calcNavDotOn {
+  width: 20px;
+  border-radius: 999px;
+  background: var(--calc-accent);
+}
+
+.calcNavCta {
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--calc-r);
+  background: var(--calc-accent);
+  color: var(--calc-accent-ink);
+  font-family: var(--calc-display);
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1;
+  min-height: 48px;
+  padding: 0 18px;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 24px -8px rgba(var(--calc-glow-warm), 0.7);
+  transition: transform 0.12s, box-shadow 0.2s, opacity 0.2s;
+}
+
+.calcNavCta:hover:not(:disabled) {
+  box-shadow: 0 14px 30px -8px rgba(var(--calc-glow-warm), 0.8);
+}
+
+.calcNavCta:active:not(:disabled) { transform: scale(0.97); }
+
+.calcNavCta:focus-visible {
+  outline: 2px solid var(--calc-accent);
+  outline-offset: 3px;
+}
+
+.calcNavCta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calcFab:active,
+  .calcNavCta:active { transform: none; }
+  .calcNavDot { transition: background 0.25s; }
+}
+
+/* ═════════════════════════════════════════════════════════
+   INTRO — mismo sistema de tarjetas flotantes liquid glass
+   (claro) que form/result. La "portada" de la misma revista:
+   título display en tinta, hook ELANS dentro de una card glass
+   con regla de acento editorial, y el CTA de acento del sistema.
+   ═════════════════════════════════════════════════════════ */
+
+/* Kicker de portada — acento como texto (AA sobre claro) */
+.calcIntroKicker {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--calc-accent-text);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* Título hero grande en tinta (jerarquía fuerte) */
+.calcIntroTitle {
+  font-family: var(--calc-display);
+  font-size: clamp(30px, 8.5vw, 46px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--calc-ink);
+  margin: 0;
+}
+
+.calcIntroTitle span { color: var(--calc-accent-text); }
+
+/* Hook ELANS: regla de acento editorial dentro de la card glass */
+.calcIntroHook {
+  border-left: 2px solid var(--calc-accent);
+  padding-left: 14px;
+}
+
+.calcIntroHookText {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--calc-ink);
+  font-weight: 500;
+  margin: 0;
+}
+
+.calcIntroHookText strong {
+  color: var(--calc-accent-text);
+  font-weight: 800;
+}
+
+.calcIntroHookCite {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--calc-ink-label);
+  margin: 8px 0 0;
+}
+
+.calcIntroSub {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--calc-ink-dim);
+  margin: 4px 6px 0;
+}
+
+/* ═════════════════════════════════════════════════════════
+   DESBLOQUEO — mismo sistema glass claro. Banner "protocolo
+   activo" (hero wash), card de código + precios, plan de
+   comidas (MealPlan) y el CTA de acento del sistema.
+   ═════════════════════════════════════════════════════════ */
+
+/* Banner — dosis destacada sobre el wash claro del hero */
+.calcUnlockGrams {
+  font-family: var(--calc-display);
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--calc-ink);
+  line-height: 1;
+  margin: 6px 0 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.calcUnlockGrams span {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--calc-ink-dim);
+  margin-left: 4px;
+}
+
+.calcUnlockSub {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--calc-ink-dim);
+  margin: 12px 0 0;
+}
+
+/* Código de descuento — caja dashed en acento + botón copiar chip */
+.calcCodeRow {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.calcCodeBox {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--calc-accent-tint);
+  border: 1.5px dashed var(--calc-accent);
+  border-radius: var(--calc-r);
+  padding: 12px 16px;
+  font-family: var(--calc-display);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--calc-accent-text);
+}
+
+.calcCopyBtn {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: var(--calc-r);
+  border: 1px solid var(--calc-chip-border);
+  background: var(--calc-chip-bg);
+  color: var(--calc-ink-dim);
+  font-family: var(--calc-body);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.12s, color 0.2s, background 0.2s, border-color 0.2s;
+}
+
+.calcCopyBtn:active { transform: scale(0.97); }
+
+.calcCopyBtn:focus-visible {
+  outline: 2px solid var(--calc-accent);
+  outline-offset: 2px;
+}
+
+.calcCopyBtnDone {
+  border-color: var(--calc-accent);
+  color: var(--calc-accent-text);
+  background: var(--calc-accent-tint);
+}
+
+/* Precios */
+.calcPriceRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.calcOldPrice {
+  font-family: var(--calc-display);
+  font-size: 14px;
+  color: var(--calc-ink-dim);
+  text-decoration: line-through;
+}
+
+.calcNewPrice {
+  font-family: var(--calc-display);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--calc-ink);
+}
+
+.calcStockBadge {
+  font-family: var(--calc-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--calc-accent-text);
+  background: var(--calc-accent-tint);
+  border-radius: var(--calc-r-pill);
+  padding: 4px 10px;
+}
+
+/* CTA final de carrito — mismo relleno de acento, standalone en la columna */
+.calcCtaBlock { margin-top: 0; }
+
+/* ═════════════════════════════════════════════════════════
+   PLAN DE COMIDAS (MealPlan) — filas legibles sobre glass claro.
+   Se renderiza como una única card; cada comida es un grupo
+   separado por divisor suave.
+   ═════════════════════════════════════════════════════════ */
+.calcMealGroup {
+  padding: 14px 0;
+  border-top: 1px solid var(--calc-line);
+}
+
+.calcMealGroup:first-of-type {
+  border-top: none;
+  padding-top: 4px;
+}
+
+.calcMealHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.calcMealEmoji { font-size: 16px; line-height: 1; }
+
+.calcMealName {
+  font-family: var(--calc-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--calc-ink);
+  margin: 0;
+}
+
+.calcMealItems {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.calcMealItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.calcMealItemLabel {
+  font-size: 12.5px;
+  color: var(--calc-ink-dim);
+  flex: 1;
+}
+
+.calcMealItemShake {
+  color: var(--calc-ink);
+  font-weight: 700;
+}
+
+.calcMealItemMacros {
+  font-family: var(--calc-display);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--calc-ink-dim);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.calcMealNote {
+  font-size: 11px;
+  color: var(--calc-ink-dim);
+  font-style: italic;
+  margin: 12px 0 0;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calcCopyBtn:active { transform: none; }
+}
+
+/* En mobile el aside del resultado es transparente al layout: las 3 tarjetas
+   se apilan en la misma columna que el hero (idéntico al diseño actual). */
+.calcResultAside { display: contents; }
+
+/* ═════════════════════════════════════════════════════════
+   DESKTOP (≥960px) — layout propio por fase sobre el canvas claro
+   full-bleed. Todo vive detrás de este breakpoint: la experiencia
+   mobile (columna única) queda intacta. Los agrupamientos usan
+   wrappers que en base son display:contents y aquí pasan a track
+   de grid / columna flex.
+   ═════════════════════════════════════════════════════════ */
+@media (min-width: 960px) {
+  /* El sticky del hero necesita que ningún ancestro recorte. Los glows del
+     stage son gradientes del propio fondo (no desbordan), así que overflow
+     visible es seguro. Más aire lateral y superior en pantallas anchas. */
+  .calcStage {
+    overflow: visible;
+    padding: 56px 32px 96px;
+  }
+
+  .calcHeadTitle { font-size: 30px; }
+
+  /* ---- INTRO: hero editorial a 2 columnas ---- */
+  .calcIntroScroll {
+    width: min(1080px, 92vw);
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    column-gap: 56px;
+    row-gap: 22px;
+    align-content: center;
+    align-items: start;
+    min-height: calc(100vh - 240px);
+  }
+
+  .calcIntroScroll .calcHead { grid-column: 1; grid-row: 1; }
+
+  .calcIntroScroll .calcIntroSub {
+    grid-column: 1;
+    grid-row: 2;
+    margin: 0;
+    max-width: 34ch;
+  }
+
+  .calcIntroScroll .calcCta {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: start;
+    width: auto;
+    padding: 0 40px;
+    margin-top: 8px;
+  }
+
+  .calcIntroScroll .calcCard {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    align-self: center;
+  }
+
+  .calcIntroTitle { font-size: clamp(48px, 4.6vw, 66px); }
+  .calcIntroKicker { font-size: 12px; }
+  .calcIntroHookText { font-size: 16px; }
+
+  /* ---- RESULTADO: dashboard a 2 columnas, hero sticky a la izquierda ---- */
+  .calcResultScroll {
+    width: min(1060px, 92vw);
+    display: grid;
+    grid-template-columns: minmax(340px, 420px) 1fr;
+    column-gap: 32px;
+    align-content: start;
+    align-items: start;
+  }
+
+  .calcResultScroll .calcHead { grid-column: 1 / -1; }
+
+  .calcResultScroll .calcHeroCard {
+    grid-column: 1;
+    grid-row: 2;
+    position: sticky;
+    top: calc(var(--header-height-desktop) + 16px);
+  }
+
+  .calcResultAside {
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    gap: var(--calc-gap);
+  }
+
+  /* ---- DESBLOQUEO: banner + CTA a ancho completo; código y plan en 2 col ---- */
+  .calcUnlockedScroll {
+    width: min(980px, 92vw);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-content: start;
+    align-items: start;
+  }
+
+  .calcUnlockedScroll .calcHead,
+  .calcUnlockedScroll .calcHeroCard,
+  .calcUnlockedScroll .calcCtaBlock { grid-column: 1 / -1; }
+
+  .calcUnlockedScroll .calcCtaBlock {
+    width: auto;
+    justify-self: center;
+    padding: 0 48px;
+  }
+
+  /* ---- FORMULARIO · Perfil: grid de 2 columnas; peso a ancho completo ---- */
+  .calcFormPerfil {
+    width: min(760px, 92vw);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-content: start;
+  }
+
+  .calcFormPerfil .calcHead,
+  .calcFormPerfil .calcFormPesoCard { grid-column: 1 / -1; }
 }
