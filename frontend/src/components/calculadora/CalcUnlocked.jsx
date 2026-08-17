@@ -1,22 +1,36 @@
 import { useState, useRef, useLayoutEffect } from 'react';
 import { MealPlan } from './MealPlan';
+import { CopyIcon, CheckIcon } from '../ui/icons';
+import { buildCoachPrompt } from '../../data/calculadora';
 import { useCartActions } from '../../hooks/useCart';
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
 import { PRICE, OLD_PRICE, STOCK, formatMoney } from '../../data/config';
 import { DISCOUNT_CODE } from '../../data/promo';
 import styles from './Calculadora.module.css';
 
-export function CalcUnlocked({ user, result, plan }) {
+export function CalcUnlocked({ user, result, plan, formData }) {
   const { addItem } = useCartActions();
   const reduce = usePrefersReducedMotion();
   const scrollRef = useRef(null);
   const heroRef = useRef(null);
   const [copied, setCopied] = useState(false);
+  const [promptCopied, setPromptCopied] = useState(false);
+
+  // Prompt ya personalizado con la data real del usuario, listo para copiar y
+  // pegar en su propio asistente IA (no consume tokens de VAGGO).
+  const coachPrompt = buildCoachPrompt({ result, formData, plan });
 
   const handleCopy = () => {
     navigator.clipboard.writeText(DISCOUNT_CODE).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  const handleCopyPrompt = () => {
+    navigator.clipboard.writeText(coachPrompt).then(() => {
+      setPromptCopied(true);
+      setTimeout(() => setPromptCopied(false), 2000);
     });
   };
 
@@ -81,6 +95,22 @@ export function CalcUnlocked({ user, result, plan }) {
 
         {/* Plan de comidas (card propia) */}
         <MealPlan meals={plan.meals} />
+
+        {/* Coach IA personalizado — el prompt (con tus datos) se copia y se pega en tu asistente */}
+        <div data-card className={`${styles.calcCard} ${styles.calcPromptCard}`}>
+          <div className={styles.calcCoach}>
+            <p className={styles.calcCoachLine}>Copia tu coach de IA personalizado para tu objetivo</p>
+            <button
+              type="button"
+              className={`${styles.calcPromptCopy} ${promptCopied ? styles.calcPromptCopyDone : ''}`}
+              onClick={handleCopyPrompt}
+              aria-label="Copiar el prompt personalizado de tu coach de IA"
+            >
+              {promptCopied ? <CheckIcon size={18} /> : <CopyIcon size={18} />}
+              {promptCopied ? 'Copiado' : 'Copiar'}
+            </button>
+          </div>
+        </div>
 
         {/* CTA final — mismo relleno de acento del sistema */}
         <button

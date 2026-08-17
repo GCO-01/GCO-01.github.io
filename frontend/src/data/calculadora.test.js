@@ -1,6 +1,8 @@
 import {
   computeProtein,
+  computeCalories,
   buildMealPlan,
+  buildCoachPrompt,
   intakeForPattern,
   selectCitation,
   CITATIONS,
@@ -142,4 +144,49 @@ test('buildMealPlan: mínimos de comida se respetan con metas bajas', () => {
   for (const item of food) {
     expect(item.grams).toBeGreaterThanOrEqual(5);
   }
+});
+
+test('computeCalories: Mifflin-St Jeor + factor de actividad + objetivo', () => {
+  const cal = computeCalories({
+    weight: 75, height: 175, gender: 'male', age_range: '25-34',
+    activity: 'moderate', training: 'strength_high', goal: 'muscle',
+  });
+  // TMB = 10*75 + 6.25*175 − 5*30 + 5 = 1698.75 → 1699
+  expect(cal.tmb).toBe(1699);
+  // factor = 1.375 (moderate) + 0.175 (fuerza 3+) = 1.55
+  expect(cal.activityFactor).toBe(1.55);
+  expect(cal.get).toBe(Math.round(1699 * 1.55)); // 2633
+  // kcal = GET × 1.08 (superávit magro), redondeado a la decena
+  expect(cal.kcal).toBe(Math.round((2633 * 1.08) / 10) * 10); // 2840
+  // 'other' usa la constante intermedia; sigue dando un número válido
+  expect(computeCalories({ weight: 60, height: 165, gender: 'other', age_range: '35-44', activity: 'sedentary', training: 'none', goal: 'lose' }).kcal).toBeGreaterThan(0);
+});
+
+test('buildCoachPrompt: llena el bloque de datos y los placeholders del prompt', () => {
+  const formData = {
+    goal: 'muscle', weight: 75, target: 78, height: 175, age_range: '25-34',
+    gender: 'male', training: 'strength_high', activity: 'moderate',
+  };
+  const result = computeProtein({ ...formData, currentIntake: 79 });
+  const plan = buildMealPlan({ grams: result.grams });
+  const cal = computeCalories(formData);
+  const prompt = buildCoachPrompt({ result, formData, plan });
+
+  // Bloque de datos inyectado con la data real
+  expect(prompt).toContain('DATOS DE LA CALCULADORA VAGGO');
+  expect(prompt).toContain('ganar masa muscular');
+  expect(prompt).toContain('Altura: 175 cm');
+  expect(prompt).toContain(`${result.grams} g/día`);
+  expect(prompt).toContain(`${cal.kcal} kcal/día`);
+  expect(prompt).toContain(`brecha de ${result.gap} g/día`);
+
+  // Placeholders del Beat 1 rellenados (nada queda sin resolver)
+  expect(prompt).toContain('meta 78 kg');
+  for (const token of ['{DATOS_CALCULADORA}', '{edad}', '{sexo}', '{peso}', '{peso_objetivo}', '{kcal}', '{proteína}']) {
+    expect(prompt).not.toContain(token);
+  }
+  // El cuerpo del prompt (plantilla editable) sigue presente
+  expect(prompt).toContain('NUTRICIONISTA ESTRATÉGICO SENIOR');
+  // Los hooks que NO son data del usuario se preservan intactos
+  expect(prompt).toContain('{URL_CIENCIA_VAGGO');
 });

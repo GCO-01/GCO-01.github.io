@@ -12,6 +12,7 @@ const DEFAULT_STATE = {
   goal: '',
   weight: 75,
   target: 78,
+  height: 170,          // cm — para estimar calorías (Mifflin-St Jeor) en el prompt del coach
   age: 'under65',       // derivado de age_range → preserva el cálculo (computeProtein lee age)
   age_range: '',        // rango granular seleccionado por el usuario (segmentación)
   gender: '',           // segmentación demográfica; no afecta la dosis
@@ -91,7 +92,7 @@ export function Calculadora() {
         <CalcResult result={result} onUnlock={handleUnlock} />
       )}
       {phase === 'unlocked' && result && plan && (
-        <CalcUnlocked user={user} result={result} plan={plan} />
+        <CalcUnlocked user={user} result={result} plan={plan} formData={formData} />
       )}
     </div>
   );

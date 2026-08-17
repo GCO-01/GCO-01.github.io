@@ -1,3 +1,7 @@
+// El prompt del coach vive como archivo Markdown editable (coachPrompt.md) y se
+// importa como texto crudo (?raw, feature de Vite) → se edita ahí sin tocar lógica.
+import COACH_PROMPT_TEMPLATE from './coachPrompt.md?raw';
+
 // Coeficientes base g/kg por objetivo.
 // muscle 1.6 (Morton et al. 2018); maintain 1.4 (Phillips et al. 2016);
 // recomp/lose 1.3 — redondeo fiel al ~1.25 g/kg medido en recomposición corporal
@@ -146,4 +150,97 @@ export function selectCitation({ coef, goal, age, coefFloorApplied }) {
   if (goal === 'recomp' || goal === 'lose') return CITATIONS.wycherley;
   if (coef >= 1.4) return CITATIONS.phillips;
   return CITATIONS.patrick;
+}
+
+// ── Etiquetas legibles (para el bloque de datos del prompt) ──────────────────
+const GOAL_LABEL = {
+  muscle:   'ganar masa muscular',
+  recomp:   'recomposición corporal (perder grasa y ganar músculo)',
+  lose:     'perder grasa preservando músculo',
+  maintain: 'mantener masa muscular',
+};
+const TRAINING_LABEL = {
+  strength_high: 'fuerza 3+ veces por semana',
+  strength_some: 'fuerza 1–2 veces por semana',
+  none:          'sin entrenamiento de fuerza',
+};
+const ACTIVITY_LABEL = {
+  sedentary:   'vida sedentaria',
+  moderate:    'actividad moderada',
+  very_active: 'muy activo',
+};
+const GENDER_LABEL = { male: 'hombre', female: 'mujer', other: 'sin especificar' };
+
+// ── Calorías (Mifflin-St Jeor) — solo para el prompt del coach ───────────────
+// La calculadora no pedía altura ni calculaba calorías; se agregó para completar
+// el "punto de partida" que el prompt del coach entrega (Beat 1 / bloque de datos).
+// La edad se estima con el punto medio del rango elegido (la calculadora usa
+// rangos, no edad exacta) → el kcal es un ESTIMADO que el agente recalibra (M6).
+const AGE_MIDPOINT = { '18-24': 21, '25-34': 30, '35-44': 40, '45-54': 50, '55-64': 60, '65+': 70 };
+const ACTIVITY_BASE = { sedentary: 1.2, moderate: 1.375, very_active: 1.55 };
+const TRAINING_BUMP = { none: 0, strength_some: 0.075, strength_high: 0.175 };
+// Multiplicador calórico por objetivo (déficit / mantenimiento / superávit).
+const CALORIE_GOAL_MULT = { muscle: 1.08, maintain: 1.0, recomp: 0.82, lose: 0.82 };
+
+export function computeCalories(state) {
+  const { weight, height = 170, gender, age_range, activity, training, goal } = state;
+  const age = AGE_MIDPOINT[age_range] ?? 30;
+  // Mifflin-St Jeor sobre el PESO ACTUAL (la TMB depende de la masa real).
+  const base = 10 * weight + 6.25 * height - 5 * age;
+  const sexConst = gender === 'male' ? 5 : gender === 'female' ? -161 : -78; // 'other' = punto medio
+  const tmb = Math.round(base + sexConst);
+  // Factor de actividad ≈ Mifflin, combinando actividad general + frecuencia de fuerza.
+  const factor = Math.min(1.9, Math.max(1.2,
+    (ACTIVITY_BASE[activity] ?? 1.375) + (TRAINING_BUMP[training] ?? 0)));
+  const get = Math.round(tmb * factor);
+  const kcal = Math.round((get * (CALORIE_GOAL_MULT[goal] ?? 1.0)) / 10) * 10;
+  return { tmb, activityFactor: +factor.toFixed(3), get, kcal };
+}
+
+// ── Prompt del coach nutricional ─────────────────────────────────────────────
+// El texto vive en coachPrompt.md (editable). Aquí solo se RELLENA con los datos
+// reales del usuario: el bloque {DATOS_CALCULADORA} (todo lo conocido, para que el
+// agente no repregunte) y los placeholders del recap (Beat 1). El usuario lo copia
+// y lo pega en su propio asistente IA — no consume tokens de VAGGO.
+export function buildCoachPrompt({ result, formData, plan }) {
+  const goal     = GOAL_LABEL[formData.goal] ?? formData.goal;
+  const training = TRAINING_LABEL[formData.training] ?? formData.training;
+  const activity = ACTIVITY_LABEL[formData.activity] ?? formData.activity;
+  const gender   = GENDER_LABEL[formData.gender] ?? 'sin especificar';
+  const cite     = selectCitation(result);
+  const cal      = computeCalories(formData);
+
+  const gapTxt = result.gap > 0
+    ? `${result.currentIntake} g/día → brecha de ${result.gap} g/día para llegar a la meta`
+    : `${result.currentIntake} g/día (ya cubre la meta)`;
+
+  const meals = (plan?.meals ?? [])
+    .map(m => `  · ${m.name}: ${m.items.map(i => `${i.label} (${i.grams} g)`).join(', ')}`)
+    .join('\n');
+
+  const datos = `== DATOS DE LA CALCULADORA VAGGO (ya conocidos — NO volver a preguntarlos) ==
+El usuario ya completó la calculadora VAGGO. Toma estos datos como confirmados. En el
+diagnóstico (M5) pide ÚNICAMENTE lo que falta (peso de hace 3–6 meses, historial médico,
+sueño/estrés/alcohol, suplementos, tipos de día). No repreguntes lo de abajo.
+
+- Objetivo: ${goal}
+- Peso actual: ${formData.weight} kg · Peso objetivo: ${formData.target} kg · Altura: ${formData.height} cm
+- Edad: ${formData.age_range || '—'} · Sexo: ${gender}
+- Entrenamiento: ${training} · Actividad general: ${activity}
+- Proteína recomendada: ${result.grams} g/día (${result.coef} g/kg sobre ${result.baseWeight} kg de peso base)
+- Consumo actual estimado: ${gapTxt}
+- Calorías objetivo (estimado): ${cal.kcal} kcal/día — Mifflin-St Jeor: TMB ${cal.tmb} × factor ${cal.activityFactor} = GET ${cal.get}, ajustado por objetivo. Recalibrar con datos reales (M6).
+- Plan de comidas base sugerido (~${plan?.total?.grams ?? result.grams} g):
+${meals || '  · (sin plan)'}
+- Referencia científica de la dosis: ${cite.author} ${cite.year} — ${cite.note}
+==`;
+
+  return COACH_PROMPT_TEMPLATE
+    .replaceAll('{DATOS_CALCULADORA}', datos)
+    .replaceAll('{edad}', formData.age_range || '—')
+    .replaceAll('{sexo}', gender)
+    .replaceAll('{peso_objetivo}', String(formData.target))
+    .replaceAll('{peso}', String(formData.weight))
+    .replaceAll('{kcal}', String(cal.kcal))
+    .replaceAll('{proteína}', String(result.grams));
 }

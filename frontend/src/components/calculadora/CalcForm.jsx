@@ -75,7 +75,7 @@ export function isStepValid(step, formData) {
   // Paso "Perfil": peso + edad + género + entrenamiento + actividad, todo junto.
   if (step === 1) {
     return (
-      formData.weight > 0 && formData.target > 0 &&
+      formData.weight > 0 && formData.target > 0 && formData.height > 0 &&
       !!formData.age_range && !!formData.gender &&
       !!formData.training && !!formData.activity
     );
@@ -151,10 +151,10 @@ export function CalcForm({ step, formData, onChange, onNext, onBack }) {
           </div>
         )}
 
-        {/* ── Paso 2 · Perfil: peso (en desktop ocupa el ancho completo del grid) ── */}
+        {/* ── Paso 2 · Perfil: peso + altura (en desktop ocupa el ancho completo del grid) ── */}
         {step === 1 && (
           <div data-card className={`${styles.calcCard} ${styles.calcFormPesoCard}`}>
-            <p className={styles.calcCardLbl}>Peso</p>
+            <p className={styles.calcCardLbl}>Peso y altura</p>
 
             <div className={styles.calcWeightGroup}>
               <div className={styles.calcWeightRow}>
@@ -187,6 +187,26 @@ export function CalcForm({ step, formData, onChange, onNext, onBack }) {
                 onChange={e => set('target', Number(e.target.value))}
               />
             </div>
+
+            <div className={styles.calcWeightGroup}>
+              <div className={styles.calcWeightRow}>
+                <span className={styles.calcWeightLbl}>Altura</span>
+                <span className={styles.calcWeightVal}>
+                  {formData.height}<span> cm</span>
+                </span>
+              </div>
+              <input
+                type="range" min={140} max={210} value={formData.height}
+                className={styles.calcSlider}
+                aria-label="Altura en centímetros"
+                style={{ '--pct': sliderPct(formData.height, 140, 210) }}
+                onChange={e => set('height', Number(e.target.value))}
+              />
+            </div>
+
+            <p className={styles.calcFieldHint}>
+              La altura se usa para estimar tus calorías en el prompt de tu coach IA.
+            </p>
           </div>
         )}
 
