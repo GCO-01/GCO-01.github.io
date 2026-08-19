@@ -1,0 +1,309 @@
+/* Founding Batch #001 — hoja de estilos propia, escrita desde cero.
+   Poppins ya se carga globalmente vía <link> en index.html (misma convención
+   del resto del proyecto), así que no hace falta un @import adicional acá. */
+
+.page {
+  background: linear-gradient(
+    180deg,
+    #1e4e7a 0%,
+    #2c6fa0 22%,
+    #2c6fa0 32%,
+    #6fb6d9 45%,
+    #6fb6d9 58%,
+    #d9edf5 68%,
+    #d9edf5 82%,
+    #f5f1e6 100%
+  );
+  font-family: 'Poppins', var(--font-poppins, sans-serif);
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Placeholder de textura — reemplazar por noise.png real cuando exista. */
+.noiseLayer {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+  background-size: 180px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.splitGrid {
+  display: block;
+  min-height: 100vh;
+}
+
+@media (min-width: 900px) {
+  .splitGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.leftPanel {
+  display: none;
+  position: relative;
+  background: repeating-linear-gradient(135deg, #2c6fa0, #2c6fa0 12px, #1e4e7a 12px, #1e4e7a 24px);
+  border: 2px dashed rgba(255, 255, 255, 0.4);
+}
+
+@media (min-width: 900px) {
+  .leftPanel {
+    display: block;
+  }
+}
+
+.wordmark {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  color: #fff;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+
+.rightPanel {
+  position: relative;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: #fff;
+}
+
+@media (min-width: 900px) {
+  .rightPanel {
+    padding: 56px 48px;
+  }
+}
+
+.progressBar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.progressSegment {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.progressSegmentDone {
+  background: #fff;
+}
+
+.progressCounter {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.headline {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+@media (min-width: 900px) {
+  .headline {
+    font-size: 26px;
+  }
+}
+
+.subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+}
+
+.pillGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill {
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-weight: 600;
+  font-size: 13px;
+  background: #fff;
+  border: 1.5px solid rgba(27, 46, 34, 0.2);
+  color: #1b2e22;
+  cursor: pointer;
+}
+
+.pillActive {
+  background: #1b2e22;
+  color: #fff;
+  border-color: #1b2e22;
+}
+
+.checklistGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #fff;
+  line-height: 1.4;
+}
+
+.checkbox {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background: #fff;
+  border: 1.5px solid rgba(27, 46, 34, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  margin-top: 1px;
+}
+
+.checkboxChecked {
+  background: #1b2e22;
+  border-color: #1b2e22;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.field input,
+.field textarea {
+  border-radius: 12px;
+  padding: 10px 14px;
+  border: 1.5px solid rgba(27, 46, 34, 0.15);
+  background: #fff;
+  color: #1b2e22;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.ctaPrimary {
+  background: #e8531c;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(232, 83, 28, 0.28);
+  border: none;
+  padding: 12px 24px;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ctaPrimary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.backLink {
+  background: none;
+  border: none;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.navRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.mascotCorner {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 60px;
+  height: 60px;
+  opacity: 0.9;
+}
+
+@media (min-width: 900px) {
+  .mascotCorner {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+.stepAnim {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.stepIn {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 260ms ease-out, transform 260ms ease-out;
+}
+
+.stepBody {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+}
+
+.confirm {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+}
+
+.confirmInner {
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: #fff;
+}

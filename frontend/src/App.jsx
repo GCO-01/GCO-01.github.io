@@ -17,6 +17,12 @@ const Calculadora = lazy(() =>
   import('./pages/Calculadora').then(m => ({ default: m.Calculadora }))
 );
 
+// Founding Batch #001 — landing propia con CSS/paleta independiente, solo
+// se descarga al visitar /batch-001.
+const BatchLanding = lazy(() =>
+  import('./pages/BatchLanding').then(m => ({ default: m.BatchLanding }))
+);
+
 function ScrollManager() {
   const { pathname, hash } = useLocation();
 
@@ -33,6 +39,19 @@ function ScrollManager() {
   return null;
 }
 
+// El carrito no aplica al flujo de captación del Founding Batch: es una
+// landing dedicada, sin tienda visible.
+function CartChrome() {
+  const { pathname } = useLocation();
+  if (pathname === '/batch-001') return null;
+  return (
+    <>
+      <CartDrawer />
+      <FloatingCartFAB />
+    </>
+  );
+}
+
 export function App() {
   return (
     <BrowserRouter>
@@ -45,14 +64,14 @@ export function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/calculadora" element={<Calculadora />} />
+                <Route path="/batch-001" element={<BatchLanding />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
           </ErrorBoundary>
         </main>
         <Footer />
-        <CartDrawer />
-        <FloatingCartFAB />
+        <CartChrome />
       </CartProvider>
     </BrowserRouter>
   );
